@@ -1,6 +1,7 @@
 package com.provinceofmusic;
 
-import com.provinceofmusic.screen.TesterScreens;
+import com.provinceofmusic.recorder.MusicYoinker;
+import com.provinceofmusic.screen.ConfigScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -39,10 +40,10 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("MusicYoinkerRecordMidi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.category.first.test"));
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 		});
-		TesterScreens.INSTANCE.load();
+		ConfigScreen.INSTANCE.load();
 	}
 
-	public static TesterScreens getConfig() {
-		return TesterScreens.INSTANCE.getConfig();
+	public static ConfigScreen getConfig() {
+		return ConfigScreen.INSTANCE.getConfig();
 	}
 }

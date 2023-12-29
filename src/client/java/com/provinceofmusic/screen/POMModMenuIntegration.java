@@ -1,6 +1,5 @@
 package com.provinceofmusic.screen;
 
-import com.provinceofmusic.CustomScreen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.text.Text;
@@ -19,7 +18,7 @@ public class POMModMenuIntegration implements ModMenuApi {
 
             //TesterScreens ts = new TesterScreens();
             //ts.createGui(new CustomScreen(Text.of("")));
-            return getConfig().createGui(new CustomScreen(Text.of("")));
+            return getConfig().createGui(new GoofyScreenItDoesStuffTrustMe(Text.of("")));
         };
     }
 }

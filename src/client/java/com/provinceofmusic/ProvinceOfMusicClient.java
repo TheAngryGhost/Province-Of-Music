@@ -1,5 +1,7 @@
 package com.provinceofmusic;
 
+import com.provinceofmusic.jukebox.POMPlayerDisconnectWorldListener;
+import com.provinceofmusic.jukebox.POMPlayerJoinWorldListener;
 import com.provinceofmusic.recorder.MusicYoinker;
 import com.provinceofmusic.screen.ConfigScreen;
 import net.fabricmc.api.ClientModInitializer;

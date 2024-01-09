@@ -28,6 +28,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		LOGGER.info("Hello Fabric world!");
 
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
+			musicYoinker.PassTime();
 		});
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
@@ -35,7 +36,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		});
 		musicYoinker.main();
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
-			musicYoinker.PassTime();
+			//musicYoinker.PassTime();
 		});
 		ClientPlayConnectionEvents.JOIN.register(new POMPlayerJoinWorldListener());
 		ClientPlayConnectionEvents.DISCONNECT.register(new POMPlayerDisconnectWorldListener());

@@ -36,12 +36,12 @@ public class MusicYoinker implements SoundInstanceListener {
         //we don't want to have "block.note.harp", only "harp" for backwards compatibility and easier readability
         //but we need the whole "entity.silverfish.hurt" e.g. for the other, non-noteblock sounds, that are part of the piece
 
-        if(sound.getId().toString().equals("minecraft:block.note_block.harp")){
-            ProvinceOfMusicClient.LOGGER.info("Match!!!!!");
-        }
-        else {
-            ProvinceOfMusicClient.LOGGER.info(sound.getId().toString() + " = " + "minecraft:block.note_block.harp");
-        }
+        //if(sound.getId().toString().equals("minecraft:block.note_block.harp")){
+        //    ProvinceOfMusicClient.LOGGER.info("Match!!!!!");
+        //}
+        //else {
+        //    ProvinceOfMusicClient.LOGGER.info(sound.getId().toString() + " = " + "minecraft:block.note_block.harp");
+        //}
 
         String name = (split_up_name[0].equals("block") && split_up_name[1].equals("note")) ? split_up_name[2] : sound.getId().toString();
         float pitch = sound.getPitch();

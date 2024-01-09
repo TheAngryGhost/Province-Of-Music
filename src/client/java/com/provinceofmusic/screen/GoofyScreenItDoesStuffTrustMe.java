@@ -1,6 +1,7 @@
 package com.provinceofmusic.screen;
 
-import net.minecraft.client.gui.DrawableHelper;
+//import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -21,19 +22,19 @@ public class GoofyScreenItDoesStuffTrustMe extends Screen {
     //}
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        //this.renderBackground(matrices);
+        super.render(context, mouseX, mouseY, delta);
 
         // Use the Minecraft client to access resources
         //ResourceLocation resourceLocation = new ResourceLocation("my_mod", "textures/gui/my_image.png");
         //MinecraftClient.getInstance().getTextureManager().bindTexture(new Identifier("wynncraftmusicmod", "textures/testimg.jpg"));
 
-        super.render(matrices, mouseX, mouseY, delta);
-        drawCenteredTextWithShadow(matrices, textRenderer, Text.literal("You must see me"), width / 2, height / 2, 0xffffff);
+        //super.render(context, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("You must see me"), width / 2, height / 2, 0xffffff);
         ///MinecraftClient.getInstance().getResourceManager().getResource()
 
         // Draw the image on the screen
-        DrawableHelper.drawTexture(matrices, x, y, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        //DrawableHelper.drawTexture(matrices, x, y, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
     }
 }

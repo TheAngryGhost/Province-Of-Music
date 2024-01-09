@@ -3,6 +3,7 @@ package com.provinceofmusic.screen;
 import com.provinceofmusic.recorder.ConvertToMidi;
 import com.provinceofmusic.recorder.ReplayMusic;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -24,15 +25,15 @@ public class MidiEditScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        //this.renderBackground(matrices);
+        super.render(context, mouseX, mouseY, delta);
 
         // Use the Minecraft client to access resources
         //ResourceLocation resourceLocation = new ResourceLocation("my_mod", "textures/gui/my_image.png");
         //MinecraftClient.getInstance().getTextureManager().bindTexture(new Identifier("wynncraftmusicmod", "textures/testimg.jpg"));
 
-        super.render(matrices, mouseX, mouseY, delta);
+        //super.render(matrices, mouseX, mouseY, delta);
         //drawCenteredTextWithShadow(matrices, textRenderer, Text.literal("You must see me"), width / 2, height / 2, 0xffffff);
         //MinecraftClient.getInstance().getResourceManager().getResource()
 
@@ -50,7 +51,7 @@ public class MidiEditScreen extends Screen {
         //    drawTextWithShadow(matrices, textRenderer, Text.literal(f.listFiles()[i].getName()), 10, (i * 20) + 10, 0xffffff);
         //}
 //
-        drawTextWithShadow(matrices, textRenderer, Text.literal(fileInstance.getName()), 10, (0 * 20) + 10, 0xffffff);
+        context.drawTextWithShadow(textRenderer, Text.literal(fileInstance.getName()), 10, (0 * 20) + 10, 0xffffff);
     }
 
     @Override
@@ -140,6 +141,7 @@ public class MidiEditScreen extends Screen {
 
 
         ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
+                    ReplayMusic.StopMusic();
                     //MinecraftClient.getInstance().setScreen(new TitleScreen());
                     //MinecraftClient.getInstance().setScreen(new OptionsScreen(new GameMenuScreen()));
                     //MinecraftClient.

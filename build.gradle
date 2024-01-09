@@ -46,13 +46,13 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modApi("me.shedaniel.cloth:cloth-config-fabric:10.1.105") {
-		exclude(group: "net.fabricmc.fabric-api")
-	}
+	//modApi("me.shedaniel.cloth:cloth-config-fabric:10.1.105") {
+	//	exclude(group: "net.fabricmc.fabric-api")
+	//}
 
-	modImplementation("dev.isxander.yacl:yet-another-config-lib-fabric:3.1.1+1.19.4")
+	modImplementation("dev.isxander.yacl:yet-another-config-lib-fabric:3.3.0-beta.1+1.20.2")
 
-	modApi "com.terraformersmc:modmenu:6.2.1"
+	modApi "com.terraformersmc:modmenu:8.0.1"
 }
 
 processResources {

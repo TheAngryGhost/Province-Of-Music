@@ -6,5 +6,5 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.client.gui.hud.ChatHud;
 
 public class ItemSlotClicked{
-
+//
 }

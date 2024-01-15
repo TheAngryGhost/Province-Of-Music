@@ -1,6 +1,7 @@
 package com.provinceofmusic;
 
-import com.provinceofmusic.jukebox.POMPlayerDisconnectWorldListener;
+import com.provinceofmusic.jukebox.ConsoleCaptureExample;
+import  com.provinceofmusic.jukebox.POMPlayerDisconnectWorldListener;
 import com.provinceofmusic.jukebox.POMPlayerJoinWorldListener;
 import com.provinceofmusic.recorder.MusicYoinker;
 import com.provinceofmusic.screen.ConfigScreen;
@@ -22,10 +23,15 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	MusicYoinker musicYoinker = new MusicYoinker();
 
+
+	public static ConsoleCaptureExample example;
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		LOGGER.info("Hello Fabric world!");
+
+		example = new ConsoleCaptureExample();
+		example.start();
 
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			musicYoinker.PassTime();

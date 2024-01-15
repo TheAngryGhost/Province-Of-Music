@@ -3,7 +3,7 @@
 	"id": "provinceofmusic",
 	"version": "${version}",
 	"name": "Province Of Music",
-	"description": "The ultimate wynncraft music mod",
+	"description": "The Ultimate Wynncraft music mod",
 	"authors": [
 		"TheAngryGhost",
 		"Minemano"
@@ -40,7 +40,7 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "clientsidenoteblocks"
+		"another-mod": "wynntils"
 	},
 	"dependencies": {
 		"yet_another_config_lib_v3": "*"

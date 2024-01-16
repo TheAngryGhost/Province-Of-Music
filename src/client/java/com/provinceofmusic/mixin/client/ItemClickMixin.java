@@ -17,7 +17,7 @@ public class ItemClickMixin {
 	private void run(PlayerEntity player, ClickType clickType, Slot slot, ItemStack stack, ItemStack cursorStack, CallbackInfoReturnable<Boolean> cir) {
 		// This code is injected into the start of MinecraftClient.run()V
 
-		System.out.println("Player clicked!" + stack.getName().getString());
+		//System.out.println("Player clicked!" + stack.getName().getString());
 
 	}
 }

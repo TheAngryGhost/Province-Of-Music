@@ -21,10 +21,10 @@ public class ConvertToMidi {
         RunSetup();
 
         File f = inputFile;
-        File f2 = new File("exported-music/");
-        if (!f2.exists()){
-            f2.mkdirs();
-        }
+        //File f2 = new File("exported-music/");
+        //if (!f2.exists()){
+        //    f2.mkdirs();
+        //}
 
         ArrayList<String> types = new ArrayList<>();
         ArrayList<String> ticks = new ArrayList<>();
@@ -33,8 +33,8 @@ public class ConvertToMidi {
 
 
 
-        if (f.exists()) {
-            //System.out.println("File exists.");
+        //if (f.exists()) {
+        //    //System.out.println("File exists.");
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(f));
                 String line;
@@ -50,10 +50,10 @@ public class ConvertToMidi {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println("File does not exist.");
-        }
-
+        //} //else {
+          //  System.out.println("File does not exist.");
+        //}
+//
         MidiTrack tempoTrack = new MidiTrack();
         MidiTrack noteTrack = new MidiTrack();
 

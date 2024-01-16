@@ -10,7 +10,7 @@ public class POMPlayerJoinWorldListener implements ClientPlayConnectionEvents.Jo
     @Override
     public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
         //System.out.println("CONECTED!!!!!!!");
-        ProvinceOfMusicClient.example.end();
+        //ProvinceOfMusicClient.example.end();
         //MinecraftClient.getInstance().setScreen(new GoofyScreenItDoesStuffTrustMe(Text.literal("my tutorial screen")));
 
         //MinecraftClient.getInstance().setOverlay(new CustomOverlay());

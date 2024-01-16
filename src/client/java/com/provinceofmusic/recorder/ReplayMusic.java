@@ -37,14 +37,21 @@ public class ReplayMusic {
     //}
 
     public static void StopMusic(){
-        endMusic = true;
+        if(playThread != null){
+            if(!playThread.isAlive()){
+                endMusic = false;
+            }
+            else {
+                endMusic = true;
+            }
+        }
     }
 
-    public static void PlayMusic(File inputFile){
+    public static void PlayMusic(String inputFile){
 
         if(playThread != null){
             if(playThread.isAlive()){
-                endMusic = true;
+                StopMusic();
             }
         }
 
@@ -60,7 +67,7 @@ public class ReplayMusic {
 
                     //File f = new File("recorded-music/" + "2023-10-29_14-13-47.csv");
                     //File f = new File("recorded-music/" + "2023-11-04_15-51-46.csv");
-                    File f = inputFile;
+                    File f = new File(inputFile);
 
                     ArrayList<String> type = new ArrayList<>();
                     ArrayList<String> ticks = new ArrayList<>();
@@ -68,7 +75,7 @@ public class ReplayMusic {
                     ArrayList<String> volume = new ArrayList<>();
 
                     if (f.exists()) {
-                        System.out.println("File exists.");
+                        //System.out.println("File exists.");
                         try {
                             BufferedReader reader = new BufferedReader(new FileReader(f));
                             String line;
@@ -80,14 +87,20 @@ public class ReplayMusic {
                                 pitch.add(values[2]);
                                 volume.add(values[3]);
                             }
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
-                        } catch (IOException e) {
+                            reader.close();
+                        }
+                        catch (FileNotFoundException e) {
                             throw new RuntimeException(e);
                         }
-                    } else {
-                        System.out.println("File does not exist.");
+                        catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
+                    else {
+                        //System.out.println("File does not exist.");
+                    }
+
+                    //f = new File("");
 
 
                     //if(ticksSinceReset != Integer.parseInt(ticks.get(currentline))){

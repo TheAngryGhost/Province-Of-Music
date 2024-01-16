@@ -1,5 +1,6 @@
 package com.provinceofmusic.screen;
 
+import com.provinceofmusic.ProvinceOfMusicClient;
 import dev.isxander.yacl3.api.ButtonOption;
 import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
@@ -34,7 +35,7 @@ public class ConfigScreen {
         INSTANCE.save();
     }
 
-    public Screen createGui(Screen parent) {
+    public Screen createGui() {
 
         ArrayList<File> midiFiles = FetchFiles();
 
@@ -44,14 +45,14 @@ public class ConfigScreen {
             int finalI = i;
             unconvertedmidibuttons.add(ButtonOption.createBuilder()
                     .name(Text.of(midiFiles.get(i).getName()))
-                    .text(Text.of("MODIFY"))
+                    .text(Text.of("Modify File"))
 
                     //.tooltip(Text.of("This is so easy!")) // optional
                     .action((yaclScreen, buttonOption) -> {
                         if(screenInstance != null){
-                            MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), screenInstance, midiFiles.get(finalI)));
+                            MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
                         }
-                        System.out.println("Button has been pressed!");
+                        //System.out.println("Button has been pressed!");
                     })
                     //.controller(new ActionController(buttonOption /* provided by builder */, Text.of("Run") /* optional */))
                     //.controller(opt -> new ActionController())
@@ -91,28 +92,42 @@ public class ConfigScreen {
         return screenInstance;
     }
 
-    public void openFolderInExplorer() throws IOException {
-        File f = new File("recorded-music/");
-        if (!f.exists()){
-            f.mkdirs();
-        }
-        System.out.println(f.getAbsolutePath());
-        Desktop.getDesktop().open(f.getAbsoluteFile());
-    }
+    //void RefreshScreen(Screen screenIn){
+    //    ConfigScreen temp = new ConfigScreen();
+    //    screenIn = temp.createGui(ProvinceOfMusicClient.getConfig());
+    //}
+
+
+    //public void openFolderInExplorer() throws IOException {
+    //    File f = new File("recorded-music/");
+    //    if (!f.exists()){
+    //        f.mkdirs();
+    //    }
+    //    System.out.println(f.getAbsolutePath());
+    //    Desktop.getDesktop().open(f.getAbsoluteFile());
+    //}
 
     public ArrayList<File> FetchFiles(){
 
 
         ArrayList<File> tempFiles = new ArrayList<>();
-        File f = new File("recorded-music/");
-        if (!f.exists()){
-            f.mkdirs();
-        }
-        System.out.println(f.getAbsolutePath());
-        int fileCount = f.listFiles().length;
+        //File f = new File("recorded-music/");
+        //if (!f.exists()){
+        //    f.mkdirs();
+        //}
+        //System.out.println(ProvinceOfMusicClient.recordedmusicdir.getAbsolutePath());
+        int fileCount = ProvinceOfMusicClient.recordedmusicdir.listFiles().length;
         for(int i = 0; i < fileCount; i++){
             //System.out.println(f.listFiles()[i].getName());
-            tempFiles.add(f.listFiles()[i]);
+            //boolean existsInDeletedFilesList = false;
+            //for(int j = 0; j < ProvinceOfMusicClient.deletedFiles.size(); j++){
+                //if(ProvinceOfMusicClient.recordedmusicdir.listFiles()[i].equals(ProvinceOfMusicClient.deletedFiles.get(j))){
+                    //existsInDeletedFilesList = true;
+                //}
+            //}
+            //if(!existsInDeletedFilesList){
+                tempFiles.add(ProvinceOfMusicClient.recordedmusicdir.listFiles()[i]);
+            //}
         }
         return tempFiles;
     }

@@ -1,5 +1,6 @@
 package com.provinceofmusic.screen;
 
+import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.recorder.ConvertToMidi;
 import com.provinceofmusic.recorder.ReplayMusic;
 import net.minecraft.client.MinecraftClient;
@@ -18,9 +19,15 @@ public class MidiEditScreen extends Screen {
 
     Screen doneScreenInstance;
     File fileInstance;
-    protected MidiEditScreen(Text title, Screen doneScreenInstance, File fileInstance) {
+    //protected MidiEditScreen(Text title, Screen doneScreenInstance, File fileInstance) {
+    //    super(title);
+    //    this.doneScreenInstance = doneScreenInstance;
+    //    this.fileInstance = fileInstance;
+    //}
+
+    protected MidiEditScreen(Text title, File fileInstance) {
         super(title);
-        this.doneScreenInstance = doneScreenInstance;
+        //this.doneScreenInstance = doneScreenInstance;
         this.fileInstance = fileInstance;
     }
 
@@ -111,22 +118,34 @@ public class MidiEditScreen extends Screen {
         ButtonWidget exportbutton = ButtonWidget.builder(Text.literal("↑").styled(style -> style.withUnderline(true)),button -> {
                         //MinecraftClient.getInstance().setScreen(POMConfigScreen.getScreen());
                     //fileInstance.getName().substring(0, fileInstance.getName().length() - 4)
-                    ConvertToMidi.convert(fileInstance, "exported-music/" + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
+                    //ConvertToMidi.convert(fileInstance, "exported-music/" + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
+                    ConvertToMidi.convert(fileInstance, ProvinceOfMusicClient.exportedmusicdir.getPath() + "/" + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
+                    //ConvertToMidi.convert(fileInstance, ProvinceOfMusicClient.exportedmusicdir.getPath() + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
                     })        .dimensions(width / 2 - 205, 50, 20, 20)
-                    .tooltip(Tooltip.of(Text.literal("Export As Midi")))
+                    .tooltip(Tooltip.of(Text.literal("Export File As Midi")))
                     .build();
 
         ButtonWidget deletebutton = ButtonWidget.builder(Text.literal("X"),button -> {
                     //MinecraftClient.getInstance().setScreen(POMConfigScreen.getScreen());
-                })        .dimensions((width / 2 - 205) + 20, 50, 20, 20)
-                .tooltip(Tooltip.of(Text.literal("Delete")))
+                    ReplayMusic.StopMusic();
+                    //ProvinceOfMusicClient.deletedFiles.add(fileInstance);
+                    //fileInstance.deleteOnExit();
+                    fileInstance.delete();
+                    //if(doneScreenInstance!= null){
+                        MinecraftClient.getInstance().setScreen(new ConfigScreen().createGui());
+                    //}
+
+
+                })        //.dimensions((width / 2 - 205) + 20, 50, 20, 20)
+                .dimensions((width - 10) - 80, height - 50, 20, 20)
+                .tooltip(Tooltip.of(Text.literal("Delete File")))
                 .build();
 
         ButtonWidget replaybutton = ButtonWidget.builder(Text.literal("⟳").styled(style -> style.withBold(true)),button -> {
-                    ReplayMusic.PlayMusic(fileInstance);
+                    ReplayMusic.PlayMusic(fileInstance.getPath());
                     //FindFiles();
                 })        .dimensions((width / 2 - 205) + 40, 50, 20, 20)
-                .tooltip(Tooltip.of(Text.literal("Replay")))
+                .tooltip(Tooltip.of(Text.literal("Replay or Stop music file")))
                 .build();
 
         ButtonWidget openFolderButton = ButtonWidget.builder(Text.literal("Open Folder"),button -> {
@@ -146,13 +165,14 @@ public class MidiEditScreen extends Screen {
                     //MinecraftClient.getInstance().setScreen(new OptionsScreen(new GameMenuScreen()));
                     //MinecraftClient.
                     //MinecraftClient.getInstance().setScreen(new POMMenuScreen(Text.of("")));
-                    if(doneScreenInstance!= null){
-                        MinecraftClient.getInstance().setScreen(doneScreenInstance);
-                    }
+                    //if(doneScreenInstance!= null){
+                        //ConfigScreen configScreen = new ConfigScreen();
+                        MinecraftClient.getInstance().setScreen(new ConfigScreen().createGui());
+                    //}
                     //this.close();
                     //ModMenuApi.createModsScreen()
                 })        .dimensions(width / 2 - 205, height - 50, 200, 20)
-                .tooltip(Tooltip.of(Text.literal("Tooltip of button1")))
+                //.tooltip(Tooltip.of(Text.literal("Tooltip of button1")))
                 .build();
 
 
@@ -172,23 +192,23 @@ public class MidiEditScreen extends Screen {
     }
 
     public void openFolderInExplorer() throws IOException {
-        File f = new File("recorded-music/");
-        if (!f.exists()){
-            f.mkdirs();
-        }
-        System.out.println(f.getAbsolutePath());
-        Desktop.getDesktop().open(f.getAbsoluteFile());
+        //File f = new File("recorded-music/");
+        //if (!f.exists()){
+        //    f.mkdirs();
+        //}
+        System.out.println(ProvinceOfMusicClient.recordedmusicdir.getAbsolutePath());
+        Desktop.getDesktop().open(ProvinceOfMusicClient.recordedmusicdir.getAbsoluteFile());
     }
 
-    public void FindFiles(){
-        File f = new File("recorded-music/");
-        if (!f.exists()){
-            f.mkdirs();
-        }
-        System.out.println(f.getAbsolutePath());
-        int fileCount = f.listFiles().length;
-        for(int i = 0; i < fileCount; i++){
-            System.out.println(f.listFiles()[i].getName());
-        }
-    }
+    //public void FindFiles(){
+    //    File f = new File("recorded-music/");
+    //    if (!f.exists()){
+    //        f.mkdirs();
+    //    }
+    //    System.out.println(f.getAbsolutePath());
+    //    int fileCount = f.listFiles().length;
+    //    for(int i = 0; i < fileCount; i++){
+    //        System.out.println(f.listFiles()[i].getName());
+    //    }
+    //}
 }

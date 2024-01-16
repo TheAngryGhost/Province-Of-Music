@@ -100,7 +100,7 @@ public class ClientChatReceivedMixin {
         //System.out.println("Message Recieved" + message.getString());
 
         if(!packet.content().getString().contains("❤") && !packet.content().getString().contains("/") && !packet.content().getString().contains("✺")){
-            System.out.println("Message Recieved " + packet.content().getString());
+            //System.out.println("Message Recieved " + packet.content().getString());
 
         }
 

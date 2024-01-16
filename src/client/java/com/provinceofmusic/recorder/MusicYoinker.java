@@ -73,10 +73,11 @@ public class MusicYoinker implements SoundInstanceListener {
                 //client.player.sendMessage(Text.of("Recording Started"), false);
                 is_writing_to_file = !is_writing_to_file;
                 if (is_writing_to_file) {
-                    file_to_write = "recorded-music/" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
+                    //file_to_write = "recorded-music/" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
+                    file_to_write = ProvinceOfMusicClient.recordedmusicdir + "/" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
                     // make a folder if there isn't one
-                    File theDir = new File("recorded-music");
-                    if (!theDir.exists()) theDir.mkdirs();
+                    //File theDir = new File("recorded-music");
+                    //if (!theDir.exists()) theDir.mkdirs();
                     ProvinceOfMusicClient.LOGGER.info("Started recording to file " + file_to_write + ".");
                     client.player.sendMessage(Text.of("Started recording to file " + file_to_write + "."), false);
                 } else {

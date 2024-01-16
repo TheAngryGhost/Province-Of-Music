@@ -18,7 +18,7 @@ public class POMModMenuIntegration implements ModMenuApi {
 
             //TesterScreens ts = new TesterScreens();
             //ts.createGui(new CustomScreen(Text.of("")));
-            return getConfig().createGui(new GoofyScreenItDoesStuffTrustMe(Text.of("")));
+            return getConfig().createGui();
         };
     }
 }

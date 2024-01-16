@@ -17,22 +17,34 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("provinceofmusic");
 
 	MusicYoinker musicYoinker = new MusicYoinker();
 
+	public static File recordedmusicdir;
+	public static File exportedmusicdir;
 
-	public static ConsoleCaptureExample example;
+	//public static ArrayList<File> deletedFiles = new ArrayList<>();
+
+
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-		LOGGER.info("Hello Fabric world!");
+		//LOGGER.info("Hello Fabric world!");
 
-		example = new ConsoleCaptureExample();
-		example.start();
+		setupFiles();
+		setupListeners();
 
+
+
+	}
+
+	public void setupListeners(){
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			musicYoinker.PassTime();
 		});
@@ -40,17 +52,43 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 			MinecraftClient.getInstance().getSoundManager().registerListener(musicYoinker);
 		});
+
 		musicYoinker.main();
+
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
-			//musicYoinker.PassTime();
 		});
+
 		ClientPlayConnectionEvents.JOIN.register(new POMPlayerJoinWorldListener());
+
 		ClientPlayConnectionEvents.DISCONNECT.register(new POMPlayerDisconnectWorldListener());
+
 		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("MusicYoinkerRecordMidi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.category.first.test"));
+
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 		});
+
 		ConfigScreen.INSTANCE.load();
 	}
+
+	public void setupFiles(){
+		recordedmusicdir = new File("provinceofmusic/recorded-music/");
+		if (!recordedmusicdir.exists()){
+			recordedmusicdir.mkdirs();
+		}
+
+		exportedmusicdir = new File("provinceofmusic/exported-music/");
+		if (!exportedmusicdir.exists()){
+			exportedmusicdir.mkdirs();
+		}
+
+		//recordedmusicdir = new File();
+
+		//System.out.println(ProvinceOfMusicClient.exportedmusicdir.getPath());
+	}
+
+	//public void ReloadConfig(){
+	//	ConfigScreen.INSTANCE.load();
+	//}
 
 	public static ConfigScreen getConfig() {
 		return ConfigScreen.INSTANCE.getConfig();

@@ -12,9 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 //import dev.isxander.yacl3.*;
 //import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
@@ -37,9 +35,14 @@ public class ConfigScreen {
 
     public Screen createGui() {
 
-        ArrayList<File> midiFiles = FetchFiles();
+        ArrayList<File> midiFiles = FetchMidiFiles();
+        ArrayList<File> playrulesheetFiles = FetchPlayRuleSheetFiles();
 
         ArrayList<ButtonOption> unconvertedmidibuttons = new ArrayList<>();
+
+        ArrayList<ButtonOption> playrulesheets = new ArrayList<>();
+
+
 
         for(int i = 0; i < midiFiles.size(); i++){
             int finalI = i;
@@ -59,10 +62,52 @@ public class ConfigScreen {
                     .build());
         }
 
+        //playrulesheets.add(ButtonOption.createBuilder()
+        //        //.options(unconvertedmidibuttons)
+        //        .name(Text.of("CreatePlayRuleSheet"))
+        //        .text(Text.of(""))
+//
+        //        //.tooltip(Text.of("This is so easy!")) // optional
+        //        .action((yaclScreen, buttonOption) -> {
+        //            //if(screenInstance != null){
+        //            //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
+        //            //}
+        //            //System.out.println("Button has been pressed!");
+        //            MinecraftClient.getInstance().setScreen(new PlayRuleSheetNameScreen());
+        //        })
+        //        .build());
+//
+        //playrulesheets.add(ButtonOption.createBuilder()
+        //        //.options(unconvertedmidibuttons)
+        //        .name(Text.of("ImportPlayRuleSheet"))
+        //        .text(Text.of(""))
+//
+        //        //.tooltip(Text.of("This is so easy!")) // optional
+        //        .action((yaclScreen, buttonOption) -> {
+        //            //if(screenInstance != null){
+        //            //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
+        //            //}
+        //            //System.out.println("Button has been pressed!");
+        //        })
+        //        .build());
+
+        for(int i = 0; i < playrulesheetFiles.size(); i++){
+            int finalI = i;
+            playrulesheets.add(ButtonOption.createBuilder()
+                    .name(Text.of(playrulesheetFiles.get(i).getName()))
+                    .text(Text.of("Modify Rules"))
+                    .action((yaclScreen, buttonOption) -> {
+                        if(screenInstance != null){
+                            MinecraftClient.getInstance().setScreen(new PlayRuleSheetEditScreen(playrulesheetFiles.get(finalI)).createGui());
+                        }
+                    })
+                    .build());
+        }
+
         screenInstance = YetAnotherConfigLib.create(INSTANCE, (defaults, config, builder) -> builder
                 .title(Text.of("Province Of Music"))
                 .category(ConfigCategory.createBuilder()
-                        .name(Text.of("Province Of Music"))
+                        .name(Text.of("Midi Recorder Editor"))
                         //.tooltip(Text.of("This displays when you hover over a category button")) // optional
                         //.option(Option.createBuilder(boolean.class)
                         //        .name(Text.of("My Boolean Option"))
@@ -87,6 +132,42 @@ public class ConfigScreen {
                         //        .build())
                         .options(unconvertedmidibuttons)
                         .build())
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.of("Music Replace Editor"))
+                        .option(ButtonOption.createBuilder()
+                        //.options(unconvertedmidibuttons)
+                            .name(Text.of("CreatePlayRuleSheet"))
+                            .text(Text.of(""))
+
+                        //.tooltip(Text.of("This is so easy!")) // optional
+                            .action((yaclScreen, buttonOption) -> {
+                                //if(screenInstance != null){
+                                    //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
+                                //}
+                                //System.out.println("Button has been pressed!");
+                                MinecraftClient.getInstance().setScreen(new PlayRuleSheetNameScreen());
+                            })
+                            .build()
+                        )
+                        .option(ButtonOption.createBuilder()
+                                //.options(unconvertedmidibuttons)
+                                .name(Text.of("ImportPlayRuleSheet"))
+                                .text(Text.of(""))
+
+                                //.tooltip(Text.of("This is so easy!")) // optional
+                                .action((yaclScreen, buttonOption) -> {
+                                    //if(screenInstance != null){
+                                    //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
+                                    //}
+                                    //System.out.println("Button has been pressed!");
+                                })
+                                .build()
+                        )
+                        .options(playrulesheets)
+                        .build()
+
+
+                )
                 //.save(ConfigScreen::save)).generateScreen(null);
         ).generateScreen(null);
         return screenInstance;
@@ -107,28 +188,23 @@ public class ConfigScreen {
     //    Desktop.getDesktop().open(f.getAbsoluteFile());
     //}
 
-    public ArrayList<File> FetchFiles(){
-
-
+    public ArrayList<File> FetchMidiFiles(){
         ArrayList<File> tempFiles = new ArrayList<>();
-        //File f = new File("recorded-music/");
-        //if (!f.exists()){
-        //    f.mkdirs();
-        //}
-        //System.out.println(ProvinceOfMusicClient.recordedmusicdir.getAbsolutePath());
         int fileCount = ProvinceOfMusicClient.recordedmusicdir.listFiles().length;
         for(int i = 0; i < fileCount; i++){
-            //System.out.println(f.listFiles()[i].getName());
-            //boolean existsInDeletedFilesList = false;
-            //for(int j = 0; j < ProvinceOfMusicClient.deletedFiles.size(); j++){
-                //if(ProvinceOfMusicClient.recordedmusicdir.listFiles()[i].equals(ProvinceOfMusicClient.deletedFiles.get(j))){
-                    //existsInDeletedFilesList = true;
-                //}
-            //}
-            //if(!existsInDeletedFilesList){
                 tempFiles.add(ProvinceOfMusicClient.recordedmusicdir.listFiles()[i]);
-            //}
         }
         return tempFiles;
     }
+
+    public ArrayList<File> FetchPlayRuleSheetFiles(){
+        ArrayList<File> tempFiles = new ArrayList<>();
+        int fileCount = ProvinceOfMusicClient.playrulesheetsdir.listFiles().length;
+        for(int i = 0; i < fileCount; i++){
+            tempFiles.add(ProvinceOfMusicClient.playrulesheetsdir.listFiles()[i]);
+        }
+        return tempFiles;
+    }
+
+
 }

@@ -8,6 +8,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -19,6 +21,8 @@ public class MidiEditScreen extends Screen {
 
     Screen doneScreenInstance;
     File fileInstance;
+
+    //DrawContext context;
     //protected MidiEditScreen(Text title, Screen doneScreenInstance, File fileInstance) {
     //    super(title);
     //    this.doneScreenInstance = doneScreenInstance;
@@ -58,7 +62,8 @@ public class MidiEditScreen extends Screen {
         //    drawTextWithShadow(matrices, textRenderer, Text.literal(f.listFiles()[i].getName()), 10, (i * 20) + 10, 0xffffff);
         //}
 //
-        context.drawTextWithShadow(textRenderer, Text.literal(fileInstance.getName()), 10, (0 * 20) + 10, 0xffffff);
+        //this.context = context;
+        //context.drawTextWithShadow(textRenderer, Text.literal(fileInstance.getName()), 10, (0 * 20) + 10, 0xffffff);
     }
 
     @Override
@@ -114,6 +119,11 @@ public class MidiEditScreen extends Screen {
         //        return 0;
         //    }
         //};
+        //context.drawTextWithShadow(textRenderer, Text.literal(fileInstance.getName()), 10, (0 * 20) + 10, 0xffffff);
+
+        TextWidget fileNameLabel = new TextWidget(Text.literal(fileInstance.getName()), textRenderer);
+        fileNameLabel.setX(10);
+        fileNameLabel.setY((0 * 20) + 10);
 
         ButtonWidget exportbutton = ButtonWidget.builder(Text.literal("↑").styled(style -> style.withUnderline(true)),button -> {
                         //MinecraftClient.getInstance().setScreen(POMConfigScreen.getScreen());
@@ -135,7 +145,6 @@ public class MidiEditScreen extends Screen {
                         MinecraftClient.getInstance().setScreen(new ConfigScreen().createGui());
                     //}
 
-
                 })        //.dimensions((width / 2 - 205) + 20, 50, 20, 20)
                 .dimensions((width - 10) - 80, height - 50, 20, 20)
                 .tooltip(Tooltip.of(Text.literal("Delete File")))
@@ -143,6 +152,7 @@ public class MidiEditScreen extends Screen {
 
         ButtonWidget replaybutton = ButtonWidget.builder(Text.literal("⟳").styled(style -> style.withBold(true)),button -> {
                     ReplayMusic.PlayMusic(fileInstance.getPath());
+                    //button.setMessage(Text.literal("test"));
                     //FindFiles();
                 })        .dimensions((width / 2 - 205) + 40, 50, 20, 20)
                 .tooltip(Tooltip.of(Text.literal("Replay or Stop music file")))
@@ -177,7 +187,47 @@ public class MidiEditScreen extends Screen {
 
 
         //ScrollPanelWidget scrollableWidget;
+
+        //TextFieldWidget textFieldWidgetTest = new TextFieldWidget(textRenderer, 50, 50, 200, 20, Text.literal("")){
+        //    //String textcurrent = "";
+        //    @Override
+        //    public void setText(String text) {
+        //        super.setText(text);
 //
+        //        // Your code here
+        //        System.out.println("Text field modified: " + text);
+        //    }
+//
+        //    @Override
+        //    public void setMessage(Text message) {
+        //        super.setMessage(message);
+//
+        //        System.out.println("Text field modified: " + message);
+        //    }
+//
+        //    @Override
+        //    public Text getMessage() {
+        //        return super.getMessage();
+        //    }
+//
+        //    @Override
+        //    public void write(String text) {
+        //        System.out.println("Text field modified: " + text);
+        //        super.write(text);
+        //    }
+//
+        //    @Override
+        //    public void eraseCharacters(int characterOffset) {
+        //        //if(textcurrent.length() > 0){
+        //        //    textcurrent = textcurrent.substring(0, textcurrent.length() - 1);
+        //        //}
+//
+        //        System.out.println("Text field " + getText());
+        //        System.out.println("Text field characterOffset: " + characterOffset);
+        //        super.eraseCharacters(characterOffset);
+        //    }
+        //};
+
         //scrollableWidget = new ScrollableWidget(width, height, 32, height - 40, Text.of("Button List"));
         //CustomScrollableWidget scrollableWidget = new CustomScrollableWidget(MinecraftClient.getInstance(), 100, 100, 100, 50, 30);
 
@@ -186,6 +236,8 @@ public class MidiEditScreen extends Screen {
         addDrawableChild(replaybutton);
         addDrawableChild(openFolderButton);
         addDrawableChild(doneButton);
+        addDrawableChild(fileNameLabel);
+        //addDrawableChild(textFieldWidgetTest);
         //addDrawableChild(scrollableWidget);
         //addDrawableChild(new MusicEntryWidget(100, 100, 100, 100, "idk"));
         //addDrawableChild(configbutton);

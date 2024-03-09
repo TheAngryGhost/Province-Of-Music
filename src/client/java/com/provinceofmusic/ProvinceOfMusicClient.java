@@ -28,6 +28,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static File recordedmusicdir;
 	public static File exportedmusicdir;
+	public static File playrulesheetsdir;
 
 	//public static ArrayList<File> deletedFiles = new ArrayList<>();
 
@@ -79,6 +80,11 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		exportedmusicdir = new File("provinceofmusic/exported-music/");
 		if (!exportedmusicdir.exists()){
 			exportedmusicdir.mkdirs();
+		}
+
+		playrulesheetsdir = new File("provinceofmusic/playrulesheets/");
+		if (!playrulesheetsdir.exists()){
+			playrulesheetsdir.mkdirs();
 		}
 
 		//recordedmusicdir = new File();

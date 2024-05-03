@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 //import dev.isxander.yacl3.*;
 //import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
@@ -25,12 +26,19 @@ public class ConfigScreen {
     @ConfigEntry public boolean booleanToggle = true;
     public int intSlider = 5;
     private Boolean myBooleanOption;
+    public boolean searchingforActive = false;
+
+    @ConfigEntry private String activeRuleSheet;
 
     Screen screenInstance;
 
+    ButtonOption playRuleSheetActive;
+
     public static void save() {
         /* save your config! */
+
         INSTANCE.save();
+
     }
 
     public Screen createGui() {
@@ -42,6 +50,22 @@ public class ConfigScreen {
 
         ArrayList<ButtonOption> playrulesheets = new ArrayList<>();
 
+        playRuleSheetActive = ButtonOption.createBuilder()
+                //.options(unconvertedmidibuttons)
+                .name(Text.of("SetAnActiveRuleSheet"))
+                .text(Text.of("Current: " + ProvinceOfMusicClient.configSettings.defaultPlayRuleSheet))
+
+                //.tooltip(Text.of("This is so easy!")) // optional
+                .action((yaclScreen, buttonOption) -> {
+                        searchingforActive = true;
+                    //if(screenInstance != null){
+                    //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
+                    //}
+                    //System.out.println("Button has been pressed!");
+
+
+                })
+                .build();
 
 
         for(int i = 0; i < midiFiles.size(); i++){
@@ -97,8 +121,20 @@ public class ConfigScreen {
                     .name(Text.of(playrulesheetFiles.get(i).getName()))
                     .text(Text.of("Modify Rules"))
                     .action((yaclScreen, buttonOption) -> {
-                        if(screenInstance != null){
-                            MinecraftClient.getInstance().setScreen(new PlayRuleSheetEditScreen(playrulesheetFiles.get(finalI)).createGui());
+                        if(searchingforActive){
+                            ProvinceOfMusicClient.configSettings.defaultPlayRuleSheet = playrulesheetFiles.get(finalI).getName();
+                            searchingforActive = false;
+                            ProvinceOfMusicClient.setConfigSettings();
+                            MinecraftClient.getInstance().setScreen(ProvinceOfMusicClient.getConfig().createGui());
+                        }
+                        else{
+                            if(screenInstance != null){
+                                try {
+                                    MinecraftClient.getInstance().setScreen(new PlayRuleSheetEditScreen(playrulesheetFiles.get(finalI)).createGui());
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                         }
                     })
                     .build());
@@ -106,32 +142,6 @@ public class ConfigScreen {
 
         screenInstance = YetAnotherConfigLib.create(INSTANCE, (defaults, config, builder) -> builder
                 .title(Text.of("Province Of Music"))
-                .category(ConfigCategory.createBuilder()
-                        .name(Text.of("Midi Recorder Editor"))
-                        //.tooltip(Text.of("This displays when you hover over a category button")) // optional
-                        //.option(Option.createBuilder(boolean.class)
-                        //        .name(Text.of("My Boolean Option"))
-                        //        //.tooltip(Text.of("This option displays the basic capabilities of YetAnotherConfigLib")) // optional
-                        //        .binding(
-                        //                defaults.booleanToggle, // default
-                        //                () -> config.booleanToggle, // getter
-                        //                value -> config.booleanToggle = value // setter
-                        //        )
-                        //        //.controller(TickBoxController::new)
-                        //        .controller(opt -> BooleanControllerBuilder.create(opt).yesNoFormatter().coloured(true))
-                        //        //.controller(new BooleanController(Option.createBuilder(Binding.immutable(Binding<Integer>))))
-                        //        .build())
-                        //.option(ButtonOption.createBuilder()
-                        //        .name(Text.of("Pressable Button"))
-                        //        //.tooltip(Text.of("This is so easy!")) // optional
-                        //        .action((yaclScreen, buttonOption) -> {
-                        //            System.out.println("Button has been pressed!");
-                        //        })
-                        //        //.controller(new ActionController(buttonOption /* provided by builder */, Text.of("Run") /* optional */))
-                        //        //.controller(opt -> new ActionController())
-                        //        .build())
-                        .options(unconvertedmidibuttons)
-                        .build())
                 .category(ConfigCategory.createBuilder()
                         .name(Text.of("Music Replace Editor"))
                         .option(ButtonOption.createBuilder()
@@ -146,6 +156,7 @@ public class ConfigScreen {
                                 //}
                                 //System.out.println("Button has been pressed!");
                                 MinecraftClient.getInstance().setScreen(new PlayRuleSheetNameScreen());
+                                searchingforActive = false;
                             })
                             .build()
                         )
@@ -160,14 +171,42 @@ public class ConfigScreen {
                                     //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
                                     //}
                                     //System.out.println("Button has been pressed!");
+                                    searchingforActive = false;
                                 })
                                 .build()
                         )
+                        .option(playRuleSheetActive)
                         .options(playrulesheets)
                         .build()
 
 
                 )
+                        .category(ConfigCategory.createBuilder()
+                                .name(Text.of("Midi Recorder Editor"))
+                                //.tooltip(Text.of("This displays when you hover over a category button")) // optional
+                                //.option(Option.createBuilder(boolean.class)
+                                //        .name(Text.of("My Boolean Option"))
+                                //        //.tooltip(Text.of("This option displays the basic capabilities of YetAnotherConfigLib")) // optional
+                                //        .binding(
+                                //                defaults.booleanToggle, // default
+                                //                () -> config.booleanToggle, // getter
+                                //                value -> config.booleanToggle = value // setter
+                                //        )
+                                //        //.controller(TickBoxController::new)
+                                //        .controller(opt -> BooleanControllerBuilder.create(opt).yesNoFormatter().coloured(true))
+                                //        //.controller(new BooleanController(Option.createBuilder(Binding.immutable(Binding<Integer>))))
+                                //        .build())
+                                //.option(ButtonOption.createBuilder()
+                                //        .name(Text.of("Pressable Button"))
+                                //        //.tooltip(Text.of("This is so easy!")) // optional
+                                //        .action((yaclScreen, buttonOption) -> {
+                                //            System.out.println("Button has been pressed!");
+                                //        })
+                                //        //.controller(new ActionController(buttonOption /* provided by builder */, Text.of("Run") /* optional */))
+                                //        //.controller(opt -> new ActionController())
+                                //        .build())
+                                .options(unconvertedmidibuttons)
+                                .build())
                 //.save(ConfigScreen::save)).generateScreen(null);
         ).generateScreen(null);
         return screenInstance;

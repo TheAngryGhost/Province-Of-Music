@@ -7,6 +7,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 public class POMPlayerDisconnectWorldListener implements ClientPlayConnectionEvents.Disconnect{
     @Override
     public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
-        System.out.println("DISCONECTED!!!!!!!");
+        //System.out.println("DISCONECTED!!!!!!!");
+        RuleHandler.StopThread();
     }
 }

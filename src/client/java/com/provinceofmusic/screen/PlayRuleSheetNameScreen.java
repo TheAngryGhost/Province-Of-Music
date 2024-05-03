@@ -1,6 +1,8 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
+import com.provinceofmusic.jukebox.PlayRule;
+import com.provinceofmusic.jukebox.PlayRuleSheet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -11,6 +13,7 @@ import net.minecraft.text.Text;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class PlayRuleSheetNameScreen extends Screen {
     protected PlayRuleSheetNameScreen() {
@@ -23,46 +26,8 @@ public class PlayRuleSheetNameScreen extends Screen {
         screenLabel.setX((width/2) - screenLabel.getWidth()/2);
         screenLabel.setY((0 * 20) + 30);
 
-        TextFieldWidget nameInput = new TextFieldWidget(textRenderer, (width/2) - (200/2), (height/2), 200, 20, Text.literal("")){
-            //String textcurrent = "";
-            //@Override
-            //public void setText(String text) {
-            //    super.setText(text);
-////
-            //    // Your code here
-            //    System.out.println("Text field modified: " + text);
-            //}
-//
-            //@Override
-            //public void setMessage(Text message) {
-            //    super.setMessage(message);
-////
-            //    System.out.println("Text field modified: " + message);
-            //}
-//
-            //@Override
-            //public Text getMessage() {
-            //    return super.getMessage();
-            //}
-//
-            @Override
-            public void write(String text) {
-                //System.out.println("Text field modified: " + text);
-                System.out.println("Text field " + getText());
-                super.write(text);
-            }
-//
-            @Override
-            public void eraseCharacters(int characterOffset) {
-                //if(textcurrent.length() > 0){
-                //    textcurrent = textcurrent.substring(0, textcurrent.length() - 1);
-                //}
-//
-                System.out.println("Text field " + getText());
-                //System.out.println("Text field characterOffset: " + characterOffset);
-                super.eraseCharacters(characterOffset);
-            }
-        };
+
+        TextFieldWidget nameInput = new TextFieldWidget(textRenderer, (width/2) - (200/2), (height/2), 200, 20, Text.literal(""));
 
         ButtonWidget createButton = ButtonWidget.builder(Text.literal("Create"), button -> {
                     //MinecraftClient.getInstance().setScreen(POMConfigScreen.getScreen());
@@ -70,15 +35,25 @@ public class PlayRuleSheetNameScreen extends Screen {
                     //ConvertToMidi.convert(fileInstance, "exported-music/" + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
                     //ConvertToMidi.convert(fileInstance, ProvinceOfMusicClient.exportedmusicdir.getPath() + "/" + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
                     //ConvertToMidi.convert(fileInstance, ProvinceOfMusicClient.exportedmusicdir.getPath() + fileInstance.getName().substring(0, fileInstance.getName().length() - 4));
-                    File outputFile = new File(ProvinceOfMusicClient.playrulesheetsdir+ "/" + nameInput.getText() +".json");
-                    try {
-                        FileWriter fileWriter = new FileWriter(outputFile);
-                        fileWriter.write("empty");
-                        //fileWriter.write("empy");
-                        fileWriter.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    //File folderTemp = new File(ProvinceOfMusicClient.playrulesheetsdir + "/" + nameInput.getText() + "/" + "tracks");
+                    //folderTemp.mkdirs();
+                    //File outputFile = new File(ProvinceOfMusicClient.playrulesheetsdir + "/" + nameInput.getText() + "/" + nameInput.getText() +".json");
+
+                    PlayRuleSheet.createRuleSheet(nameInput.getText());
+                    PlayRuleSheet sheet = new PlayRuleSheet();
+                    sheet.rules = new ArrayList<>();
+                    sheet.rules.add(new PlayRule("Rule1"));
+                    PlayRuleSheet.writeRuleSheet(nameInput.getText(), sheet);
+
+                    //try {
+                    //    FileWriter fileWriter = new FileWriter(outputFile);
+                    //    fileWriter.write("empty");
+                    //    //fileWriter.write("empy");
+                    //    fileWriter.close();
+                    //} catch (IOException e) {
+                    //    throw new RuntimeException(e);
+                    //}
+                    //PlayRuleSheet.getSheetFromFile(outputFile);
                     MinecraftClient.getInstance().setScreen(new ConfigScreen().createGui());
 
 

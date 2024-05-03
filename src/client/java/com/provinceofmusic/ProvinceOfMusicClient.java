@@ -1,8 +1,11 @@
 package com.provinceofmusic;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.provinceofmusic.jukebox.ConsoleCaptureExample;
 import  com.provinceofmusic.jukebox.POMPlayerDisconnectWorldListener;
 import com.provinceofmusic.jukebox.POMPlayerJoinWorldListener;
+import com.provinceofmusic.jukebox.PlayRule;
 import com.provinceofmusic.recorder.MusicYoinker;
 import com.provinceofmusic.screen.ConfigScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -18,6 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class ProvinceOfMusicClient implements ClientModInitializer {
@@ -29,6 +36,9 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	public static File recordedmusicdir;
 	public static File exportedmusicdir;
 	public static File playrulesheetsdir;
+	public static File configsettingsdir;
+
+	public static POMConfigObject configSettings;
 
 	//public static ArrayList<File> deletedFiles = new ArrayList<>();
 
@@ -39,6 +49,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		//LOGGER.info("Hello Fabric world!");
 
 		setupFiles();
+		getConfigSettings();
 		setupListeners();
 
 
@@ -87,9 +98,46 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 			playrulesheetsdir.mkdirs();
 		}
 
+		configsettingsdir = new File("provinceofmusic/");
+		if (!configsettingsdir.exists()){
+			configsettingsdir.mkdirs();
+		}
+
 		//recordedmusicdir = new File();
 
 		//System.out.println(ProvinceOfMusicClient.exportedmusicdir.getPath());
+	}
+
+	public void getConfigSettings() {
+
+		File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings"+".json");
+		GsonBuilder builder = new GsonBuilder();
+		builder.setPrettyPrinting().serializeNulls();
+		Gson gson = builder.create();
+
+		try {
+			configSettings = gson.fromJson(Files.readString(jsonTemp.toPath(), Charset.defaultCharset()) + "", POMConfigObject.class);
+		} catch (IOException e) {
+			configSettings = new POMConfigObject();
+			setConfigSettings();
+			//throw new RuntimeException(e);
+		}
+	}
+
+	public static void setConfigSettings(){
+		File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings"+".json");
+		GsonBuilder builder = new GsonBuilder();
+		builder.setPrettyPrinting().serializeNulls();
+		Gson gson = builder.create();
+
+		try {
+			FileWriter fileWriter = new FileWriter(jsonTemp);
+			fileWriter.write(gson.toJson(configSettings));
+			//fileWriter.write("empy");
+			fileWriter.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	//public void ReloadConfig(){

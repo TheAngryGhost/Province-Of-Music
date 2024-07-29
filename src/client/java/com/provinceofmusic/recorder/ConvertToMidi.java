@@ -73,6 +73,8 @@ public class ConvertToMidi {
             float notePitch = Float.valueOf(pitches.get(i));
             float noteVolume = Float.valueOf(volumes.get(i));
 
+            //System.out.println(noteVolume);
+
 
             int noteInstrument = -1;
             for(int j = 0; j < instruments.size(); j++){
@@ -88,7 +90,7 @@ public class ConvertToMidi {
 
             int insertNoteChannel = instrumentChannels.get(noteInstrument);
             int insertNotePitch = (Math.round((log2(notePitch) * 12) + 66.5f) - 1) + instrumentPitchesToShift.get(noteInstrument);
-            int insertNoteVelocity = 100;
+            int insertNoteVelocity =  (int) (noteVolume * 100f);
             int insertNoteTick = currentTick * (240 / 6);
             int insertNoteDuration = 120;
 

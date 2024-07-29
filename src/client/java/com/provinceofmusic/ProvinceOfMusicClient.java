@@ -8,6 +8,8 @@ import com.provinceofmusic.jukebox.POMPlayerJoinWorldListener;
 import com.provinceofmusic.jukebox.PlayRule;
 import com.provinceofmusic.recorder.MusicYoinker;
 import com.provinceofmusic.screen.ConfigScreen;
+import com.provinceofmusic.sfz.PitchShifterExample;
+import com.provinceofmusic.sfz.WavPlayer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -16,6 +18,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import org.jfugue.player.Player;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,12 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+
+import org.boris.jvst.AEffect;
+import org.boris.jvst.VST;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class ProvinceOfMusicClient implements ClientModInitializer {
 
@@ -48,13 +57,13 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		//LOGGER.info("Hello Fabric world!");
 
+
+
 		setupFiles();
 		getConfigSettings();
 		setupListeners();
 
-
-
-	}
+    }
 
 	public void setupListeners(){
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
@@ -74,7 +83,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.DISCONNECT.register(new POMPlayerDisconnectWorldListener());
 
-		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("MusicYoinkerRecordMidi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.category.first.test"));
+		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("MusicYoinkerRecordMidi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 		});

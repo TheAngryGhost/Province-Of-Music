@@ -72,6 +72,22 @@ public class PlayRuleSheet {
         }
         return -1;
     }
+    public MusicSound getMusicSoundFromRule(PlayRule inRule){
+        //int index = getRuleIndexFromName(inRule.ruleName);
+
+
+
+
+        for(int i = 0; i < tracksNames.size(); i++){
+            if(tracksNames.get(i).equals(inRule.trackName)){
+                MusicSound ms = new MusicSound(tracks.get(i).getPath());
+                ms.fastSwitch = inRule.fastSwitch;
+                ms.loop = inRule.loop;
+                return ms;
+            }
+        }
+        return null;
+    }
 
     public static void createRuleSheet(String nameIn){
         File folderTemp = new File(ProvinceOfMusicClient.playrulesheetsdir + "/" + nameIn + "/" + "tracks");

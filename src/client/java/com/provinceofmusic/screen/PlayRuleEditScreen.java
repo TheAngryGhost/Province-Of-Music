@@ -1,14 +1,17 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
+import com.provinceofmusic.jukebox.PlayRule;
 import com.provinceofmusic.jukebox.PlayRuleSheet;
 import com.provinceofmusic.ui.BooleanButtonWidget;
 import com.provinceofmusic.ui.FloatInputWidget;
 import com.provinceofmusic.ui.IntegerInputWidget;
 import com.provinceofmusic.ui.TextInputWidget;
+import com.provinceofmusic.POMUtils;
 import net.fabricmc.fabric.impl.client.itemgroup.FabricCreativeGuiComponents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -162,6 +165,11 @@ public class PlayRuleEditScreen extends Screen {
         FloatInputWidget Z2 = new FloatInputWidget(textRenderer,160 + 130, 50 + 30 + 5, 100, 20, Text.literal("Position: "));
 
 
+
+
+
+
+
         BooleanButtonWidget fastSwitchButton = new BooleanButtonWidget(10, 110 + 5, 90, 20, Text.literal("Fast Switch: "), button -> {
             button.setTooltip(Tooltip.of(Text.literal("If true this will make it so there is no transition between the previous track and this one")));
         }, false);
@@ -169,6 +177,20 @@ public class PlayRuleEditScreen extends Screen {
         BooleanButtonWidget refreshSeekButton = new BooleanButtonWidget(110, 110 + 5, 100, 20, Text.literal("Refresh Seek: "), button -> {
             button.setTooltip(Tooltip.of(Text.literal("When searching through the rules to see what should be played when this rule is on any previous rules played before this one regardless of priority will be re evaluated if they should be played at this time. Usually meanings ones based of location override ones based off of messages received ")));
         }, false);
+
+        BooleanButtonWidget loopButton = new BooleanButtonWidget(110 + 90 + 10 + 10, 110 + 5, 60, 20, Text.literal("Loop: "), button -> {
+            button.setTooltip(Tooltip.of(Text.literal("")));
+        }, true);
+
+        TextWidget postRuleNameLabel = new TextWidget((110 + 90 + 10 + 10) + 60, 110 + 5, 60, 20, Text.literal("Post Rule:"), textRenderer);
+        TextWidget postRuleNameText = new TextWidget((110 + 90 + 10 + 10) + 60 + 70, 110 + 5, 130, 20, Text.literal("RULE ! TEST EXISTS HERE"), textRenderer);
+
+        ButtonWidget changePostRuleButton = ButtonWidget.builder(Text.literal("⟳").styled(style -> style.withBold(true)),button -> {
+                    PickPostRuleScreen screen = new PickPostRuleScreen();
+                    MinecraftClient.getInstance().setScreen(screen.createGui(ruleIndex, sheet));
+                })        .dimensions((110 + 90 + 10 + 10) + 60 + 130 + 80, 110 + 5, 20, 20)
+                .tooltip(Tooltip.of(Text.literal("Change the post rule for another one from your list of rules in this sheet")))
+                .build();
 
         TextWidget MinuteLabel1 = new TextWidget(10, 110 + 30 + 5, 80, 20, Text.literal("Start at Minute: "), textRenderer);
         IntegerInputWidget Minute1 = new IntegerInputWidget(textRenderer,30 + 60, 110 + 30 + 5, 60, 20, Text.literal("Position: "));
@@ -221,6 +243,7 @@ public class PlayRuleEditScreen extends Screen {
                     sheet.rules.get(ruleIndex).armourEquipped = armourEquipped.getText();
                     sheet.rules.get(ruleIndex).itemButtonPressed = itemButtonPressed.getText();
                     sheet.rules.get(ruleIndex).priority = priority.getInt();
+                    sheet.rules.get(ruleIndex).loop = loopButton.state;
                     PlayRuleSheet.writeRuleSheet(sheet.getName(), sheet);
                     try {
                         PlayRuleSheetEditScreen screen = new PlayRuleSheetEditScreen(sheet.sheet);
@@ -242,6 +265,41 @@ public class PlayRuleEditScreen extends Screen {
                     }
                 })        .dimensions(10 + 350, 175 + 30 + 30 + 30, 90, 20)
                 .tooltip(Tooltip.of(Text.literal("")))
+                .build();
+
+        ButtonWidget duplicateButton = ButtonWidget.builder(Text.literal("☱↷☱"),button -> {
+                    PlayRule temp = null;
+                    try {
+                        temp = (PlayRule) sheet.rules.get(ruleIndex).clone();
+                    } catch (CloneNotSupportedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    temp.ruleName = sheet.rules.get(ruleIndex).ruleName + System.currentTimeMillis();
+                    sheet.rules.add(ruleIndex + 1, temp);
+                    PlayRuleSheet.writeRuleSheet(sheet.getName(), sheet);
+                    try {
+                        PlayRuleSheetEditScreen screen = new PlayRuleSheetEditScreen(sheet.sheet);
+                        MinecraftClient.getInstance().setScreen(screen.createGui());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                })        .dimensions(10 + 350 + 90 + 10, 175 + 30 + 30, 40, 20)
+                .tooltip(Tooltip.of(Text.literal("Duplicate")))
+                .build();
+
+        ButtonWidget deleteButton = ButtonWidget.builder(Text.literal("X"),button -> {
+                    sheet.rules.remove(ruleIndex);
+                    PlayRuleSheet.writeRuleSheet(sheet.getName(), sheet);
+                    try {
+                        PlayRuleSheetEditScreen screen = new PlayRuleSheetEditScreen(sheet.sheet);
+                        MinecraftClient.getInstance().setScreen(screen.createGui());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                })        .dimensions(10 + 350 + 90 + 10, 175 + 30 + 30 + 30, 40, 20)
+                .tooltip(Tooltip.of(Text.literal("Delete")))
                 .build();
 
 
@@ -371,6 +429,10 @@ public class PlayRuleEditScreen extends Screen {
 
         addDrawableChild(fastSwitchButton);
         addDrawableChild(refreshSeekButton);
+        addDrawableChild(loopButton);
+        addDrawableChild(postRuleNameLabel);
+        addDrawableChild(postRuleNameText);
+        addDrawableChild(changePostRuleButton);
 
         addDrawableChild(Minute1);
         addDrawableChild(MinuteLabel1);
@@ -399,7 +461,9 @@ public class PlayRuleEditScreen extends Screen {
         addDrawableChild(priorityLabel);
 
         addDrawableChild(saveChangesButton);
+        addDrawableChild(duplicateButton);
         addDrawableChild(cancelButton);
+        addDrawableChild(deleteButton);
 
         ruleName.write(sheet.rules.get(ruleIndex).ruleName);
         trackNameText.setMessage(Text.of(sheet.rules.get(ruleIndex).trackName));
@@ -411,6 +475,8 @@ public class PlayRuleEditScreen extends Screen {
         Z2.forceWrite("" + sheet.rules.get(ruleIndex).Z2);
         fastSwitchButton.setState(sheet.rules.get(ruleIndex).fastSwitch);
         refreshSeekButton.setState(sheet.rules.get(ruleIndex).refreshSeek);
+        loopButton.setState(sheet.rules.get(ruleIndex).loop);
+        postRuleNameText.setMessage(Text.of(sheet.rules.get(ruleIndex).postPlayRuleName));
         Minute1.forceWrite("" + sheet.rules.get(ruleIndex).startMinute);
         Second1.forceWrite("" + sheet.rules.get(ruleIndex).startSecond);
         Millisecond1.forceWrite("" + sheet.rules.get(ruleIndex).startMillisecond);

@@ -185,7 +185,7 @@ public class PlayRuleSheetEditScreen {
 
                                         //.tooltip(Text.of("This is so easy!")) // optional
                                         .action((yaclScreen, buttonOption) -> {
-                                            PlayRule tempPlayRule = new PlayRule("Unnamed Rule");
+                                            PlayRule tempPlayRule = new PlayRule("Unnamed Rule " + System.currentTimeMillis());
                                             playRuleSheet.rules.add(tempPlayRule);
                                             MinecraftClient.getInstance().setScreen(new PlayRuleEditScreen(playRuleSheet.rules.size()-1, playRuleSheet, this.createGui()));
                                             //if(screenInstance != null){

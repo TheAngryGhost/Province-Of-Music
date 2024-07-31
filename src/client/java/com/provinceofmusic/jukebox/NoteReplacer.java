@@ -1,6 +1,9 @@
 package com.provinceofmusic.jukebox;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
+import com.provinceofmusic.listeners.NoteListener;
+import com.provinceofmusic.listeners.NoteListenerHelper;
+import com.provinceofmusic.mixin.client.NoteblockNoteIntercept;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.sound.SoundInstance;
@@ -395,6 +398,8 @@ public class NoteReplacer implements SoundInstanceListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        NoteListenerHelper.addListener(this);
 
         PlayNotesThread();
     }

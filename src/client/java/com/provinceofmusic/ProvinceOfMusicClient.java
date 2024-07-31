@@ -2,14 +2,9 @@ package com.provinceofmusic;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.provinceofmusic.jukebox.ConsoleCaptureExample;
-import  com.provinceofmusic.jukebox.POMPlayerDisconnectWorldListener;
-import com.provinceofmusic.jukebox.POMPlayerJoinWorldListener;
-import com.provinceofmusic.jukebox.PlayRule;
+import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.recorder.MusicYoinker;
 import com.provinceofmusic.screen.ConfigScreen;
-import com.provinceofmusic.sfz.PitchShifterExample;
-import com.provinceofmusic.sfz.WavPlayer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -18,7 +13,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import org.jfugue.player.Player;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +24,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-import org.boris.jvst.AEffect;
-import org.boris.jvst.VST;
-
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -41,6 +32,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("provinceofmusic");
 
 	MusicYoinker musicYoinker = new MusicYoinker();
+	NoteReplacer noteReplacer = new NoteReplacer();
 
 	public static File recordedmusicdir;
 	public static File exportedmusicdir;
@@ -48,6 +40,8 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	public static File configsettingsdir;
 
 	public static POMConfigObject configSettings;
+
+	public static boolean replaceMusic = false;
 
 	//public static ArrayList<File> deletedFiles = new ArrayList<>();
 
@@ -68,13 +62,18 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	public void setupListeners(){
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			musicYoinker.PassTime();
+			noteReplacer.PassTime();
+
 		});
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 			MinecraftClient.getInstance().getSoundManager().registerListener(musicYoinker);
+			MinecraftClient.getInstance().getSoundManager().registerListener(noteReplacer);
 		});
 
 		musicYoinker.main();
+		noteReplacer.main();
+		noteReplacer.RunSetup();
 
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
 		});
@@ -83,7 +82,8 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.DISCONNECT.register(new POMPlayerDisconnectWorldListener());
 
-		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("MusicYoinkerRecordMidi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
+		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
+		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_L, "Province of Music"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 		});

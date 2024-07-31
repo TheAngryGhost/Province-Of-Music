@@ -27,6 +27,7 @@ public class MusicYoinker implements SoundInstanceListener {
         //    System.out.println(sound.getPitch());
         //}
         //sound.getSound().getIdentifier()
+        //System.out.println("Working2");
 
         String sound_category = sound.getCategory().getName().toLowerCase();
         //LOGGER.info("Sound played with category " + sound_category + ".");

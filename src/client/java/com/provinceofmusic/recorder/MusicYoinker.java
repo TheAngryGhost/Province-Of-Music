@@ -20,7 +20,7 @@ public class MusicYoinker implements SoundInstanceListener {
 
     public static KeyBinding recordBinding;
     @Override
-    public void onSoundPlayed(SoundInstance sound, WeightedSoundSet soundSet) {
+    public void onSoundPlayed(SoundInstance sound, WeightedSoundSet soundSet, float range) {
         //System.out.println(sound.getId());
 
         //if(sound.getId().toString().equals("minecraft:block.note_block.harp")){
@@ -47,7 +47,7 @@ public class MusicYoinker implements SoundInstanceListener {
         String name = (split_up_name[0].equals("block") && split_up_name[1].equals("note")) ? split_up_name[2] : sound.getId().toString();
         float pitch = sound.getPitch();
         float volume = sound.getVolume();
-        //LOGGER.info("Recording " + name + " at time " + time_passed + " with pitch " + pitch + " and volume " + volume + ".");
+        //LOGGER.info("Recording " + name + " at time " + time_passed + " with pitch " + pitch + " and musicVolume " + musicVolume + ".");
         try {
             // we're opening and closing the file every time we add a line to it, performance could be improved maybe
             FileWriter myWriter = new FileWriter(file_to_write, true);

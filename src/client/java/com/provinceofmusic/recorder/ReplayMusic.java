@@ -114,8 +114,10 @@ public class ReplayMusic {
                     for(int i = 0; currentline < type.size(); i++){
 
 
-                        //System.out.println(type.get(currentline) + " " + ticks.get(currentline) + " " + pitch.get(currentline) + " " + volume.get(currentline));
-                        Identifier NOTE_BLOCK_HARP_SOUND_ID = new Identifier(type.get(currentline));
+                        //System.out.println(type.get(currentline) + " " + ticks.get(currentline) + " " + pitch.get(currentline) + " " + musicVolume.get(currentline));
+
+                        //Identifier NOTE_BLOCK_HARP_SOUND_ID = new Identifier(type.get(currentline));
+                        Identifier NOTE_BLOCK_HARP_SOUND_ID = Identifier.of(type.get(currentline));
                         SoundEvent NOTE_BLOCK_HARP_SOUND_EVENT = SoundEvent.of(NOTE_BLOCK_HARP_SOUND_ID);
                         MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(NOTE_BLOCK_HARP_SOUND_EVENT, Float.parseFloat(pitch.get(currentline))));
 

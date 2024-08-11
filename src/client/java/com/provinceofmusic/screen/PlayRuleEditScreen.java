@@ -3,7 +3,7 @@ package com.provinceofmusic.screen;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.PlayRule;
 import com.provinceofmusic.jukebox.PlayRuleSheet;
-import com.provinceofmusic.ui.BooleanButtonWidget;
+//import com.provinceofmusic.ui.BooleanButtonWidget;
 import com.provinceofmusic.ui.FloatInputWidget;
 import com.provinceofmusic.ui.IntegerInputWidget;
 import com.provinceofmusic.ui.TextInputWidget;
@@ -170,17 +170,17 @@ public class PlayRuleEditScreen extends Screen {
 
 
 
-        BooleanButtonWidget fastSwitchButton = new BooleanButtonWidget(10, 110 + 5, 90, 20, Text.literal("Fast Switch: "), button -> {
-            button.setTooltip(Tooltip.of(Text.literal("If true this will make it so there is no transition between the previous track and this one")));
-        }, false);
-
-        BooleanButtonWidget refreshSeekButton = new BooleanButtonWidget(110, 110 + 5, 100, 20, Text.literal("Refresh Seek: "), button -> {
-            button.setTooltip(Tooltip.of(Text.literal("When searching through the rules to see what should be played when this rule is on any previous rules played before this one regardless of priority will be re evaluated if they should be played at this time. Usually meanings ones based of location override ones based off of messages received ")));
-        }, false);
-
-        BooleanButtonWidget loopButton = new BooleanButtonWidget(110 + 90 + 10 + 10, 110 + 5, 60, 20, Text.literal("Loop: "), button -> {
-            button.setTooltip(Tooltip.of(Text.literal("")));
-        }, true);
+        //BooleanButtonWidget fastSwitchButton = new BooleanButtonWidget(10, 110 + 5, 90, 20, Text.literal("Fast Switch: "), button -> {
+        //    button.setTooltip(Tooltip.of(Text.literal("If true this will make it so there is no transition between the previous track and this one")));
+        //}, false);
+//
+        //BooleanButtonWidget refreshSeekButton = new BooleanButtonWidget(110, 110 + 5, 100, 20, Text.literal("Refresh Seek: "), button -> {
+        //    button.setTooltip(Tooltip.of(Text.literal("When searching through the rules to see what should be played when this rule is on any previous rules played before this one regardless of priority will be re evaluated if they should be played at this time. Usually meanings ones based of location override ones based off of messages received ")));
+        //}, false);
+//
+        //BooleanButtonWidget loopButton = new BooleanButtonWidget(110 + 90 + 10 + 10, 110 + 5, 60, 20, Text.literal("Loop: "), button -> {
+        //    button.setTooltip(Tooltip.of(Text.literal("")));
+        //}, true);
 
         TextWidget postRuleNameLabel = new TextWidget((110 + 90 + 10 + 10) + 60, 110 + 5, 60, 20, Text.literal("Post Rule:"), textRenderer);
         TextWidget postRuleNameText = new TextWidget((110 + 90 + 10 + 10) + 60 + 70, 110 + 5, 130, 20, Text.literal("RULE ! TEST EXISTS HERE"), textRenderer);
@@ -231,8 +231,8 @@ public class PlayRuleEditScreen extends Screen {
                     sheet.rules.get(ruleIndex).X2 = X2.getFloat();
                     sheet.rules.get(ruleIndex).Y2 = Y2.getFloat();
                     sheet.rules.get(ruleIndex).Z2 = Z2.getFloat();
-                    sheet.rules.get(ruleIndex).fastSwitch = fastSwitchButton.state;
-                    sheet.rules.get(ruleIndex).refreshSeek = refreshSeekButton.state;
+                    //sheet.rules.get(ruleIndex).fastSwitch = fastSwitchButton.state;
+                    //sheet.rules.get(ruleIndex).refreshSeek = refreshSeekButton.state;
                     sheet.rules.get(ruleIndex).startMinute = Minute1.getInt();
                     sheet.rules.get(ruleIndex).startSecond = Second1.getInt();
                     sheet.rules.get(ruleIndex).startMillisecond = Millisecond1.getInt();
@@ -243,7 +243,7 @@ public class PlayRuleEditScreen extends Screen {
                     sheet.rules.get(ruleIndex).armourEquipped = armourEquipped.getText();
                     sheet.rules.get(ruleIndex).itemButtonPressed = itemButtonPressed.getText();
                     sheet.rules.get(ruleIndex).priority = priority.getInt();
-                    sheet.rules.get(ruleIndex).loop = loopButton.state;
+                    //sheet.rules.get(ruleIndex).loop = loopButton.state;
                     PlayRuleSheet.writeRuleSheet(sheet.getName(), sheet);
                     try {
                         PlayRuleSheetEditScreen screen = new PlayRuleSheetEditScreen(sheet.sheet);
@@ -427,9 +427,9 @@ public class PlayRuleEditScreen extends Screen {
         addDrawableChild(Z2);
         addDrawableChild(Z2Label);
 
-        addDrawableChild(fastSwitchButton);
-        addDrawableChild(refreshSeekButton);
-        addDrawableChild(loopButton);
+        //addDrawableChild(fastSwitchButton);
+        //addDrawableChild(refreshSeekButton);
+        //addDrawableChild(loopButton);
         addDrawableChild(postRuleNameLabel);
         addDrawableChild(postRuleNameText);
         addDrawableChild(changePostRuleButton);
@@ -473,9 +473,9 @@ public class PlayRuleEditScreen extends Screen {
         X2.forceWrite("" + sheet.rules.get(ruleIndex).X2);
         Y2.forceWrite("" + sheet.rules.get(ruleIndex).Y2);
         Z2.forceWrite("" + sheet.rules.get(ruleIndex).Z2);
-        fastSwitchButton.setState(sheet.rules.get(ruleIndex).fastSwitch);
-        refreshSeekButton.setState(sheet.rules.get(ruleIndex).refreshSeek);
-        loopButton.setState(sheet.rules.get(ruleIndex).loop);
+        //fastSwitchButton.setState(sheet.rules.get(ruleIndex).fastSwitch);
+        //refreshSeekButton.setState(sheet.rules.get(ruleIndex).refreshSeek);
+        //loopButton.setState(sheet.rules.get(ruleIndex).loop);
         postRuleNameText.setMessage(Text.of(sheet.rules.get(ruleIndex).postPlayRuleName));
         Minute1.forceWrite("" + sheet.rules.get(ruleIndex).startMinute);
         Second1.forceWrite("" + sheet.rules.get(ruleIndex).startSecond);

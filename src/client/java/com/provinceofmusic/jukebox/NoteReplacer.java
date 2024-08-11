@@ -3,252 +3,187 @@ package com.provinceofmusic.jukebox;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.listeners.NoteListener;
 import com.provinceofmusic.listeners.NoteListenerHelper;
-import com.provinceofmusic.mixin.client.NoteblockNoteIntercept;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.sound.SoundInstanceListener;
-import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.text.Text;
 
 import javax.sound.midi.*;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class NoteReplacer implements SoundInstanceListener {
+public class NoteReplacer implements NoteListener {
 
     private static int time_passed = 0;
-    private static boolean is_writing_to_file = false;
-    private static String file_to_write;
+    //private static boolean is_writing_to_file = false;
+    //private static String file_to_write;
 
     public static KeyBinding replaceNoteBinding;
 
-    static ArrayList<String> instruments = new ArrayList<>();
-    static ArrayList<Integer> instrumentChannels = new ArrayList<>();
+    public static ArrayList<String> NoteTypes = new ArrayList<>();
+    public static ArrayList<Integer> instrumentChannels = new ArrayList<>();
+    public static ArrayList<Integer> instrumentPrograms = new ArrayList<>();
+    public static ArrayList<Integer> instrumentPitchesToShift = new ArrayList<>();
 
-    static ArrayList<Integer> instrumentPrograms = new ArrayList<>();
+    //public static Synthesizer synth;
+    //public static Receiver receiver = null;
+    
+    
+    public static ArrayList<Instrument> instruments = new ArrayList<>();
+    
+    
+    
 
-    static ArrayList<Integer> instrumentPitchesToShift = new ArrayList<>();
-
-    public static Synthesizer synth;
-    public static Receiver receiver = null;
-
-    public static ArrayList<Integer> NoteChannelsQueue = new ArrayList<>();
-    public static ArrayList<Integer> NotePitchsQueue = new ArrayList<>();
-    public static ArrayList<Integer> NoteVelocitiesQueue = new ArrayList<>();
-
-
-
-    public static ArrayList<Integer> NoteChannelsStopQueue = new ArrayList<>();
-    public static ArrayList<Integer> NotePitchsStopQueue = new ArrayList<>();
-    public static ArrayList<Integer> NoteVelocitiesStopQueue = new ArrayList<>();
+    //public static ArrayList<String> NoteChannelsQueue = new ArrayList<>();
+    //public static ArrayList<Integer> NotePitchsQueue = new ArrayList<>();
+    //public static ArrayList<Integer> NoteVelocitiesQueue = new ArrayList<>();
 
 
-    public static boolean Clear = false;
+    public static boolean replaceMusic = false;
 
-
-    int prevSize = 0;
+    public static float musicVolume = 0.5f;
+    
     @Override
-    public void onSoundPlayed(SoundInstance sound, WeightedSoundSet soundSet) {
-        //System.out.println(sound.getId());
+    public void onNotePlayed(String instrument, int ticksPassed, int pitch, int volume) {
 
-        //if(sound.getId().toString().equals("minecraft:block.note_block.harp")){
-        //    System.out.println(sound.getPitch());
-        //}
-        //sound.getSound().getIdentifier()
+        if (!replaceMusic) return;
 
-        //System.out.println("Working");
-
-        String sound_category = sound.getCategory().getName().toLowerCase();
-        //LOGGER.info("Sound played with category " + sound_category + ".");
-        // test if the sound is of record category and if we're recording
-        if (!sound_category.equals("record") || !is_writing_to_file) return;
-        String[] split_up_name = sound.getId().toString().split("[.]");
-        //we don't want to have "block.note.harp", only "harp" for backwards compatibility and easier readability
-        //but we need the whole "entity.silverfish.hurt" e.g. for the other, non-noteblock sounds, that are part of the piece
-
-        //if(sound.getId().toString().equals("minecraft:block.note_block.harp")){
-        //    ProvinceOfMusicClient.LOGGER.info("Match!!!!!");
-        //}
-        //else {
-        //    ProvinceOfMusicClient.LOGGER.info(sound.getId().toString() + " = " + "minecraft:block.note_block.harp");
-        //}
-
-        String name = (split_up_name[0].equals("block") && split_up_name[1].equals("note")) ? split_up_name[2] : sound.getId().toString();
-        float pitch = sound.getPitch();
-        float volume = sound.getVolume();
-
-
-        String noteType = name;
-        int noteTick = Integer.valueOf(time_passed);
-        float notePitch = Float.valueOf(pitch);
-        float noteVolume = Float.valueOf(volume);
+        String noteType = instrument;
+        float notePitch = pitch;
+        float noteVolume = volume;
 
         int noteInstrument = -1;
-        for(int j = 0; j < instruments.size(); j++){
-            if(instruments.get(j).equals(noteType)){
+        for(int j = 0; j < NoteTypes.size(); j++){
+            if(NoteTypes.get(j).equals(noteType)){
                 noteInstrument = j;
             }
         }
         if(noteInstrument == -1){
             System.out.println("Error");
+            return;
         }
 
-        //currentTick += noteTick;
 
-        int insertNoteChannel = instrumentChannels.get(noteInstrument);
-        int insertNotePitch = (Math.round((log2(notePitch) * 12) + 66.5f) - 1) + instrumentPitchesToShift.get(noteInstrument);
-        int insertNoteVelocity =  (int) (noteVolume * 100f);
-        //int insertNoteTick = currentTick * (240 / 6);
-        int insertNoteDuration = 120;
+        //int insertNoteChannel = instrumentChannels.get(noteInstrument);
 
-        NoteChannelsQueue.add(insertNoteChannel);
-        NotePitchsQueue.add(insertNotePitch);
-        NoteVelocitiesQueue.add(insertNoteVelocity);
+        //if(instrument.equals("minecraft:block.note_block.xylophone")){
+        //    System.err.println("Match");
+        //}
+        //System.err.println(instrument);
 
-        //currentTick += noteTick;
+        //NoteChannelsQueue.add(instrument);
+        //NotePitchsQueue.add(pitch);
+        //NoteVelocitiesQueue.add(volume);
 
-        //javaSimpleSynth synth = new javaSimpleSynth();
-
-        //try {
-        //    //synth.PlayNote(insertNoteChannel, insertNotePitch, insertNoteVelocity);
-        //} catch (MidiUnavailableException e) {
-        //    throw new RuntimeException(e);
-        //} catch (InvalidMidiDataException e) {
-        //    throw new RuntimeException(e);
-        //} catch (IOException e) {
-        //    throw new RuntimeException(e);
-        //} catch (InterruptedException e) {
-        //    throw new RuntimeException(e);
+        //if(time_passed != 0){
+            playMusicFrame(instrument, pitch, volume);
         //}
 
-
-        //ShortMessage noteOn = new ShortMessage();
-        //try {
-        //    noteOn.setMessage(ShortMessage.NOTE_ON, insertNoteChannel, insertNotePitch, insertNoteVelocity);
-        //} catch (InvalidMidiDataException e) {
-        //    throw new RuntimeException(e);
-        //}
-
-        //track.add(new MidiEvent(noteOn, 0));
-//
-// Note-//off event (after the desired duration)
-        //ShortMessage noteOff = new ShortMessage();
-        //try {
-        //    noteOff.setMessage(ShortMessage.NOTE_OFF, insertNoteChannel, insertNotePitch, 0);
-        //} catch (InvalidMidiDataException e) {
-        //    throw new RuntimeException(e);
-        //}
-
-        //Receiver receiver = null;
-        //try {
-       //     receiver = synth.getReceiver();
-        //} catch (MidiUnavailableException e) {
-       //     throw new RuntimeException(e);
-        //}
-
-
-        //receiver.send(noteOn, -1);
-        //try {
-        //    Thread.sleep(100);
-        //} catch (InterruptedException e) {
-        //    throw new RuntimeException(e);
-        //}
-        //receiver.send(noteOff, -1);
-
-
-        //noteTrack.insertNote(insertNoteChannel, insertNotePitch, insertNoteVelocity, insertNoteTick, insertNoteDuration);
-
-
-
-
-
-
-
-
-        //LOGGER.info("Recording " + name + " at time " + time_passed + " with pitch " + pitch + " and volume " + volume + ".");
-        //try {
-        //    // we're opening and closing the file every time we add a line to it, performance could be improved maybe
-        //    FileWriter myWriter = new FileWriter(file_to_write, true);
-        //    myWriter.append(name + "," + time_passed + "," + pitch + "," + volume + "\n");
-        //    myWriter.close();
-        //} catch (IOException e) {
-        //    ProvinceOfMusicClient.LOGGER.error("Error writing to file " + file_to_write + ".");
-        //    e.printStackTrace();
-        //}
         time_passed = 0;
     }
 
-    public static void PlayNotesThread(){
-       Thread playThread = new Thread(() -> {
-           while (true){
-               while(NoteChannelsQueue.size() != 0){
-                   ShortMessage noteOn = new ShortMessage();
-                   try {
-                       noteOn.setMessage(ShortMessage.NOTE_ON, NoteChannelsQueue.get(0), NotePitchsQueue.get(0), NoteVelocitiesQueue.get(0));
-                   } catch (InvalidMidiDataException e) {
-                       throw new RuntimeException(e);
-                   }
-                   //track.add(new MidiEvent(noteOn, 0));
+    public static void playMusicFrame(String instrument, int pitch, int volume){
+        //ArrayList<String> channelsCopy = (ArrayList) instrument.clone();
+        //ArrayList<Integer> pitchesCopy = (ArrayList) pitch.clone();
+        //ArrayList<Integer> volumesCopy = (ArrayList) volume.clone();
+        //NoteChannelsQueue.clear();
+        //NotePitchsQueue.clear();
+        //NoteVelocitiesQueue.clear();
+
+
+        System.out.println("Note Played " + "Ins: " + instrument + " Pitch: " + pitch + " Volume: " + volume + " Time: " + Instant.now());
+
+        final int newVolume;
+
+        if(volume > 100){
+            newVolume = 100;
+        }
+        else{
+            newVolume = volume;
+        }
+
+        //Thread playThread = new Thread(() -> {
+        //    try {
+        //        ShortMessage noteOn = new ShortMessage();
+        //        noteOn.setMessage(ShortMessage.NOTE_ON, 0, pitch, volume);
+        //        for(int j = 0; j < instruments.size(); j++){
+        //            if(instrument.equals(instruments.get(j).noteType)){
+        //                noteOn.setMessage(ShortMessage.NOTE_ON, 0, pitch + instruments.get(j).transpose, (int) ((float)(volume) * musicVolume * instruments.get(j).volume));
+        //                instruments.get(j).receiver.send(noteOn, -1);
+        //            }
+        //        }
+        //        try {
+        //            Thread.sleep(120);
+        //        } catch (InterruptedException e) {
+        //            throw new RuntimeException(e);
+        //        }
+        //        ShortMessage noteOff = new ShortMessage();
+        //        noteOff.setMessage(ShortMessage.NOTE_OFF, 0, pitch, 0);
+        //        for(int j = 0; j < instruments.size(); j++){
+        //            if(instrument.equals(instruments.get(j).noteType)){
+        //                noteOff.setMessage(ShortMessage.NOTE_ON, 0, pitch + instruments.get(j).transpose, 0);
+        //                instruments.get(j).receiver.send(noteOff, -1);
+        //            }
+        //        }
 //
-// Note-//o    ff event (after the desired duration)
-                   receiver.send(noteOn, -1);
-                   //try {
-                   //    Thread.sleep(100);
-                   //} catch (InterruptedException e) {
-                   //    throw new RuntimeException(e);
-                   //}
-
-                   NoteChannelsStopQueue.add(NoteChannelsQueue.get(0));
-                   NotePitchsStopQueue.add(NotePitchsQueue.get(0));
-                   NoteVelocitiesStopQueue.add(NoteVelocitiesQueue.get(0));
-
-                   NoteChannelsQueue.remove(0);
-                   NotePitchsQueue.remove(0);
-                   NoteVelocitiesQueue.remove(0);
+        //    } catch (InvalidMidiDataException e) {
+        //        throw new RuntimeException(e);
+        //    }
+        //});
+        //playThread.start();
 
 
-               }
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    ShortMessage noteOn = new ShortMessage();
+                    noteOn.setMessage(ShortMessage.NOTE_ON, 0, pitch, newVolume);
+                    for(int j = 0; j < instruments.size(); j++){
+                        if(instrument.equals(instruments.get(j).noteType)){
+                            noteOn.setMessage(ShortMessage.NOTE_ON, 0, pitch + instruments.get(j).transpose, (int) ((float)(newVolume) * musicVolume * instruments.get(j).volume));
+                            instruments.get(j).receiver.send(noteOn, -1);
+                        }
+                    }
 
-               //if(prevSize != 0 && prevSize != NoteChannelsQueue.size())
-               //prevSize = NoteChannelsQueue.size();
-               //ShortMessage noteOn = new ShortMessage();
-               //try {
-               //    noteOn.setMessage(ShortMessage.NOTE_ON, insertNoteChannel, insertNotePitch, insertNoteVelocity);
-               //} catch (InvalidMidiDataException e) {
-               //    throw new RuntimeException(e);
-               //}
-               try {
-                   Thread.sleep(100);
-               } catch (InterruptedException e) {
-                   throw new RuntimeException(e);
-               }
+                } catch (InvalidMidiDataException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
 
-               //if(prevSize != 0 && ){
-               for(int i = 0; i < NoteChannelsStopQueue.size(); i++){
-                   ShortMessage noteOff = new ShortMessage();
-                   try {
-                       noteOff.setMessage(ShortMessage.NOTE_OFF, NoteChannelsStopQueue.get(i), NotePitchsStopQueue.get(i), 0);
-                   } catch (InvalidMidiDataException e) {
-                       throw new RuntimeException(e);
-                   }
-                   receiver.send(noteOff, -1);
-               }
-               NoteChannelsStopQueue.clear();
-               NotePitchsStopQueue.clear();
-               NoteVelocitiesStopQueue.clear();
+        Timer timer = new Timer(true);
+        timer.schedule(task, 0);
 
-           }
 
-       });
-       playThread.start();
+        TimerTask task2 = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    ShortMessage noteOff = new ShortMessage();
+                    noteOff.setMessage(ShortMessage.NOTE_OFF, 0, pitch, 0);
+                    for(int j = 0; j < instruments.size(); j++){
+                        if(instrument.equals(instruments.get(j).noteType)){
+                            noteOff.setMessage(ShortMessage.NOTE_ON, 0, pitch + instruments.get(j).transpose, 0);
+                            instruments.get(j).receiver.send(noteOff, -1);
+                        }
+                    }
+
+                } catch (InvalidMidiDataException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        //Timer timer = new Timer(true);
+        timer.schedule(task2, 120);
     }
 
     public void PassTime(){
-        if(is_writing_to_file){
-            Clear = false;
+        if(replaceMusic){
             time_passed++;
         }
     }
@@ -258,20 +193,15 @@ public class NoteReplacer implements SoundInstanceListener {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (replaceNoteBinding.wasPressed()) {
-                //client.player.sendMessage(Text.of("Recording Started"), false);
-                is_writing_to_file = !is_writing_to_file;
-                if (is_writing_to_file) {
-                    //file_to_write = "recorded-music/" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
-                    file_to_write = ProvinceOfMusicClient.recordedmusicdir + "/" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
-                    // make a folder if there isn't one
-                    //File theDir = new File("recorded-music");
-                    //if (!theDir.exists()) theDir.mkdirs();
-                    ProvinceOfMusicClient.LOGGER.info("Started recording to file " + file_to_write + ".");
-                    client.player.sendMessage(Text.of("Started recording to file " + file_to_write + "."), false);
+
+                replaceMusic = !replaceMusic;
+                if (replaceMusic) {
+                    ProvinceOfMusicClient.LOGGER.info("Playing better music");
+                    client.player.sendMessage(Text.of("Playing better music"), false);
                 } else {
                     time_passed = 0;
-                    ProvinceOfMusicClient.LOGGER.info("Stopped recording to file " + file_to_write + ".");
-                    client.player.sendMessage(Text.of("Stopped recording to file " + file_to_write + "."), false);
+                    ProvinceOfMusicClient.LOGGER.info("Playing original music");
+                    client.player.sendMessage(Text.of("Playing original music"), false);
 
                 }
             }
@@ -288,24 +218,24 @@ public class NoteReplacer implements SoundInstanceListener {
         return result;
     }
 
-    public static void RunSetup(){
-        //ArrayList<String> instruments = new ArrayList<>();
-        instruments.add("minecraft:block.note_block.harp");
-        instruments.add("minecraft:block.note_block.bass");
-        instruments.add("minecraft:block.note_block.snare");
-        instruments.add("minecraft:block.note_block.hat");
-        instruments.add("minecraft:block.note_block.basedrum");
-        instruments.add("minecraft:block.note_block.bell");
-        instruments.add("minecraft:block.note_block.flute");
-        instruments.add("minecraft:block.note_block.chime");
-        instruments.add("minecraft:block.note_block.guitar");
-        instruments.add("minecraft:block.note_block.xylophone");
-        instruments.add("minecraft:block.note_block.iron_xylophone");
-        instruments.add("minecraft:block.note_block.cow_bell");
-        instruments.add("minecraft:block.note_block.didgeridoo");
-        instruments.add("minecraft:block.note_block.bit");
-        instruments.add("minecraft:block.note_block.banjo");
-        instruments.add("minecraft:block.note_block.pling");
+    public void RunSetup(){
+        //ArrayList<String> NoteTypes = new ArrayList<>();
+        NoteTypes.add("minecraft:block.note_block.harp");
+        NoteTypes.add("minecraft:block.note_block.bass");
+        NoteTypes.add("minecraft:block.note_block.snare");
+        NoteTypes.add("minecraft:block.note_block.hat");
+        NoteTypes.add("minecraft:block.note_block.basedrum");
+        NoteTypes.add("minecraft:block.note_block.bell");
+        NoteTypes.add("minecraft:block.note_block.flute");
+        NoteTypes.add("minecraft:block.note_block.chime");
+        NoteTypes.add("minecra ft:block.note_block.guitar");
+        NoteTypes.add("minecraft:block.note_block.xylophone");
+        NoteTypes.add("minecraft:block.note_block.iron_xylophone");
+        NoteTypes.add("minecraft:block.note_block.cow_bell");
+        NoteTypes.add("minecraft:block.note_block.didgeridoo");
+        NoteTypes.add("minecraft:block.note_block.bit");
+        NoteTypes.add("minecraft:block.note_block.banjo");
+        NoteTypes.add("minecraft:block.note_block.pling");
 
         //ArrayList<Integer> instrumentChannels = new ArrayList<>();
         instrumentChannels.add(0);
@@ -366,10 +296,10 @@ public class NoteReplacer implements SoundInstanceListener {
 
         //"harp": [0, 6, 0],
         //"bass": [2, 32, -24], #MIDI visualizer matches channel 9 to channel 1 and I need bass to be separate from percussion
-        //"snare": [9, 38 if not use_visual_percussion else 26, 0], #sadly we can't convert pitch for percussion (channel 9) instruments,
-        //"hat": [9, 42 if not use_visual_percussion else 28, 0], #because it is needed for different percussion instruments
+        //"snare": [9, 38 if not use_visual_percussion else 26, 0], #sadly we can't convert pitch for percussion (channel 9) NoteTypes,
+        //"hat": [9, 42 if not use_visual_percussion else 28, 0], #because it is needed for different percussion NoteTypes
         //"basedrum": [9, 35 if not use_visual_percussion else 24, 0],
-        //#        "bell": [3, 14, 24], #uncomment these if you want to record music with these instruments too (Wynncraft doesn't have these)
+        //#        "bell": [3, 14, 24], #uncomment these if you want to record music with these NoteTypes too (Wynncraft doesn't have these)
         //#        "flute": [4, 73, 12],
         //#        "chime": [5, 112, 24],
         //#        "guitar": [6, 24, -12],
@@ -381,26 +311,186 @@ public class NoteReplacer implements SoundInstanceListener {
         //#        "banjo": [14, 105, 0],
         //#        "pling": [15, 4, 0],
 
-        try {
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-            synth.unloadAllInstruments(synth.getDefaultSoundbank());
 
-            // Load the custom soundbank
-            Soundbank soundbank = MidiSystem.getSoundbank(new File("1st-violin-SEC-accent.sf2"));
-            synth.loadAllInstruments(soundbank);
 
-            receiver = synth.getReceiver();
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+
+
+
+
+
+        //instruments.add(new Instrument(new File("1st-violin-SEC-staccato.sf2"), "minecraft:block.note_block.harp", 0, 0.75f));
+        //instruments.add(new Instrument(new File("2nd-violin-SEC-staccato.sf2"), "minecraft:block.note_block.harp", 0, 0.75f));
+        //instruments.add(new Instrument(new File("cello-SEC-accent.sf2"), "minecraft:block.note_block.harp", 0 , 0.75f));
+        //instruments.add(new Instrument(new File("cello-SEC-staccato.sf2"), "minecraft:block.note_block.harp"));
+        //instruments.add(new Instrument(new File("viola-SEC-staccato.sf2"), "minecraft:block.note_block.harp", 0, 0.75f));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.harp"));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.harp", 0, 0.75f));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.harp", 0, 0.75f));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.harp", -12));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.harp", 12, 0.75f));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.harp", -12, 0.75f));
+
+        //instruments.add(new Instrument(new File("firelyre.sf2"), "minecraft:block.note_block.harp"));
+        //instruments.add(new Instrument(new File("SuperHarp.sf2"), "minecraft:block.note_block.harp"));
+
+
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+        //instruments.add(new Instrument(new File("bass-SEC-staccato.sf2"), "minecraft:block.note_block.bass"));
+
+
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+
+
+        //SamplePack samplePackTest = new SamplePack();
+        //samplePackTest.name = "testPack";
+        //samplePackTest.author = "TheAngryGhost";
+        //samplePackTest.instrumentDefs = new ArrayList<>();
+        //samplePackTest.instrumentDefs.add(new InstrumentDef("1st-violin-SEC-staccato.sf2", "minecraft:block.note_block.harp", 0, 0.75f));
+        //samplePackTest.WriteSamplePack();
+
+
+        if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
+            instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments();
         }
+
+
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+//
+//
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("SnareDrum.sf2"), "minecraft:block.note_block.snare"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+        //instruments.add(new Instrument(new File("KickDrum.sf2"), "minecraft:block.note_block.basedrum"));
+
+
+
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+        //instruments.add(new Instrument(new File("HatDrum.sf2"), "minecraft:block.note_block.hat"));
+//
+//
+//
+//
+//
+//
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("piccolo-SOLO-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("piccolo-SOLO-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("piccolo-SOLO-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("piccolo-SOLO-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("piccolo-SOLO-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("piccolo-SOLO-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+        //instruments.add(new Instrument(new File("flute-SEC-staccato.sf2"), "minecraft:block.note_block.bell"));
+//
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+        //instruments.add(new Instrument(new File("SpanishClassicalGuitar.sf2"), "minecraft:block.note_block.guitar", -12));
+//
+//
+        //instruments.add(new Instrument(new File("celesta.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("celesta.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("celesta.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("celesta.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("Mallets_GM.sf2"), "minecraft:block.note_block.chime"));
+        //instruments.add(new Instrument(new File("BRIGHT GRAND.sf2"), "minecraft:block.note_block.chime"));
+        
+
+        //try {
+        //    synth = MidiSystem.getSynthesizer();
+        //    synth.open();
+        //    synth.unloadAllInstruments(synth.getDefaultSoundbank());
+//
+        //    // Load the custom soundbank
+        //    Soundbank soundbank = MidiSystem.getSoundbank(new File("1st-violin-SEC-accent.sf2"));
+        //    synth.loadAllInstruments(soundbank);
+//
+        //    receiver = synth.getReceiver();
+        //} catch (MidiUnavailableException e) {
+        //    e.printStackTrace();
+        //} catch (InvalidMidiDataException e) {
+        //    throw new RuntimeException(e);
+        //} catch (IOException e) {
+        //    throw new RuntimeException(e);
+        //}
 
         NoteListenerHelper.addListener(this);
 
-        PlayNotesThread();
+        //PlayNotesThread();
     }
 }

@@ -23,12 +23,13 @@ public class NoteListenerHelper {
 
     private static ArrayList<Integer> instrumentPitchesToShift = new ArrayList<>();
     public static void notePlayed(SoundInstance sound, int delay){
+        //System.err.println("is null1    " + sound);
 
+        instant = Instant.now();
         if(lastNoteMillis == -1){
-            long lastNoteMillis = instant.toEpochMilli();
+            lastNoteMillis = instant.toEpochMilli();
         }
         else{
-            instant = Instant.now();
             long ellapsedMillis = instant.toEpochMilli() - lastNoteMillis;
             ellapsedTicks = ((int) (ellapsedMillis / 50)) + delay;
 
@@ -46,7 +47,8 @@ public class NoteListenerHelper {
             }
         }
         if(noteInstrument == -1){
-            System.out.println("Error");
+            System.out.println("Error: " + sound.getId().toString());
+            return;
         }
 
         int insertNotePitch = (Math.round((log2(pitch) * 12) + 66.5f) - 1) + instrumentPitchesToShift.get(noteInstrument);
@@ -71,7 +73,7 @@ public class NoteListenerHelper {
         return result;
     }
 
-    private static void RunSetup(){
+    public NoteListenerHelper(){
         instruments.add("minecraft:block.note_block.harp");
         instruments.add("minecraft:block.note_block.bass");
         instruments.add("minecraft:block.note_block.snare");

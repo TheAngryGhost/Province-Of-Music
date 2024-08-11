@@ -3,8 +3,11 @@ package com.provinceofmusic;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.provinceofmusic.jukebox.*;
+import com.provinceofmusic.listeners.NoteListenerHelper;
 import com.provinceofmusic.recorder.MusicYoinker;
 import com.provinceofmusic.screen.ConfigScreen;
+import com.provinceofmusic.screen.ExampleGui;
+import com.provinceofmusic.screen.SamplePackConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -34,14 +37,18 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	MusicYoinker musicYoinker = new MusicYoinker();
 	NoteReplacer noteReplacer = new NoteReplacer();
 
+	NoteListenerHelper noteListenerHelper = new NoteListenerHelper();
+
 	public static File recordedmusicdir;
 	public static File exportedmusicdir;
 	public static File playrulesheetsdir;
 	public static File configsettingsdir;
+	public static File samplepacksdir;
 
 	public static POMConfigObject configSettings;
 
 	public static boolean replaceMusic = false;
+
 
 	//public static ArrayList<File> deletedFiles = new ArrayList<>();
 
@@ -68,7 +75,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 			MinecraftClient.getInstance().getSoundManager().registerListener(musicYoinker);
-			MinecraftClient.getInstance().getSoundManager().registerListener(noteReplacer);
 		});
 
 		musicYoinker.main();
@@ -86,9 +92,14 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_L, "Province of Music"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			//while (NoteReplacer.replaceNoteBinding.wasPressed()) {
+			//	replaceMusic = !replaceMusic;
+			//	System.out.println("replaceMusic" + replaceMusic);
+			//}
 		});
 
-		ConfigScreen.INSTANCE.load();
+
+		//ConfigScreen.INSTANCE.load();
 	}
 
 	public void setupFiles(){
@@ -110,6 +121,11 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		configsettingsdir = new File("provinceofmusic/");
 		if (!configsettingsdir.exists()){
 			configsettingsdir.mkdirs();
+		}
+
+		samplepacksdir = new File("provinceofmusic/samplepacks");
+		if (!samplepacksdir.exists()){
+			samplepacksdir.mkdirs();
 		}
 
 		//recordedmusicdir = new File();
@@ -153,7 +169,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	//	ConfigScreen.INSTANCE.load();
 	//}
 
-	public static ConfigScreen getConfig() {
-		return ConfigScreen.INSTANCE.getConfig();
-	}
+	//public static ConfigScreen getConfig() {
+	//	return ConfigScreen.INSTANCE.getConfig();
+	//}
 }

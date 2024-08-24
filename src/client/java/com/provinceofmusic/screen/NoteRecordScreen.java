@@ -1,8 +1,6 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.jukebox.InstrumentDef;
-import com.provinceofmusic.ui.InstrumentWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
@@ -38,7 +36,7 @@ public class NoteRecordScreen extends LightweightGuiDescription {
 
         WButton backButton = new WButton(Text.literal("Back"));
         Runnable runnable4 = () -> {
-            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ExampleGui()));
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
         };
         root.add(backButton, 6, 0, 3,1);
         backButton.setOnClick(runnable4);

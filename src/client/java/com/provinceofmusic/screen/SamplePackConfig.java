@@ -110,7 +110,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
         WButton backButton = new WButton(Text.literal("Back"));
         root.add(backButton, 0, 4, 3, 1);
         Runnable backButtonRunnable = () -> {
-            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ExampleGui()));
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
             setActive = false;
         };
         backButton.setOnClick(backButtonRunnable);

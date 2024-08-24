@@ -1,11 +1,8 @@
 package com.provinceofmusic.screen;
 
-import com.provinceofmusic.ProvinceOfMusicClient;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 
 //import static com.provinceofmusic.ProvinceOfMusicClient.getConfig;
 
@@ -22,7 +19,7 @@ public class POMModMenuIntegration implements ModMenuApi {
             //TesterScreens ts = new TesterScreens();
             //ts.createGui(new CustomScreen(Text.of("")));
             //return getConfig().createGui();
-            return new CottonClientScreen(new ExampleGui());
+            return new CottonClientScreen(new ConfigScreen());
         };
     }
 }

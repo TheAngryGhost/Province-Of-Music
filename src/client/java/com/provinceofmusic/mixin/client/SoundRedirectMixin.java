@@ -29,58 +29,23 @@ import java.util.Map;
 
 @Mixin(SoundSystem.class)
 public class SoundRedirectMixin{
-    //play(Lnet/minecraft/client/sound/SoundInstance;)V
     @Inject(method = "play", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundInstance;getVolume()F"), cancellable = true)
     public void onPlaySound(SoundInstance sound, CallbackInfo info) {
-        //System.out.println(sound.getId());
-        //System.out.println(sound.getVolume());
-        //System.out.println(sound.getPitch());
-
-
-        //if(sound!= null) {
-        //    System.out.println(sound.getPitch());
-        //}
         if(NoteReplacer.replaceMusic){
             for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
                 if(tempSound.registeredName.equals(sound.getId().toString())){
-                    //instrumentSound = tempSound;
-                    //System.err.println("sdfjklhjdsjkfghusdkhjfgjklsdlfghksdjflghjklsdfghsdjklfghjklsdflg");
                     ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
                     info.cancel();
                 }
                 else {
                     for (String tempSound2 : tempSound.remaps) {
                         if(tempSound2.equals(sound.getId().toString())){
-                            //instrumentSound = tempSound;
                             ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
-                            //System.err.println("sdfjklhjdsjkfghusdkhjfgjklsdlfghksdjflghjklsdfghsdjklfghjklsdflg");
                             info.cancel();
                         }
                     }
                 }
             }
         }
-
-
-        // Check if it's a noteblock sound
-        //if (isNoteblockSound(sound)) {
-            //ci.cancel(); // Cancel the sound playback
-        //}
     }
-
-    //@Inject(method = "play", at = @At(value = "FIELD", target = "Lnet/minecraft/client/sounds/SoundEngine;instanceBySource:Lcom/google/common/collect/Multimap;"), locals = LocalCapture.CAPTURE_FAILHARD)
-    //private void play(SoundInstance sound, CallbackInfo ci, WeighedSoundEvents weightedSoundSet, ResourceLocation identifier, Sound sound2, float f, float g, SoundSource soundCategory) {
-    //    //SoundPhysics.setLastSoundCategoryAndName(soundCategory, sound.getLocation().toString());
-    //}
-
-    //private final Map<Identifier, WeightedSoundSet> sounds = Maps.newHashMap();
-    //@Inject(method = "play(Lnet/minecraft/client/sound/SoundInstance;)V", at = @At(value = "FIELD", target = "net/minecraft/client/sound/SoundSystem.sounds"), locals = LocalCapture.CAPTURE_FAILHARD)
-    //private void play(SoundInstance sound, CallbackInfo ci){
-////
-    //}
-//
-    //private boolean isNoteblockSound(SoundInstance sound) {
-    //    // Implement your logic to identify noteblock sounds
-    //    return sound.getId().getPath().startsWith("block.note_block.");
-    //}
 }

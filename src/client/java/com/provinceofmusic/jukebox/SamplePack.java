@@ -28,7 +28,6 @@ public class SamplePack {
     }
 
     public ArrayList<Instrument> getInstruments(ArrayList<Instrument> out){
-        //ArrayList<Instrument> out = new ArrayList<>();
         if(out == null){
             out = new ArrayList<>();
         }
@@ -54,7 +53,6 @@ public class SamplePack {
         try {
             FileWriter fileWriter = new FileWriter(outputFile);
             fileWriter.write("null");
-            //fileWriter.write("empy");
             fileWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -74,23 +72,13 @@ public class SamplePack {
 
 
         File jsonTemp = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + name +".json");
-        //outputSheet.rules = new ArrayList<>();
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting().serializeNulls();
         Gson gson = builder.create();
-        //gson.toJson(sheetIn);
-
-
-
-        //PlayRule[] rulesArr = new PlayRule[sheetIn.rules.size()];
-        //for(int i = 0; i < rulesArr.length; i++){
-        //    rulesArr[i] = sheetIn.rules.get(i);
-        //}
 
         try {
             FileWriter fileWriter = new FileWriter(jsonTemp);
             fileWriter.write(gson.toJson(this));
-            //fileWriter.write("empy");
             fileWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -117,40 +105,19 @@ public class SamplePack {
     }
 
     public static void DeletePack(String name){
-        //getFile(name).delete();
-
 
         File file = getFile(name);
         SamplePack samplePack = getSamplePack(file);
-        //try {
-        //    getSamplePack(file).deleteOnExit = true;
-        //    getSamplePack(file).WriteSamplePack();
-        //    file.deleteOnExit();
-        //} catch (IOException e) {
-        //    throw new RuntimeException(e);
-        //}
-        //try {
-        //    Files.delete(file.toPath());
-        //} catch (IOException e) {
-        //    //throw new RuntimeException(e);
-        //    try {
 
         samplePack.WriteSamplePack();
-        //file.deleteOnExit();
         try {
             ArrayList<File> filesToDelete = findAllFiles(file);
             for (File f : filesToDelete){
-                //if(!f.isDirectory()){
-                    Files.delete(f.toPath());
-                //}
+                Files.delete(f.toPath());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //    } catch (IOException ex) {
-        //        throw new RuntimeException(ex);
-        //    }
-        //}
 
     }
 
@@ -159,7 +126,6 @@ public class SamplePack {
         out.WriteSamplePack();
     }
     public static ArrayList<File> findAllFiles(File in){
-        //File file = getFile(name);
         ArrayList<File> out = new ArrayList<>();
 
         if(in.isDirectory()){

@@ -5,15 +5,11 @@ import com.google.gson.GsonBuilder;
 import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import com.provinceofmusic.recorder.MusicYoinker;
-import com.provinceofmusic.screen.ConfigScreen;
-import com.provinceofmusic.screen.ExampleGui;
-import com.provinceofmusic.screen.SamplePackConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
@@ -25,10 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class ProvinceOfMusicClient implements ClientModInitializer {
 
@@ -83,10 +75,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
 		});
-
-		ClientPlayConnectionEvents.JOIN.register(new POMPlayerJoinWorldListener());
-
-		ClientPlayConnectionEvents.DISCONNECT.register(new POMPlayerDisconnectWorldListener());
 
 		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
 		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "Province of Music"));

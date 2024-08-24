@@ -1,221 +1,100 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-//import dev.isxander.yacl3.api.ButtonOption;
-//import dev.isxander.yacl3.api.ConfigCategory;
-//import dev.isxander.yacl3.api.YetAnotherConfigLib;
-//import dev.isxander.yacl3.config.ConfigEntry;
-//import dev.isxander.yacl3.config.ConfigInstance;
-//import dev.isxander.yacl3.config.GsonConfigInstance;
-import net.fabricmc.loader.api.FabricLoader;
+import com.provinceofmusic.jukebox.NoteReplacer;
+import com.provinceofmusic.jukebox.SamplePack;
+import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
+import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
+import io.github.cottonmc.cotton.gui.widget.*;
+import io.github.cottonmc.cotton.gui.widget.data.Axis;
+import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-//import dev.isxander.yacl3.*;
-//import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
+public class ConfigScreen extends LightweightGuiDescription {
+    public ConfigScreen() {
+        WGridPanel root = new WGridPanel();
+        setRootPanel(root);
+        root.setSize(256, 240);
+        root.setInsets(Insets.ROOT_PANEL);
 
-public class ConfigScreen {
+        //WSprite icon = new WSprite(Identifier.of("minecraft","textures/item/redstone.png"));
+        WLabel title = new WLabel(Text.literal("Province of Music"), 0x000000);
+        root.add(title, 0, 0, 9, 3);
 
-    //public static final ConfigInstance<ConfigScreen> INSTANCE = new GsonConfigInstance<>(ConfigScreen.class, FabricLoader.getInstance().getConfigDir().resolve("province-of-music.json"));
-    //private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        //new Identifier(FabricLoader.getInstance().getConfigDir().resolve("splits.yml"))
 
-    //@ConfigEntry public boolean booleanToggle = true;
-    public int intSlider = 5;
-    private Boolean myBooleanOption;
-    public boolean searchingforActive = false;
+        WSprite icon = new WSprite(Identifier.of("provinceofmusic","icon.png"));
+        root.add(icon, 0, 1, 3, 3);
 
-    //@ConfigEntry private String activeRuleSheet;
+        WLabel label = new WLabel(Text.literal("Music Volume"), 0x000000);
+        root.add(label, 0, 2+3, 1, 1);
 
-    Screen screenInstance;
+        WSlider slider = new WSlider(0, 100, Axis.HORIZONTAL);
+        slider.setValue((int) (ProvinceOfMusicClient.configSettings.volume * 100));
+        NoteReplacer.musicVolume = slider.getValue() / 100f;
+        //slider.getValue()
+        root.add(slider, 0, 3+2, 5, 1);
 
-    //ButtonOption playRuleSheetActive;
+        Runnable samplePackRunnable = () -> {
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
+        };
 
-    public static void save() {
-        /* save your config! */
+        Runnable recordingRunnable = () -> {
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new NoteRecordScreen()));
+        };
 
-        //INSTANCE.save();
+        WButton button = new WButton(Text.literal("Sample Pack Editor"));
+        button.setOnClick(samplePackRunnable);
+        root.add(button, 0, 6, 6, 1);
 
+        WButton button2 = new WButton(Text.literal("Recorded Music Editor"));
+        root.add(button2, 0, 7, 7, 1);
+        button2.setOnClick(recordingRunnable);
+
+
+        Runnable runnable = () -> {
+            //System.err.println("Button Pressed");
+
+            ProvinceOfMusicClient.setConfigSettings();
+
+            if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
+                NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.instruments);
+            }
+
+
+
+            WLabel savedPopup = new WLabel(Text.literal("Changes Saved"), 0x000000);
+            root.add(savedPopup, 0, 10, 2, 1);
+            //MinecraftClient.getInstance().setScreen(new CottonClientScreen(ProvinceOfMusicClient.RootConfigScreen));
+            NoteReplacer.musicVolume = slider.getValue() / 100f;
+            Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                root.remove(savedPopup);
+            });
+            t.start();
+
+
+
+
+        };
+
+        WButton saveButton = new WButton(Text.literal("Save Changes"));
+        saveButton.setOnClick(runnable);
+        root.add(saveButton, 0, 9, 7, 1);
+
+
+        //WButton button = new WButton(Text.literal("gui.examplemod.examplebutton"));
+        //root.add(button, 0, 3, 4, 1);
+
+        //WLabel nameLabel = new WLabel(Text.literal("Test"), 0xFFFFFF);
+        //root.add(nameLabel, 0, 4, 2, 1);
+
+        root.validate(this);
     }
-
-    public Screen createGui() {
-
-        ArrayList<File> midiFiles = FetchMidiFiles();
-        ArrayList<File> playrulesheetFiles = FetchPlayRuleSheetFiles();
-
-        //ArrayList<ButtonOption> unconvertedmidibuttons = new ArrayList<>();
-
-        //ArrayList<ButtonOption> playrulesheets = new ArrayList<>();
-
-        //playRuleSheetActive = ButtonOption.createBuilder()
-        //        //.options(unconvertedmidibuttons)
-        //        .name(Text.of("SetAnActiveRuleSheet"))
-        //        .text(Text.of("Current: " + ProvinceOfMusicClient.configSettings.defaultPlayRuleSheet))
-//
-        //        //.tooltip(Text.of("This is so easy!")) // optional
-        //        .action((yaclScreen, buttonOption) -> {
-        //                searchingforActive = true;
-        //            //if(screenInstance != null){
-        //            //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
-        //            //}
-        //            //System.out.println("Button has been pressed!");
-//
-//
-        //        })
-        //        .build();
-//
-//
-        //for(int i = 0; i < midiFiles.size(); i++){
-        //    int finalI = i;
-        //    unconvertedmidibuttons.add(ButtonOption.createBuilder()
-        //            .name(Text.of(midiFiles.get(i).getName()))
-        //            .text(Text.of("Modify File"))
-//
-        //            //.tooltip(Text.of("This is so easy!")) // optional
-        //            .action((yaclScreen, buttonOption) -> {
-        //                if(screenInstance != null){
-        //                    MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
-        //                }
-        //                //System.out.println("Button has been pressed!");
-        //            })
-        //            //.controller(new ActionController(buttonOption /* provided by builder */, Text.of("Run") /* optional */))
-        //            //.controller(opt -> new ActionController())
-        //            .build());
-        //}
-
-
-        //for(int i = 0; i < playrulesheetFiles.size(); i++){
-        //    int finalI = i;
-        //    playrulesheets.add(ButtonOption.createBuilder()
-        //            .name(Text.of(playrulesheetFiles.get(i).getName()))
-        //            .text(Text.of("Modify Rules"))
-        //            .action((yaclScreen, buttonOption) -> {
-        //                if(searchingforActive){
-        //                    ProvinceOfMusicClient.configSettings.defaultPlayRuleSheet = playrulesheetFiles.get(finalI).getName();
-        //                    searchingforActive = false;
-        //                    ProvinceOfMusicClient.setConfigSettings();
-        //                    MinecraftClient.getInstance().setScreen(ProvinceOfMusicClient.getConfig().createGui());
-        //                }
-        //                else{
-        //                    if(screenInstance != null){
-        //                        try {
-        //                            MinecraftClient.getInstance().setScreen(new PlayRuleSheetEditScreen(playrulesheetFiles.get(finalI)).createGui());
-        //                        } catch (IOException e) {
-        //                            throw new RuntimeException(e);
-        //                        }
-        //                    }
-        //                }
-        //            })
-        //            .build());
-        //}
-
-        //screenInstance = YetAnotherConfigLib.create(INSTANCE, (defaults, config, builder) -> builder
-        //        .title(Text.of("Province Of Music"))
-        //        .category(ConfigCategory.createBuilder()
-        //                .name(Text.of("Music Replace Editor"))
-        //                .option(ButtonOption.createBuilder()
-        //                //.options(unconvertedmidibuttons)
-        //                    .name(Text.of("CreatePlayRuleSheet"))
-        //                    .text(Text.of(""))
-//
-        //                //.tooltip(Text.of("This is so easy!")) // optional
-        //                    .action((yaclScreen, buttonOption) -> {
-        //                        //if(screenInstance != null){
-        //                            //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
-        //                        //}
-        //                        //System.out.println("Button has been pressed!");
-        //                        MinecraftClient.getInstance().setScreen(new PlayRuleSheetNameScreen());
-        //                        searchingforActive = false;
-        //                    })
-        //                    .build()
-        //                )
-        //                .option(ButtonOption.createBuilder()
-        //                        //.options(unconvertedmidibuttons)
-        //                        .name(Text.of("ImportPlayRuleSheet"))
-        //                        .text(Text.of(""))
-//
-        //                        //.tooltip(Text.of("This is so easy!")) // optional
-        //                        .action((yaclScreen, buttonOption) -> {
-        //                            //if(screenInstance != null){
-        //                            //MinecraftClient.getInstance().setScreen(new MidiEditScreen(Text.of(""), midiFiles.get(finalI)));
-        //                            //}
-        //                            //System.out.println("Button has been pressed!");
-        //                            searchingforActive = false;
-        //                        })
-        //                        .build()
-        //                )
-        //                .option(playRuleSheetActive)
-        //                .options(playrulesheets)
-        //                .build()
-//
-//
-        //        )
-        //                .category(ConfigCategory.createBuilder()
-        //                        .name(Text.of("Midi Recorder Editor"))
-        //                        //.tooltip(Text.of("This displays when you hover over a category button")) // optional
-        //                        //.option(Option.createBuilder(boolean.class)
-        //                        //        .name(Text.of("My Boolean Option"))
-        //                        //        //.tooltip(Text.of("This option displays the basic capabilities of YetAnotherConfigLib")) // optional
-        //                        //        .binding(
-        //                        //                defaults.booleanToggle, // default
-        //                        //                () -> config.booleanToggle, // getter
-        //                        //                value -> config.booleanToggle = value // setter
-        //                        //        )
-        //                        //        //.controller(TickBoxController::new)
-        //                        //        .controller(opt -> BooleanControllerBuilder.create(opt).yesNoFormatter().coloured(true))
-        //                        //        //.controller(new BooleanController(Option.createBuilder(Binding.immutable(Binding<Integer>))))
-        //                        //        .build())
-        //                        //.option(ButtonOption.createBuilder()
-        //                        //        .name(Text.of("Pressable Button"))
-        //                        //        //.tooltip(Text.of("This is so easy!")) // optional
-        //                        //        .action((yaclScreen, buttonOption) -> {
-        //                        //            System.out.println("Button has been pressed!");
-        //                        //        })
-        //                        //        //.controller(new ActionController(buttonOption /* provided by builder */, Text.of("Run") /* optional */))
-        //                        //        //.controller(opt -> new ActionController())
-        //                        //        .build())
-        //                        .options(unconvertedmidibuttons)
-        //                        .build())
-        //        //.save(ConfigScreen::save)).generateScreen(null);
-        //).generateScreen(null);
-        return screenInstance;
-    }
-
-    //void RefreshScreen(Screen screenIn){
-    //    ConfigScreen temp = new ConfigScreen();
-    //    screenIn = temp.createGui(ProvinceOfMusicClient.getConfig());
-    //}
-
-
-    //public void openFolderInExplorer() throws IOException {
-    //    File f = new File("recorded-music/");
-    //    if (!f.exists()){
-    //        f.mkdirs();
-    //    }
-    //    System.out.println(f.getAbsolutePath());
-    //    Desktop.getDesktop().open(f.getAbsoluteFile());
-    //}
-
-    public ArrayList<File> FetchMidiFiles(){
-        ArrayList<File> tempFiles = new ArrayList<>();
-        int fileCount = ProvinceOfMusicClient.recordedmusicdir.listFiles().length;
-        for(int i = 0; i < fileCount; i++){
-                tempFiles.add(ProvinceOfMusicClient.recordedmusicdir.listFiles()[i]);
-        }
-        return tempFiles;
-    }
-
-    public ArrayList<File> FetchPlayRuleSheetFiles(){
-        ArrayList<File> tempFiles = new ArrayList<>();
-        int fileCount = ProvinceOfMusicClient.playrulesheetsdir.listFiles().length;
-        for(int i = 0; i < fileCount; i++){
-            tempFiles.add(ProvinceOfMusicClient.playrulesheetsdir.listFiles()[i]);
-        }
-        return tempFiles;
-    }
-
-
 }

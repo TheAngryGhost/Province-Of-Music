@@ -110,9 +110,6 @@ public class ConvertToMidi {
 
     public static float log2(float N)
     {
-
-        // calculate log2 N indirectly
-        // using log() method
         float result = (float) (Math.log(N) / Math.log(2));
 
         return result;

@@ -21,11 +21,28 @@ public class SamplePack {
     public ArrayList<Instrument> getInstruments(){
         ArrayList<Instrument> out = new ArrayList<>();
         for(int i = 0; i < instrumentDefs.size(); i++){
-            Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDefs.get(i).dir), instrumentDefs.get(i).noteType, instrumentDefs.get(i).transpose, instrumentDefs.get(i).volume);
+            Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDefs.get(i).dir), instrumentDefs.get(i).noteType, instrumentDefs.get(i).transpose, instrumentDefs.get(i).volume, instrumentDefs.get(i).singlePitch);
             out.add(temp);
         }
         return out;
     }
+
+    public ArrayList<Instrument> getInstruments(ArrayList<Instrument> out){
+        //ArrayList<Instrument> out = new ArrayList<>();
+        if(out == null){
+            out = new ArrayList<>();
+        }
+        else{
+            out.clear();
+        }
+        for(int i = 0; i < instrumentDefs.size(); i++){
+            Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDefs.get(i).dir), instrumentDefs.get(i).noteType, instrumentDefs.get(i).transpose, instrumentDefs.get(i).volume, instrumentDefs.get(i).singlePitch);
+            out.add(temp);
+        }
+        return out;
+    }
+
+
 
     public void WriteSamplePack(){
 
@@ -91,6 +108,7 @@ public class SamplePack {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Imported Successfully");
         return out;
     }
 

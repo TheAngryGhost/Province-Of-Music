@@ -143,6 +143,13 @@ public class SamplePackEditor extends LightweightGuiDescription {
             destination.screen = this;
             destination.instrument = s;
             destination.index = data.indexOf(s);
+            destination.toggleButton.setToggle(s.singlePitch);
+            if(s.singlePitch){
+                destination.toggleButton.setLabel(Text.of("☑"));
+            }
+            else{
+                destination.toggleButton.setLabel(Text.of("☐"));
+            }
             instrumentWidgets.add(destination);
         };
         packList = new WListPanel(data, InstrumentWidget::new, configurator);
@@ -186,7 +193,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         WButton addNewButton = new WButton(Text.literal("+"));
         Runnable runnable2 = () -> {
             copyChangesToCache();
-            InstrumentDef temp = new InstrumentDef("null", "null", 0, 1.0f);
+            InstrumentDef temp = new InstrumentDef("null", "null", 0, 1.0f, false);
             thisPack.instrumentDefs.add(temp);
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(thisPack)));
 
@@ -198,7 +205,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
     public void copyChangesToCache() {
         for(int i = 0; i < instrumentWidgets.size(); i++){
-            InstrumentDef temp2 = new InstrumentDef(instrumentWidgets.get(i).dir.getText(), instrumentWidgets.get(i).noteType.getText(), Integer.parseInt(instrumentWidgets.get(i).transpose.getText()), Float.parseFloat(instrumentWidgets.get(i).volume.getText()));
+            InstrumentDef temp2 = new InstrumentDef(instrumentWidgets.get(i).dir.getText(), instrumentWidgets.get(i).noteType.getText(), Integer.parseInt(instrumentWidgets.get(i).transpose.getText()), Float.parseFloat(instrumentWidgets.get(i).volume.getText()), instrumentWidgets.get(i).toggleButton.getToggle());
             thisPack.instrumentDefs.set(instrumentWidgets.get(i).index, temp2);
         }
     }
@@ -231,8 +238,10 @@ public class SamplePackEditor extends LightweightGuiDescription {
         //}
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
             if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name) || ProvinceOfMusicClient.configSettings.activeSamplePack.equals(namecache)){
+                //NoteReplacer.instruments = null;
+
                 ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
-                NoteReplacer.instruments = thisPack.getInstruments();
+                NoteReplacer.instruments = thisPack.getInstruments(NoteReplacer.instruments);
                 ProvinceOfMusicClient.setConfigSettings();
             }
         }

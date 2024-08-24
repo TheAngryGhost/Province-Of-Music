@@ -14,6 +14,6 @@ public class POMPlayerJoinWorldListener implements ClientPlayConnectionEvents.Jo
         //MinecraftClient.getInstance().setScreen(new GoofyScreenItDoesStuffTrustMe(Text.literal("my tutorial screen")));
 
         //MinecraftClient.getInstance().setOverlay(new CustomOverlay());
-        RuleHandler.StartThread();
+        //RuleHandler.StartThread();
     }
 }

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class Instrument {
-    public Synthesizer synth;
     public Receiver receiver = null;
 
     public String noteType;
@@ -14,8 +13,11 @@ public class Instrument {
 
     public float volume = 1f;
 
+    public boolean singlePitch = false;
+
     public Instrument(File insFile, String noteType) {
         try{
+            Synthesizer synth;
             this.noteType = noteType;
             synth = MidiSystem.getSynthesizer();
             synth.open();
@@ -37,6 +39,7 @@ public class Instrument {
 
     public Instrument(File insFile, String noteType, int transpose) {
         try{
+            Synthesizer synth;
             this.noteType = noteType;
             this.transpose = transpose;
             synth = MidiSystem.getSynthesizer();
@@ -57,11 +60,13 @@ public class Instrument {
         }
     }
 
-    public Instrument(File insFile, String noteType, int transpose, float volume) {
+    public Instrument(File insFile, String noteType, int transpose, float volume, boolean singlePitch) {
         try{
+            Synthesizer synth;
             this.noteType = noteType;
             this.transpose = transpose;
             this.volume = volume;
+            this.singlePitch = singlePitch;
             synth = MidiSystem.getSynthesizer();
             synth.open();
             synth.unloadAllInstruments(synth.getDefaultSoundbank());

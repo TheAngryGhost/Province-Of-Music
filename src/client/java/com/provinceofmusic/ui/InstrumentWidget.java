@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class InstrumentWidget extends WPlainPanel {
 
@@ -29,6 +30,8 @@ public class InstrumentWidget extends WPlainPanel {
     public WTextField transpose;
     public WTextField noteType;
     public WTextField volume;
+
+    public WToggleButton toggleButton;
 
     public SamplePackEditor screen;
 
@@ -77,6 +80,32 @@ public class InstrumentWidget extends WPlainPanel {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(newScreen));
         };
         noteTypeSwitch.setOnClick(runnable2);
+
+        if(instrument != null){
+            if(instrument.singlePitch){
+                toggleButton = new WToggleButton(Text.of("☑"));
+            }
+            else{
+                toggleButton = new WToggleButton(Text.of("☐"));
+            }
+            toggleButton.setToggle(instrument.singlePitch);
+        }
+        else{
+            toggleButton = new WToggleButton(Text.of("☐"));
+            System.out.println("hello world");
+        }
+        this.add(toggleButton, 10 + 50 + 50 + 15 + 50-3 - 10 - 3 + 20, 5 + 25 + 5 + 5 + 5, 50, 10);
+        toggleButton.setOnToggle(aBoolean -> {
+            if(toggleButton.getToggle()){
+                toggleButton.setLabel(Text.of("☑"));
+            }
+            else{
+                toggleButton.setLabel(Text.of("☐"));
+            }
+        });
+        //TooltipBuilder t = new TooltipBuilder();
+        //t.add(Text.of("Hello"));
+        //toggleButton.addTooltip(t);
 
         //NoteTypePickerScreen
 

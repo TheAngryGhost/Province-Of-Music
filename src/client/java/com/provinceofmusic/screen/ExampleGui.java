@@ -41,24 +41,11 @@ public class ExampleGui extends LightweightGuiDescription {
         root.add(slider, 0, 3+2, 5, 1);
 
         Runnable samplePackRunnable = () -> {
-            //System.err.println("Button Pressed");
-            //WLabel savedPopup = new WLabel(Text.literal("Changes Saved"), 0x000000);
-            //root.add(savedPopup, 0, 10, 2, 1);
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
-            //NoteReplacer.musicVolume = slider.getValue() / 100f;
-            //Thread t = new Thread(() -> {
-            //    try {
-            //        Thread.sleep(1000);
-            //    } catch (InterruptedException e) {
-            //        throw new RuntimeException(e);
-            //    }
-            //    root.remove(savedPopup);
-            //});
-            //t.start();
+        };
 
-
-
-
+        Runnable recordingRunnable = () -> {
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new NoteRecordScreen()));
         };
 
         WButton button = new WButton(Text.literal("Sample Pack Editor"));
@@ -67,14 +54,16 @@ public class ExampleGui extends LightweightGuiDescription {
 
         WButton button2 = new WButton(Text.literal("Recorded Music Editor"));
         root.add(button2, 0, 7, 7, 1);
+        button2.setOnClick(recordingRunnable);
 
 
         Runnable runnable = () -> {
             //System.err.println("Button Pressed");
+
             ProvinceOfMusicClient.setConfigSettings();
 
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
-                NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments();
+                NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.instruments);
             }
 
 

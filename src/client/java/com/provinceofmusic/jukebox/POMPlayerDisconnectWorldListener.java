@@ -8,6 +8,6 @@ public class POMPlayerDisconnectWorldListener implements ClientPlayConnectionEve
     @Override
     public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
         //System.out.println("DISCONECTED!!!!!!!");
-        RuleHandler.StopThread();
+        //RuleHandler.StopThread();
     }
 }

@@ -2,6 +2,7 @@ package com.provinceofmusic.screen;
 
 import com.provinceofmusic.jukebox.InstrumentDef;
 import com.provinceofmusic.jukebox.NoteReplacer;
+import com.provinceofmusic.listeners.NoteListenerHelper;
 import com.provinceofmusic.ui.InstrumentWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -35,8 +36,8 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
         root.add(title, 0, 0, 9, 3);
 
         ArrayList<String> data = new ArrayList<>();
-        for (int i = 0; i < NoteReplacer.NoteTypes.size(); i++){
-            data.add(NoteReplacer.NoteTypes.get(i));
+        for (int i = 0; i < NoteListenerHelper.instrumentSounds.size(); i++){
+            data.add(NoteListenerHelper.instrumentSounds.get(i).registeredName);
         }
 
 

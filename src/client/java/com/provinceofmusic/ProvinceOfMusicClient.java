@@ -37,7 +37,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	MusicYoinker musicYoinker = new MusicYoinker();
 	NoteReplacer noteReplacer = new NoteReplacer();
 
-	NoteListenerHelper noteListenerHelper = new NoteListenerHelper();
+	public static NoteListenerHelper noteListenerHelper = new NoteListenerHelper();
 
 	public static File recordedmusicdir;
 	public static File exportedmusicdir;
@@ -70,11 +70,11 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			musicYoinker.PassTime();
 			noteReplacer.PassTime();
-
+			noteListenerHelper.tick();
 		});
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-			MinecraftClient.getInstance().getSoundManager().registerListener(musicYoinker);
+
 		});
 
 		musicYoinker.main();
@@ -89,17 +89,11 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register(new POMPlayerDisconnectWorldListener());
 
 		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
-		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_L, "Province of Music"));
+		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "Province of Music"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			//while (NoteReplacer.replaceNoteBinding.wasPressed()) {
-			//	replaceMusic = !replaceMusic;
-			//	System.out.println("replaceMusic" + replaceMusic);
-			//}
+
 		});
-
-
-		//ConfigScreen.INSTANCE.load();
 	}
 
 	public void setupFiles(){
@@ -127,10 +121,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		if (!samplepacksdir.exists()){
 			samplepacksdir.mkdirs();
 		}
-
-		//recordedmusicdir = new File();
-
-		//System.out.println(ProvinceOfMusicClient.exportedmusicdir.getPath());
 	}
 
 	public void getConfigSettings() {
@@ -145,7 +135,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		} catch (IOException e) {
 			configSettings = new POMConfigObject();
 			setConfigSettings();
-			//throw new RuntimeException(e);
 		}
 	}
 
@@ -158,18 +147,9 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		try {
 			FileWriter fileWriter = new FileWriter(jsonTemp);
 			fileWriter.write(gson.toJson(configSettings));
-			//fileWriter.write("empy");
 			fileWriter.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	//public void ReloadConfig(){
-	//	ConfigScreen.INSTANCE.load();
-	//}
-
-	//public static ConfigScreen getConfig() {
-	//	return ConfigScreen.INSTANCE.getConfig();
-	//}
 }

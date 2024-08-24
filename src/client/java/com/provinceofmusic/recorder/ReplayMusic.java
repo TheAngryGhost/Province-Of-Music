@@ -1,5 +1,7 @@
 package com.provinceofmusic.recorder;
 
+import com.provinceofmusic.jukebox.InstrumentSound;
+import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvent;
@@ -9,32 +11,8 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class ReplayMusic {
-
-    //static int ticksSinceReset = 0;
-
-    //static int currentline = 0;
-    //int currenttick = 0;
-
     static Thread playThread;
     static boolean endMusic = false;
-    //public static void run(){
-//
-    //    if(playThread == null){
-    //        PlayMusic(new File("recorded-music/" + "2023-11-04_15-51-46.csv"));
-    //    }
-    //    else{
-    //        System.out.println("isn't null");
-    //        if(playThread.isAlive()){
-    //            //playThread.stop();
-    //            System.out.println("tried to stop");
-    //        }
-    //        else{
-    //            PlayMusic(new File("recorded-music/" + "2023-11-04_15-51-46.csv"));
-    //        }
-    //    }
-//
-//
-    //}
 
     public static void StopMusic(){
         if(playThread != null){
@@ -58,15 +36,11 @@ public class ReplayMusic {
 
         if(!endMusic){
         playThread = new Thread(){
-                //int ticksSinceReset = 0;
 
                 int currentline = 0;
-                //int currenttick = 0;
 
                 public void run() {
 
-                    //File f = new File("recorded-music/" + "2023-10-29_14-13-47.csv");
-                    //File f = new File("recorded-music/" + "2023-11-04_15-51-46.csv");
                     File f = new File(inputFile);
 
                     ArrayList<String> type = new ArrayList<>();
@@ -75,7 +49,6 @@ public class ReplayMusic {
                     ArrayList<String> volume = new ArrayList<>();
 
                     if (f.exists()) {
-                        //System.out.println("File exists.");
                         try {
                             BufferedReader reader = new BufferedReader(new FileReader(f));
                             String line;
@@ -97,58 +70,51 @@ public class ReplayMusic {
                         }
                     }
                     else {
-                        //System.out.println("File does not exist.");
                     }
 
-                    //f = new File("");
-
-
-                    //if(ticksSinceReset != Integer.parseInt(ticks.get(currentline))){
-                    //    ticksSinceReset++;
-                    //    System.out.println(ticksSinceReset);
-                    //}
-                    //else{
-                    //    ticksSinceReset = 0;
 
 
                     for(int i = 0; currentline < type.size(); i++){
 
+                        InstrumentSound instrumentSound = null;
+                        for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
+                            if(tempSound.registeredName.equals(type.get(currentline))){
+                                instrumentSound = tempSound;
+                            }
+                            else {
+                                for (String tempSound2 : tempSound.remaps) {
+                                    if(tempSound2.equals(type.get(currentline))){
+                                        instrumentSound = tempSound;
+                                    }
+                                }
+                            }
+                        }
+                        if(instrumentSound == null){
+                            return;
+                        }
+                        else{
+                        }
 
-                        //System.out.println(type.get(currentline) + " " + ticks.get(currentline) + " " + pitch.get(currentline) + " " + musicVolume.get(currentline));
-
-                        //Identifier NOTE_BLOCK_HARP_SOUND_ID = new Identifier(type.get(currentline));
                         Identifier NOTE_BLOCK_HARP_SOUND_ID = Identifier.of(type.get(currentline));
                         SoundEvent NOTE_BLOCK_HARP_SOUND_EVENT = SoundEvent.of(NOTE_BLOCK_HARP_SOUND_ID);
-                        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(NOTE_BLOCK_HARP_SOUND_EVENT, Float.parseFloat(pitch.get(currentline))));
-
-
-
-                        //currentline++;
-                        //}
-
-                        //if(currentline == type.size()){
-                        //    System.out.println("Uh oh");
-                        //}
+                        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(NOTE_BLOCK_HARP_SOUND_EVENT, Float.parseFloat(pitch.get(currentline)), Float.parseFloat(volume.get(currentline))));
 
                         currentline++;
 
 
                         if(currentline != type.size()){
-                            try {
-                                Thread.sleep((long)(((float)(Integer.parseInt(ticks.get(currentline)))) * 50));
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
+                            if((Integer.parseInt(ticks.get(currentline))) != 0){
+                                try {
+                                    Thread.sleep((long)(((float)(Integer.parseInt(ticks.get(currentline)))) * 50));
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         }
 
                         if(endMusic){
                             currentline = type.size();
                         }
-                        //}
-                        //}
-
-                        //i++;
-
                     }
                     endMusic = false;
                 }

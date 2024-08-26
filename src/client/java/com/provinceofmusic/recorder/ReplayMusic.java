@@ -1,7 +1,5 @@
 package com.provinceofmusic.recorder;
 
-import com.provinceofmusic.jukebox.InstrumentSound;
-import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvent;
@@ -16,12 +14,7 @@ public class ReplayMusic {
 
     public static void StopMusic(){
         if(playThread != null){
-            if(!playThread.isAlive()){
-                endMusic = false;
-            }
-            else {
-                endMusic = true;
-            }
+            endMusic = playThread.isAlive();
         }
     }
 
@@ -62,38 +55,13 @@ public class ReplayMusic {
                             }
                             reader.close();
                         }
-                        catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
                         catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     }
-                    else {
-                    }
-
 
 
                     for(int i = 0; currentline < type.size(); i++){
-
-                        InstrumentSound instrumentSound = null;
-                        for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
-                            if(tempSound.registeredName.equals(type.get(currentline))){
-                                instrumentSound = tempSound;
-                            }
-                            else {
-                                for (String tempSound2 : tempSound.remaps) {
-                                    if(tempSound2.equals(type.get(currentline))){
-                                        instrumentSound = tempSound;
-                                    }
-                                }
-                            }
-                        }
-                        if(instrumentSound == null){
-                            return;
-                        }
-                        else{
-                        }
 
                         Identifier NOTE_BLOCK_HARP_SOUND_ID = Identifier.of(type.get(currentline));
                         SoundEvent NOTE_BLOCK_HARP_SOUND_EVENT = SoundEvent.of(NOTE_BLOCK_HARP_SOUND_ID);

@@ -1,7 +1,7 @@
 package com.provinceofmusic.jukebox;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 public class InstrumentSound {
     public String registeredName;
@@ -24,9 +24,7 @@ public class InstrumentSound {
         this.registeredName = registeredName;
 
         ArrayList<String> temp = new ArrayList<>();
-        for (int i = 0; i < remaps.length; i++){
-            temp.add(remaps[i]);
-        }
+        Collections.addAll(temp, remaps);
         this.remaps = temp;
         this.transpose = transpose;
         this.exportChannel = exportChannel;

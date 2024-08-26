@@ -13,7 +13,6 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
-import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
@@ -23,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.BiConsumer;
 
 public class SamplePackEditor extends LightweightGuiDescription {
@@ -238,11 +239,19 @@ public class SamplePackEditor extends LightweightGuiDescription {
         //}
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
             if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name) || ProvinceOfMusicClient.configSettings.activeSamplePack.equals(namecache)){
-                //NoteReplacer.instruments = null;
+                NoteReplacer.interupt = true;
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
+                        NoteReplacer.instruments = thisPack.getInstruments(NoteReplacer.instruments);
+                        ProvinceOfMusicClient.setConfigSettings();
+                        NoteReplacer.interupt = false;
+                    }
+                };
+                Timer timer = new Timer(true);
+                timer.schedule(task, 300);
 
-                ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
-                NoteReplacer.instruments = thisPack.getInstruments(NoteReplacer.instruments);
-                ProvinceOfMusicClient.setConfigSettings();
             }
         }
     }

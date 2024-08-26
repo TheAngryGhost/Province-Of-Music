@@ -1,30 +1,15 @@
 package com.provinceofmusic.mixin.client;
 
-import com.google.common.collect.Maps;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.InstrumentSound;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.sound.SoundManager;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import net.minecraft.client.sound.*;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.Identifier;
-import org.objectweb.asm.Opcodes;
+import net.minecraft.client.sound.SoundSystem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Map;
 
 
 @Mixin(SoundSystem.class)

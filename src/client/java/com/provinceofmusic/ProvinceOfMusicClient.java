@@ -4,12 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.listeners.NoteListenerHelper;
-import com.provinceofmusic.recorder.MusicYoinker;
+import com.provinceofmusic.recorder.MusicRecorder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
@@ -26,7 +25,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("provinceofmusic");
 
-	MusicYoinker musicYoinker = new MusicYoinker();
+	MusicRecorder musicRecorder = new MusicRecorder();
 	NoteReplacer noteReplacer = new NoteReplacer();
 
 	public static NoteListenerHelper noteListenerHelper = new NoteListenerHelper();
@@ -39,28 +38,16 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static POMConfigObject configSettings;
 
-	public static boolean replaceMusic = false;
-
-
-	//public static ArrayList<File> deletedFiles = new ArrayList<>();
-
-
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-		//LOGGER.info("Hello Fabric world!");
-
-
-
 		setupFiles();
 		getConfigSettings();
 		setupListeners();
-
     }
 
 	public void setupListeners(){
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
-			musicYoinker.PassTime();
+			musicRecorder.PassTime();
 			noteReplacer.PassTime();
 			noteListenerHelper.tick();
 		});
@@ -69,14 +56,14 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		});
 
-		musicYoinker.main();
+		musicRecorder.main();
 		noteReplacer.main();
 		noteReplacer.RunSetup();
 
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
 		});
 
-		musicYoinker.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
+		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
 		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "Province of Music"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {

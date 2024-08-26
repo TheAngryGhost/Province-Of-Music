@@ -30,9 +30,7 @@ public class Instrument {
             receiver = synth.getReceiver();
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
-        } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (InvalidMidiDataException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -53,9 +51,7 @@ public class Instrument {
             receiver = synth.getReceiver();
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
-        } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (InvalidMidiDataException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -78,9 +74,7 @@ public class Instrument {
             receiver = synth.getReceiver();
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
-        } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (InvalidMidiDataException | IOException e) {
             throw new RuntimeException(e);
         }
     }

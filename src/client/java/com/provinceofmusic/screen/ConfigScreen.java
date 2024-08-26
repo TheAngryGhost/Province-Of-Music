@@ -12,6 +12,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class ConfigScreen extends LightweightGuiDescription {
     public ConfigScreen() {
         WGridPanel root = new WGridPanel();
@@ -34,7 +37,6 @@ public class ConfigScreen extends LightweightGuiDescription {
         WSlider slider = new WSlider(0, 100, Axis.HORIZONTAL);
         slider.setValue((int) (ProvinceOfMusicClient.configSettings.volume * 100));
         NoteReplacer.musicVolume = slider.getValue() / 100f;
-        //slider.getValue()
         root.add(slider, 0, 3+2, 5, 1);
 
         Runnable samplePackRunnable = () -> {
@@ -60,7 +62,21 @@ public class ConfigScreen extends LightweightGuiDescription {
             ProvinceOfMusicClient.setConfigSettings();
 
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
-                NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.instruments);
+                NoteReplacer.interupt = true;
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.instruments);
+                        NoteReplacer.interupt = false;
+                    }
+                };
+
+                Timer timer = new Timer(true);
+                timer.schedule(task, 300);
+
+
+
+
             }
 
 

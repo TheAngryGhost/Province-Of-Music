@@ -14,7 +14,6 @@ import java.util.List;
 public class ConvertToMidi {
 
     public static void convert(File inputFile, String outputPath){
-        File f = inputFile;
 
         ArrayList<String> types = new ArrayList<>();
         ArrayList<String> ticks = new ArrayList<>();
@@ -22,7 +21,7 @@ public class ConvertToMidi {
         ArrayList<String> volumes = new ArrayList<>();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(f));
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",");
@@ -31,8 +30,6 @@ public class ConvertToMidi {
                 pitches.add(values[2]);
                 volumes.add(values[3]);
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -52,38 +49,17 @@ public class ConvertToMidi {
         int currentTick = 0;
         for(int i = 0; i < types.size(); i++){
             String noteType = types.get(i);
-            int noteTick = Integer.valueOf(ticks.get(i));
-            float notePitch = Float.valueOf(pitches.get(i));
-            float noteVolume = Float.valueOf(volumes.get(i));
+            int noteTick = Integer.parseInt(ticks.get(i));
+            float notePitch = Float.parseFloat(pitches.get(i));
+            float noteVolume = Float.parseFloat(volumes.get(i));
 
-
-            int instrumentSoundIndex = -1;
-            InstrumentSound instrumentSound = null;
-            for(int j = 0; j < NoteListenerHelper.instrumentSounds.size(); j++){
-                InstrumentSound tempSound = NoteListenerHelper.instrumentSounds.get(j);
-                if(tempSound.registeredName.equals(noteType)){
-                    instrumentSound = tempSound;
-                    instrumentSoundIndex = j;
-                }
-                else {
-                    for (String tempSound2 : tempSound.remaps) {
-                        if(tempSound2.equals(noteType)){
-                            instrumentSound = tempSound;
-                            instrumentSoundIndex = j;
-                        }
-                    }
-                }
-            }
-            if(instrumentSound == null){
-                return;
-            }
-            else{
-            }
+            InstrumentSound instrumentSound = NoteListenerHelper.SoundIdToInstrumentSound(noteType);
 
             currentTick += noteTick;
 
-            int insertNoteChannel = instrumentSoundIndex;
-            int insertNotePitch = (int) (((((log2(notePitch) * 12f) + 66.5f) - 1) + 0.5f) + instrumentSound.transpose);
+            assert instrumentSound != null;
+            int insertNoteChannel = instrumentSound.exportChannel;
+            int insertNotePitch = (int) NoteListenerHelper.convertPitchMinecraftToMidi(notePitch, instrumentSound);
             int insertNoteVelocity =  (int) (noteVolume * 100f);
             int insertNoteTick = currentTick * (240 / 6);
             int insertNoteDuration = 120;
@@ -91,7 +67,7 @@ public class ConvertToMidi {
             noteTrack.insertNote(insertNoteChannel, insertNotePitch, insertNoteVelocity, insertNoteTick, insertNoteDuration);
         }
 
-        List<MidiTrack> tracks = new ArrayList<MidiTrack>();
+        List<MidiTrack> tracks = new ArrayList<>();
         tracks.add(tempoTrack);
         tracks.add(noteTrack);
 
@@ -104,14 +80,7 @@ public class ConvertToMidi {
         }
         catch(IOException e)
         {
-            System.err.println(e);
+            throw new RuntimeException(e);
         }
-    }
-
-    public static float log2(float N)
-    {
-        float result = (float) (Math.log(N) / Math.log(2));
-
-        return result;
     }
 }

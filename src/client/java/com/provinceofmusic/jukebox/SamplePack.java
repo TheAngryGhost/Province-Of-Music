@@ -3,13 +3,11 @@ package com.provinceofmusic.jukebox;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.provinceofmusic.ProvinceOfMusicClient;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
@@ -18,14 +16,14 @@ public class SamplePack {
     public String author = "None Listed";
     public ArrayList<InstrumentDef> instrumentDefs = new ArrayList<>();
 
-    public ArrayList<Instrument> getInstruments(){
-        ArrayList<Instrument> out = new ArrayList<>();
-        for(int i = 0; i < instrumentDefs.size(); i++){
-            Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDefs.get(i).dir), instrumentDefs.get(i).noteType, instrumentDefs.get(i).transpose, instrumentDefs.get(i).volume, instrumentDefs.get(i).singlePitch);
-            out.add(temp);
-        }
-        return out;
-    }
+    //public ArrayList<Instrument> getInstruments(){
+    //    ArrayList<Instrument> out = new ArrayList<>();
+    //    for (InstrumentDef instrumentDef : instrumentDefs) {
+    //        Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDef.dir), instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
+    //        out.add(temp);
+    //    }
+    //    return out;
+    //}
 
     public ArrayList<Instrument> getInstruments(ArrayList<Instrument> out){
         if(out == null){
@@ -34,9 +32,12 @@ public class SamplePack {
         else{
             out.clear();
         }
-        for(int i = 0; i < instrumentDefs.size(); i++){
-            Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDefs.get(i).dir), instrumentDefs.get(i).noteType, instrumentDefs.get(i).transpose, instrumentDefs.get(i).volume, instrumentDefs.get(i).singlePitch);
-            out.add(temp);
+        for (InstrumentDef instrumentDef : instrumentDefs) {
+            File file = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDef.dir);
+            if(file.exists()){
+                Instrument temp = new Instrument(file, instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
+                out.add(temp);
+            }
         }
         return out;
     }
@@ -58,19 +59,6 @@ public class SamplePack {
             throw new RuntimeException(e);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         File jsonTemp = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + name +".json");
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting().serializeNulls();
@@ -90,7 +78,7 @@ public class SamplePack {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting().serializeNulls();
         Gson gson = builder.create();
-        SamplePack out = null;
+        SamplePack out;
         try {
             out = gson.fromJson(Files.readString(jsonTemp.toPath(), Charset.defaultCharset()) + "", SamplePack.class);
         } catch (IOException e) {
@@ -130,6 +118,7 @@ public class SamplePack {
 
         if(in.isDirectory()){
             File[] insideFiles = in.listFiles();
+            assert insideFiles != null;
             for(File f : insideFiles){
                 ArrayList<File> temp = findAllFiles(f);
                 out.addAll(temp);
@@ -166,9 +155,10 @@ public class SamplePack {
     public ArrayList<File> getInstrumentFiles(){
         File folderTemp2 = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles");
         ArrayList<File> tempFiles = new ArrayList<>();
-        int fileCount = folderTemp2.listFiles().length;
-        for(int i = 0; i < fileCount; i++){
-            tempFiles.add(folderTemp2.listFiles()[i]);
+        File[] files = folderTemp2.listFiles();
+        assert files != null;
+        for (File file : files) {
+            tempFiles.add(file);
         }
         return tempFiles;
     }

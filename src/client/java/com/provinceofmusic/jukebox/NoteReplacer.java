@@ -4,12 +4,11 @@ import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.listeners.NoteListener;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 
-import javax.sound.midi.*;
-import java.time.Instant;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,6 +22,8 @@ public class NoteReplacer implements NoteListener {
     public static boolean replaceMusic = true;
 
     public static float musicVolume = 0.5f;
+
+    public static boolean interupt = false;
     
     @Override
     public void onNotePlayed(InstrumentSound instrument, int ticksPassed, float pitch, int volume) {
@@ -35,16 +36,8 @@ public class NoteReplacer implements NoteListener {
 
         //System.out.println("Note Played " + "Ins: " + instrument.registeredName + " Pitch: " + pitch + " Volume: " + volume + " Time: " + Instant.now());
 
-        final int newVolume;
+        final int newVolume = Math.min(volume, 100);
 
-
-
-        if(volume > 100){
-            newVolume = 100;
-        }
-        else{
-            newVolume = volume;
-        }
 
         int newPitch = (int)pitch;
         float newPitchBend = pitch - newPitch;
@@ -53,29 +46,27 @@ public class NoteReplacer implements NoteListener {
             @Override
             public void run() {
                 try {
-                    ShortMessage noteOn = new ShortMessage();
-                    noteOn.setMessage(ShortMessage.NOTE_ON, 0, newPitch, newVolume);
+                    if(!interupt){
+                        ShortMessage noteOn = new ShortMessage();
+                        noteOn.setMessage(ShortMessage.NOTE_ON, 0, newPitch, newVolume);
 
-                    // Pitch bend value for one semitone up
-                    int pitchBendValue = (int)(8192 + 4096 * newPitchBend); // Center (8192) + One semitone (4096)
-                    int lsb = pitchBendValue & 0x7F; // Least significant 7 bits
-                    int msb = (pitchBendValue >> 7) & 0x7F; // Most significant 7 bits
+                        // Pitch bend value for one semitone up
+                        int pitchBendValue = (int)(8192 + 4096 * newPitchBend); // Center (8192) + One semitone (4096)
+                        int lsb = pitchBendValue & 0x7F; // Least significant 7 bits
+                        int msb = (pitchBendValue >> 7) & 0x7F; // Most significant 7 bits
 
-                    ShortMessage pitchBend = new ShortMessage();
-                    pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
-                    for(int j = 0; j < instruments.size(); j++){
-                        Instrument tempInstrument = instruments.get(j);
-
-
-                        if(instrument.registeredName.equals(tempInstrument.noteType)){
-                            if(tempInstrument.singlePitch){
-                                noteOn.setMessage(ShortMessage.NOTE_ON, 0, 60 + tempInstrument.transpose, (int) ((float)(newVolume) * ((Math.log10(0.9*musicVolume + 0.1)) + 1) * tempInstrument.volume));
+                        ShortMessage pitchBend = new ShortMessage();
+                        pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
+                        for (Instrument tempInstrument : instruments) {
+                            if (instrument.registeredName.equals(tempInstrument.noteType)) {
+                                if (tempInstrument.singlePitch) {
+                                    noteOn.setMessage(ShortMessage.NOTE_ON, 0, 60 + tempInstrument.transpose, (int) ((float) (newVolume) * ((Math.log10(0.9 * musicVolume + 0.1)) + 1) * tempInstrument.volume));
+                                } else {
+                                    noteOn.setMessage(ShortMessage.NOTE_ON, 0, newPitch + tempInstrument.transpose, (int) ((float) (newVolume) * ((Math.log10(0.9 * musicVolume + 0.1)) + 1) * tempInstrument.volume));
+                                }
+                                tempInstrument.receiver.send(noteOn, -1);
+                                tempInstrument.receiver.send(pitchBend, -1);
                             }
-                            else{
-                                noteOn.setMessage(ShortMessage.NOTE_ON, 0, newPitch + tempInstrument.transpose, (int) ((float)(newVolume) * ((Math.log10(0.9*musicVolume + 0.1)) + 1) * tempInstrument.volume));
-                            }
-                            tempInstrument.receiver.send(noteOn, -1);
-                            tempInstrument.receiver.send(pitchBend, -1);
                         }
                     }
 
@@ -95,15 +86,13 @@ public class NoteReplacer implements NoteListener {
                 try {
                     ShortMessage noteOff = new ShortMessage();
                     noteOff.setMessage(ShortMessage.NOTE_OFF, 0, newPitch, 0);
-                    for(int j = 0; j < instruments.size(); j++){
-                        Instrument tempInstrument = instruments.get(j);
-                        if(tempInstrument.singlePitch){
-                            if(instrument.registeredName.equals(tempInstrument.noteType)){
+                    for (Instrument tempInstrument : instruments) {
+                        if (tempInstrument.singlePitch) {
+                            if (instrument.registeredName.equals(tempInstrument.noteType)) {
                                 noteOff.setMessage(ShortMessage.NOTE_ON, 0, 60 + tempInstrument.transpose, 0);
                             }
-                        }
-                        else{
-                            if(instrument.registeredName.equals(instruments.get(j).noteType)){
+                        } else {
+                            if (instrument.registeredName.equals(tempInstrument.noteType)) {
                                 noteOff.setMessage(ShortMessage.NOTE_ON, 0, newPitch + tempInstrument.transpose, 0);
                             }
                         }
@@ -129,6 +118,7 @@ public class NoteReplacer implements NoteListener {
             while (replaceNoteBinding.wasPressed()) {
 
                 replaceMusic = !replaceMusic;
+                assert client.player != null;
                 if (replaceMusic) {
                     ProvinceOfMusicClient.LOGGER.info("Playing better music");
                     client.player.sendMessage(Text.of("Playing better music"), false);

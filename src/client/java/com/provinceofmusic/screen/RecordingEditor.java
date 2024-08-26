@@ -24,7 +24,8 @@ public class RecordingEditor extends LightweightGuiDescription {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
         //if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-        root.setSize(256, 240);
+        //root.setSize(256, 240);
+        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         //} else{
         //root.setSize(256, 400);
         //}

@@ -39,18 +39,11 @@ public class SamplePackEditor extends LightweightGuiDescription {
     WTextField authorField;
     public SamplePackEditor(SamplePack inPack){
         thisPack = inPack;
-        //change to list panel
-
-        //MinecraftClient.getInstance().options.getGuiScale().getValue()
 
 
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.setSize(256, 240);
-        } else{
-            root.setSize(256, 400);
-        }
+        root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
 
@@ -58,7 +51,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0x000000);
         root.add(title, 0, 0, 9, 3);
 
-        WButton deletePackButton = new WButton(Text.literal("Delete Pack"));
+        WButton deletePackButton = new WButton(Text.literal("Delete Pack").withColor(0xFF0000).styled(style -> style.withBold(true)));
         Runnable runnable3 = () -> {
             SaveChanges();
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
@@ -79,7 +72,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         Runnable runnable4 = () -> {
             BackOutToPreviousScreen();
         };
-        root.add(backButton, 4, 3, 3,1);
+        root.add(backButton, 1, 3, 3,1);
         backButton.setOnClick(runnable4);
 
         WButton changeImageButton = new WButton(Text.literal("Change Img"));
@@ -110,7 +103,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
 
         };
-        root.add(changeImageButton, 4, 4, 4,1);
+        root.add(changeImageButton, 4, 3, 4,1);
         changeImageButton.setOnClick(runnable5);
 
 
@@ -154,7 +147,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
             instrumentWidgets.add(destination);
         };
         packList = new WListPanel(data, InstrumentWidget::new, configurator);
-        packList.setListItemHeight(72-4);
+        packList.setListItemHeight(72-6);
 
 
 
@@ -167,12 +160,12 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
 
 
-        WButton saveChangesButton = new WButton(Text.literal("Save Changes"));
+        WButton saveChangesButton = new WButton(Text.literal("Save Changes").styled(style -> style.withBold(true)));
         Runnable runnable = () -> {
             SaveChanges();
             //BackOutToPreviousScreen
             //MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
-            WLabel savedPopup = new WLabel(Text.literal("Changes Saved"), 0x000000);
+            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
             root.add(savedPopup, 8, 4, 2, 1);
             Thread t = new Thread(() -> {
                 try {
@@ -200,7 +193,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
         };
         addNewButton.setOnClick(runnable2);
-        root.add(addNewButton, 1,3, 1, 1);
+        root.add(addNewButton, 0,3, 1, 1);
 
     }
 

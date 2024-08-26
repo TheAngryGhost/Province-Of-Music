@@ -27,7 +27,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
     public SamplePackConfig() {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        root.setSize(256, 240);
+        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
 

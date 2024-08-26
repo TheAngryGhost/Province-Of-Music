@@ -1,5 +1,6 @@
 package com.provinceofmusic.screen;
 
+import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.InstrumentDef;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.listeners.NoteListenerHelper;
@@ -25,11 +26,12 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
     public NoteTypePickerScreen(){
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.setSize(256, 240);
-        } else{
-            root.setSize(256, 400);
-        }
+        //if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
+        //    root.setSize(256, 240);
+        //} else{
+        //    root.setSize(256, 400);
+        //}
+        root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
         WLabel title = new WLabel(Text.literal("Select Type"), 0x000000);

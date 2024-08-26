@@ -9,6 +9,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
@@ -38,6 +39,8 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static POMConfigObject configSettings;
 
+	public static int guiSize = 1;
+
 	@Override
 	public void onInitializeClient() {
 		setupFiles();
@@ -50,6 +53,13 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 			musicRecorder.PassTime();
 			noteReplacer.PassTime();
 			noteListenerHelper.tick();
+			if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 0){
+				guiSize = 3;
+			}
+			else{
+				guiSize = MinecraftClient.getInstance().options.getGuiScale().getValue();
+			}
+
 		});
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {

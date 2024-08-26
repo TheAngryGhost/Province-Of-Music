@@ -19,7 +19,7 @@ public class ConfigScreen extends LightweightGuiDescription {
     public ConfigScreen() {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        root.setSize(256, 240);
+        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
         //WSprite icon = new WSprite(Identifier.of("minecraft","textures/item/redstone.png"));
@@ -57,8 +57,6 @@ public class ConfigScreen extends LightweightGuiDescription {
 
 
         Runnable runnable = () -> {
-            //System.err.println("Button Pressed");
-
             ProvinceOfMusicClient.setConfigSettings();
 
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
@@ -81,7 +79,7 @@ public class ConfigScreen extends LightweightGuiDescription {
 
 
 
-            WLabel savedPopup = new WLabel(Text.literal("Changes Saved"), 0x000000);
+            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
             root.add(savedPopup, 0, 10, 2, 1);
             //MinecraftClient.getInstance().setScreen(new CottonClientScreen(ProvinceOfMusicClient.RootConfigScreen));
             NoteReplacer.musicVolume = slider.getValue() / 100f;
@@ -100,7 +98,7 @@ public class ConfigScreen extends LightweightGuiDescription {
 
         };
 
-        WButton saveButton = new WButton(Text.literal("Save Changes"));
+        WButton saveButton = new WButton(Text.literal("Save Changes").styled(style -> style.withBold(true)));
         saveButton.setOnClick(runnable);
         root.add(saveButton, 0, 9, 7, 1);
 

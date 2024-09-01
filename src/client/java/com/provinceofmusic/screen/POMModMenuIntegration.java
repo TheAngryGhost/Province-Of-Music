@@ -3,6 +3,7 @@ package com.provinceofmusic.screen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
+import net.minecraft.client.MinecraftClient;
 
 //import static com.provinceofmusic.ProvinceOfMusicClient.getConfig;
 

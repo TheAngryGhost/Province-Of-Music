@@ -68,8 +68,8 @@ public class SamplePackConfig extends LightweightGuiDescription {
 
 
 
-        WButton openFolderButton = new WButton(Text.literal("Open Folder"));
-        root.add(openFolderButton, 9, 1, 4, 1);
+        WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
+        root.add(openFolderButton, 9, 1, 5, 1);
         Runnable openFolderButtonRunnable = () -> {
             try {
                 Desktop.getDesktop().open(ProvinceOfMusicClient.samplepacksdir.getAbsoluteFile());
@@ -90,8 +90,8 @@ public class SamplePackConfig extends LightweightGuiDescription {
 
 
 
-        WButton refreshButton = new WButton(Text.literal("Refresh List"));
-        root.add(refreshButton, 9, 2, 4, 1);
+        WButton refreshButton = new WButton(Text.literal("Refresh List ⟳"));
+        root.add(refreshButton, 9, 2, 5, 1);
         Runnable refreshButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
         };
@@ -107,7 +107,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
 
 
 
-        WButton backButton = new WButton(Text.literal("Back"));
+        WButton backButton = new WButton(Text.literal("Back ↶"));
         root.add(backButton, 0, 4, 3, 1);
         Runnable backButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));

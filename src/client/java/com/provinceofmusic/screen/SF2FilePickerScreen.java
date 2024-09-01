@@ -36,6 +36,13 @@ public class SF2FilePickerScreen  extends LightweightGuiDescription {
         WLabel title = new WLabel(Text.literal("Select Type"), 0x000000);
         root.add(title, 0, 0, 9, 3);
 
+        WButton backButton = new WButton(Text.literal("Back ↶"));
+        Runnable runnable4 = () -> {
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
+        };
+        root.add(backButton, 9, 0, 3,1);
+        backButton.setOnClick(runnable4);
+
         ArrayList<File> data = inScreen.thisPack.getInstrumentFiles();
 
         //ArrayList<String> data = new ArrayList<>();

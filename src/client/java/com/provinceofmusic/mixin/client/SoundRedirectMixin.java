@@ -16,16 +16,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SoundRedirectMixin{
     @Inject(method = "play", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundInstance;getVolume()F"), cancellable = true)
     public void onPlaySound(SoundInstance sound, CallbackInfo info) {
-        if(NoteReplacer.replaceMusic){
-            for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
-                if(tempSound.registeredName.equals(sound.getId().toString())){
-                    ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
+        for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
+            if(tempSound.registeredName.equals(sound.getId().toString())){
+                ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
+                if(NoteReplacer.replaceMusic) {
                     info.cancel();
                 }
-                else {
-                    for (String tempSound2 : tempSound.remaps) {
-                        if(tempSound2.equals(sound.getId().toString())){
-                            ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
+            }
+            else {
+                for (String tempSound2 : tempSound.remaps) {
+                    if(tempSound2.equals(sound.getId().toString())){
+                        ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
+                        if(NoteReplacer.replaceMusic) {
                             info.cancel();
                         }
                     }

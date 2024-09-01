@@ -4,6 +4,7 @@ import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.InstrumentDef;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.listeners.NoteListenerHelper;
+import com.provinceofmusic.recorder.ReplayMusic;
 import com.provinceofmusic.ui.InstrumentWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -36,6 +37,13 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
 
         WLabel title = new WLabel(Text.literal("Select Type"), 0x000000);
         root.add(title, 0, 0, 9, 3);
+
+        WButton backButton = new WButton(Text.literal("Back ↶"));
+        Runnable runnable4 = () -> {
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
+        };
+        root.add(backButton, 9, 0, 3,1);
+        backButton.setOnClick(runnable4);
 
         ArrayList<String> data = new ArrayList<>();
         for (int i = 0; i < NoteListenerHelper.instrumentSounds.size(); i++){

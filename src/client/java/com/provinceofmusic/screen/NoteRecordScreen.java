@@ -20,29 +20,26 @@ import java.util.function.BiConsumer;
 public class NoteRecordScreen extends LightweightGuiDescription {
 
     public NoteRecordScreen(){
+        //base panel
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        //if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            //root.setSize(256, 240);
-        //} else{
-            //root.setSize(256, 400);
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-
-
+        //title label
         WLabel title = new WLabel(Text.literal("Recording Editor"), 0x000000);
         root.add(title, 0, 0, 9, 3);
 
-        WButton backButton = new WButton(Text.literal("Back"));
+        WButton backButton = new WButton(Text.literal("Back ↶"));
         Runnable runnable4 = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
         };
         root.add(backButton, 6, 0, 3,1);
         backButton.setOnClick(runnable4);
+        //backButton.isHovered()
 
-        WButton openFolderButton = new WButton(Text.literal("Open Folder"));
-        root.add(openFolderButton, 10, 0, 4, 1);
+        WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
+        root.add(openFolderButton, 10, 0, 5, 1);
         Runnable openFolderButtonRunnable = () -> {
             try {
                 Desktop.getDesktop().open(ProvinceOfMusicClient.recordedmusicdir.getAbsoluteFile());

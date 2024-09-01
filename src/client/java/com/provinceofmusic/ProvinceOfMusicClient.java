@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.listeners.NoteListenerHelper;
+import com.provinceofmusic.recorder.DebugMode;
 import com.provinceofmusic.recorder.MusicRecorder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -28,6 +29,8 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	MusicRecorder musicRecorder = new MusicRecorder();
 	NoteReplacer noteReplacer = new NoteReplacer();
+
+	DebugMode debugMode = new DebugMode();
 
 	public static NoteListenerHelper noteListenerHelper = new NoteListenerHelper();
 

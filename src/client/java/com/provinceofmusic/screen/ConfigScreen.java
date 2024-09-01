@@ -3,6 +3,8 @@ package com.provinceofmusic.screen;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.jukebox.SamplePack;
+import com.provinceofmusic.ui.POMTooltipManager;
+import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
@@ -19,14 +21,11 @@ public class ConfigScreen extends LightweightGuiDescription {
     public ConfigScreen() {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 250 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        //WSprite icon = new WSprite(Identifier.of("minecraft","textures/item/redstone.png"));
         WLabel title = new WLabel(Text.literal("Province of Music"), 0x000000);
         root.add(title, 0, 0, 9, 3);
-
-        //new Identifier(FabricLoader.getInstance().getConfigDir().resolve("splits.yml"))
 
         WSprite icon = new WSprite(Identifier.of("provinceofmusic","icon.png"));
         root.add(icon, 0, 1, 3, 3);
@@ -56,6 +55,8 @@ public class ConfigScreen extends LightweightGuiDescription {
         button2.setOnClick(recordingRunnable);
 
 
+
+
         Runnable runnable = () -> {
             ProvinceOfMusicClient.setConfigSettings();
 
@@ -77,11 +78,8 @@ public class ConfigScreen extends LightweightGuiDescription {
 
             }
 
-
-
             WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
             root.add(savedPopup, 0, 10, 2, 1);
-            //MinecraftClient.getInstance().setScreen(new CottonClientScreen(ProvinceOfMusicClient.RootConfigScreen));
             NoteReplacer.musicVolume = slider.getValue() / 100f;
             Thread t = new Thread(() -> {
                 try {
@@ -98,16 +96,9 @@ public class ConfigScreen extends LightweightGuiDescription {
 
         };
 
-        WButton saveButton = new WButton(Text.literal("Save Changes").styled(style -> style.withBold(true)));
+        WButton saveButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
         saveButton.setOnClick(runnable);
         root.add(saveButton, 0, 9, 7, 1);
-
-
-        //WButton button = new WButton(Text.literal("gui.examplemod.examplebutton"));
-        //root.add(button, 0, 3, 4, 1);
-
-        //WLabel nameLabel = new WLabel(Text.literal("Test"), 0xFFFFFF);
-        //root.add(nameLabel, 0, 4, 2, 1);
 
         root.validate(this);
     }

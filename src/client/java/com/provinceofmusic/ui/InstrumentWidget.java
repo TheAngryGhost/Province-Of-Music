@@ -81,27 +81,32 @@ public class InstrumentWidget extends WPlainPanel {
         };
         noteTypeSwitch.setOnClick(runnable2);
 
-        if(instrument != null){
-            if(instrument.singlePitch){
-                toggleButton = new WToggleButton(Text.of("☑"));
-            }
-            else{
-                toggleButton = new WToggleButton(Text.of("☐"));
-            }
-            toggleButton.setToggle(instrument.singlePitch);
-        }
-        else{
-            toggleButton = new WToggleButton(Text.of("☐"));
-            System.out.println("hello world");
-        }
-        this.add(toggleButton, 10 + 50 + 50 + 15 + 50-3 - 10 - 3 + 20, 5 + 25 + 5 + 5 + 5, 50, 10);
+
+        WLabel singlePitchLabel = new WLabel(Text.literal("single pitch"));
+        this.add(singlePitchLabel, 10 + 50 + 50 + 15 + 50-3 + 30 + 30, 5 + 25 + 5, 10, 10);
+
+
+        toggleButton = new WToggleButton();
+        //if(instrument != null){
+            //if(instrument.singlePitch){
+            //    toggleButton = new WToggleButton(Text.of("☑"));
+            //}
+            //else{
+            //    toggleButton = new WToggleButton(Text.of("☐"));
+            //}
+            //toggleButton.setToggle(instrument.singlePitch);
+        //}
+        //else{
+            //toggleButton = new WToggleButton(Text.of("☐"));
+        //}
+        this.add(toggleButton, 10 + 50 + 50 + 15 + 50-3 - 10 - 3 + 20 + 40 + 20, 5 + 25 + 5 + 5 + 5, 50, 10);
         toggleButton.setOnToggle(aBoolean -> {
-            if(toggleButton.getToggle()){
-                toggleButton.setLabel(Text.of("☑"));
-            }
-            else{
-                toggleButton.setLabel(Text.of("☐"));
-            }
+            //if(toggleButton.getToggle()){
+            //    toggleButton.setLabel(Text.of("☑"));
+            //}
+            //else{
+            //    toggleButton.setLabel(Text.of("☐"));
+            //}
         });
         //TooltipBuilder t = new TooltipBuilder();
         //t.add(Text.of("Hello"));
@@ -131,7 +136,7 @@ public class InstrumentWidget extends WPlainPanel {
 
         };
         deleteInstrument.setOnClick(runnable3);
-        this.add(deleteInstrument, 10 + 50 + 50 + 15 + 50 + 30 + 10 + 5 + 5, 0, 10, 10);
+        this.add(deleteInstrument, 10 + 50 + 50 + 115 + 50 + 50 - 10, 0, 10, 10);
 
 
     }

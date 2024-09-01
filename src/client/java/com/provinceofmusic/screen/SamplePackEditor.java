@@ -5,6 +5,7 @@ import com.provinceofmusic.jukebox.InstrumentDef;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.jukebox.SamplePack;
 import com.provinceofmusic.ui.InstrumentWidget;
+import com.provinceofmusic.ui.POMTooltipManager;
 import com.provinceofmusic.ui.SamplePackWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -43,7 +44,8 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
+
+        root.setSize(256 + 100, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
 
@@ -68,7 +70,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         deletePackButton.setOnClick(runnable3);
 
 
-        WButton backButton = new WButton(Text.literal("Back"));
+        WButton backButton = new WButton(Text.literal("Back ↶"));
         Runnable runnable4 = () -> {
             BackOutToPreviousScreen();
         };
@@ -139,10 +141,10 @@ public class SamplePackEditor extends LightweightGuiDescription {
             destination.index = data.indexOf(s);
             destination.toggleButton.setToggle(s.singlePitch);
             if(s.singlePitch){
-                destination.toggleButton.setLabel(Text.of("☑"));
+                //destination.toggleButton.setLabel(Text.of("☑"));
             }
             else{
-                destination.toggleButton.setLabel(Text.of("☐"));
+                //destination.toggleButton.setLabel(Text.of("☐"));
             }
             instrumentWidgets.add(destination);
         };
@@ -151,22 +153,23 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
 
 
+
         if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.add(packList, 0, 4, 14, 8);
+            root.add(packList, 0, 4, 14 + 5, 8);
         } else{
-            root.add(packList, 0, 5, 14, 17);
+            root.add(packList, 0, 5, 14 + 5, 17);
         }
 
 
 
 
-        WButton saveChangesButton = new WButton(Text.literal("Save Changes").styled(style -> style.withBold(true)));
+        WButton saveChangesButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
         Runnable runnable = () -> {
             SaveChanges();
             //BackOutToPreviousScreen
             //MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
             WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
-            root.add(savedPopup, 8, 4, 2, 1);
+            root.add(savedPopup, 13, 2, 2, 1);
             Thread t = new Thread(() -> {
                 try {
                     Thread.sleep(1000);
@@ -178,7 +181,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
             t.start();
         };
         saveChangesButton.setOnClick(runnable);
-        root.add(saveChangesButton, 8,3, 5, 1);
+        root.add(saveChangesButton, 8,3, 6, 1);
 
 
 
@@ -194,7 +197,6 @@ public class SamplePackEditor extends LightweightGuiDescription {
         };
         addNewButton.setOnClick(runnable2);
         root.add(addNewButton, 0,3, 1, 1);
-
     }
 
     public void copyChangesToCache() {

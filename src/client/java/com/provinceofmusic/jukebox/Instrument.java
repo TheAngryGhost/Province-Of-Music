@@ -15,6 +15,8 @@ public class Instrument {
 
     public boolean singlePitch = false;
 
+    public int channel = 0;
+
     public Instrument(File insFile, String noteType) {
         try{
             Synthesizer synth;
@@ -78,4 +80,12 @@ public class Instrument {
             throw new RuntimeException(e);
         }
     }
+
+    public void incrementChannel(){
+        channel++;
+        if(channel > 8 - 1){
+            channel = 0;
+        }
+    }
+
 }

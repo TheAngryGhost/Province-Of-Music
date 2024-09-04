@@ -30,81 +30,86 @@ public class NoteReplacer implements NoteListener {
         if (!replaceMusic) return;
 
         playMusicFrame(instrument, pitch, volume);
+
     }
 
-    public static void playMusicFrame(InstrumentSound instrument, float pitch, int volume){
+    public static void playMusicFrame(InstrumentSound instrumentSound, float pitch, int volume){
+        //this function is written like this to produce the least amount of TimerTasks possible
 
-        //System.out.println("Note Played " + "Ins: " + instrument.registeredName + " Pitch: " + pitch + " Volume: " + volume + " Time: " + Instant.now());
+        ArrayList<Instrument> instrumentCache = new ArrayList<>();
+        ArrayList<Integer> channelCache = new ArrayList<>();
 
-        final int newVolume = Math.min(volume, 100);
+        if(!interupt){
+            for (Instrument tempInstrument : instruments) {
+                if (instrumentSound.registeredName.equals(tempInstrument.noteType)) {
+                    instrumentCache.add(tempInstrument);
 
+                    final int newVolume = Math.min(volume, 100);
 
-        int newPitch = (int)pitch;
-        float newPitchBend = pitch - newPitch;
+                    float newPitchBend = pitch - (int)pitch;
 
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    if(!interupt){
-                        ShortMessage noteOn = new ShortMessage();
-                        noteOn.setMessage(ShortMessage.NOTE_ON, 0, newPitch, newVolume);
+                    int channel = tempInstrument.channel;
+                    channelCache.add(channel);
 
-                        // Pitch bend value for one semitone up
-                        int pitchBendValue = (int)(8192 + 4096 * newPitchBend); // Center (8192) + One semitone (4096)
-                        int lsb = pitchBendValue & 0x7F; // Least significant 7 bits
-                        int msb = (pitchBendValue >> 7) & 0x7F; // Most significant 7 bits
+                    int pitchBendValue = (int)(8192 + 4096 * newPitchBend); // Center (8192) + One semitone (4096)
+                    int lsb = pitchBendValue & 0x7F; // Least significant 7 bits
+                    int msb = (pitchBendValue >> 7) & 0x7F; // Most significant 7 bits
 
-                        ShortMessage pitchBend = new ShortMessage();
-                        pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
-                        for (Instrument tempInstrument : instruments) {
-                            if (instrument.registeredName.equals(tempInstrument.noteType)) {
-                                if (tempInstrument.singlePitch) {
-                                    noteOn.setMessage(ShortMessage.NOTE_ON, 0, 60 + tempInstrument.transpose, (int) ((float) (newVolume) * ((Math.log10(0.9 * musicVolume + 0.1)) + 1) * tempInstrument.volume));
-                                } else {
-                                    noteOn.setMessage(ShortMessage.NOTE_ON, 0, newPitch + tempInstrument.transpose, (int) ((float) (newVolume) * ((Math.log10(0.9 * musicVolume + 0.1)) + 1) * tempInstrument.volume));
-                                }
-                                tempInstrument.receiver.send(noteOn, -1);
-                                tempInstrument.receiver.send(pitchBend, -1);
-                            }
-                        }
+                    int pitchAfterSinglePitch;
+                    if (tempInstrument.singlePitch) {
+                        pitchAfterSinglePitch = 60 + tempInstrument.transpose;
+                    }
+                    else{
+                        pitchAfterSinglePitch = (int)pitch + tempInstrument.transpose;
                     }
 
-                } catch (InvalidMidiDataException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
 
-        Timer timer = new Timer(true);
-        timer.schedule(task, 0);
-
-
-        TimerTask task2 = new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    ShortMessage noteOff = new ShortMessage();
-                    noteOff.setMessage(ShortMessage.NOTE_OFF, 0, newPitch, 0);
-                    for (Instrument tempInstrument : instruments) {
-                        if (tempInstrument.singlePitch) {
-                            if (instrument.registeredName.equals(tempInstrument.noteType)) {
-                                noteOff.setMessage(ShortMessage.NOTE_ON, 0, 60 + tempInstrument.transpose, 0);
-                            }
-                        } else {
-                            if (instrument.registeredName.equals(tempInstrument.noteType)) {
-                                noteOff.setMessage(ShortMessage.NOTE_ON, 0, newPitch + tempInstrument.transpose, 0);
-                            }
+                    try {
+                        if(!interupt){
+                            ShortMessage noteOn = new ShortMessage();
+                            // Pitch bend value for one semitone up
+                            ShortMessage pitchBend = new ShortMessage();
+                            pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
+                            noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * ((Math.log10(0.9 * musicVolume + 0.1)) + 1) * tempInstrument.volume));
+                            tempInstrument.receiver.send(noteOn, -1);
+                            tempInstrument.receiver.send(pitchBend, -1);
                         }
-                        tempInstrument.receiver.send(noteOff, -1);
+                    } catch (InvalidMidiDataException e) {
+                        throw new RuntimeException(e);
                     }
-
-                } catch (InvalidMidiDataException e) {
-                    throw new RuntimeException(e);
+                    tempInstrument.incrementChannel();
                 }
             }
-        };
-        timer.schedule(task2, 200);
+
+
+            Timer timer = new Timer(true);
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        for (int i = 0; i < instrumentCache.size(); i++) {
+                            Instrument instrument = instrumentCache.get(i);
+                            int channel = channelCache.get(i);
+                            int pitchAfterSinglePitch;
+                            if (instrument.singlePitch) {
+                                pitchAfterSinglePitch = 60 + instrument.transpose;
+                            } else {
+                                pitchAfterSinglePitch = (int) pitch + instrument.transpose;
+                            }
+                            ShortMessage noteOff = new ShortMessage();
+                            noteOff.setMessage(ShortMessage.NOTE_OFF, channel, pitchAfterSinglePitch, 0);
+                            instrument.receiver.send(noteOff, -1);
+                        }
+
+                    } catch (InvalidMidiDataException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+            timer.schedule(task, 200);
+
+        }
+
     }
 
     public void PassTime(){

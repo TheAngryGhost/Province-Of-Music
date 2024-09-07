@@ -5,8 +5,6 @@ import com.provinceofmusic.jukebox.InstrumentDef;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.jukebox.SamplePack;
 import com.provinceofmusic.ui.InstrumentWidget;
-import com.provinceofmusic.ui.POMTooltipManager;
-import com.provinceofmusic.ui.SamplePackWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
@@ -14,15 +12,12 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.BiConsumer;
@@ -59,7 +54,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
                 if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name)){
                     ProvinceOfMusicClient.configSettings.activeSamplePack = null;
-                    ProvinceOfMusicClient.setConfigSettings();
+                    ProvinceOfMusicClient.saveConfigSettings();
                     NoteReplacer.instruments = new ArrayList<>();
                 }
             }
@@ -68,6 +63,17 @@ public class SamplePackEditor extends LightweightGuiDescription {
         };
         root.add(deletePackButton, 8, 0, 5,1);
         deletePackButton.setOnClick(runnable3);
+
+        WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
+        root.add(openFolderButton, 14, 1, 5, 1);
+        Runnable openFolderButtonRunnable = () -> {
+            try {
+                Desktop.getDesktop().open(new File("provinceofmusic/samplepacks" + "/" + thisPack.name).getAbsoluteFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        openFolderButton.setOnClick(openFolderButtonRunnable);
 
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
@@ -90,8 +96,6 @@ public class SamplePackEditor extends LightweightGuiDescription {
                 if(dialog.getFiles()[0].exists()){
                     File file = dialog.getFiles()[0];
 
-                    System.out.println(SamplePack.getFile(thisPack.name).toPath() + "\\icon.png");
-
                     try {
                         Files.delete(Path.of(SamplePack.getFile(thisPack.name).toPath() + "\\icon.png"));
                         Files.copy(file.toPath(), Path.of(SamplePack.getFile(thisPack.name).toPath() + "\\icon.png"));
@@ -99,7 +103,6 @@ public class SamplePackEditor extends LightweightGuiDescription {
                         throw new RuntimeException(e);
                     }
                     dialog.dispose();
-                    //System.out.println(file + " chosen.");
                 }
             }
 
@@ -200,10 +203,11 @@ public class SamplePackEditor extends LightweightGuiDescription {
     }
 
     public void copyChangesToCache() {
-        for(int i = 0; i < instrumentWidgets.size(); i++){
-            InstrumentDef temp2 = new InstrumentDef(instrumentWidgets.get(i).dir.getText(), instrumentWidgets.get(i).noteType.getText(), Integer.parseInt(instrumentWidgets.get(i).transpose.getText()), Float.parseFloat(instrumentWidgets.get(i).volume.getText()), instrumentWidgets.get(i).toggleButton.getToggle());
-            thisPack.instrumentDefs.set(instrumentWidgets.get(i).index, temp2);
+        for (InstrumentWidget ins: instrumentWidgets) {
+            InstrumentDef temp = new InstrumentDef(ins.dir.getText(), ins.noteType.getText(), ins.transpose.getInt(), ins.volume.getFloat(), ins.toggleButton.getToggle());
+            thisPack.instrumentDefs.set(ins.index, temp);
         }
+
     }
 
     public void SaveChanges(){
@@ -240,7 +244,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
                     public void run() {
                         ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
                         NoteReplacer.instruments = thisPack.getInstruments(NoteReplacer.instruments);
-                        ProvinceOfMusicClient.setConfigSettings();
+                        ProvinceOfMusicClient.saveConfigSettings();
                         NoteReplacer.interupt = false;
                     }
                 };

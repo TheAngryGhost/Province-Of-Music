@@ -3,7 +3,6 @@ package com.provinceofmusic.screen;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.recorder.ConvertToMidi;
 import com.provinceofmusic.recorder.ReplayMusic;
-import com.provinceofmusic.ui.POMTooltipManager;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;

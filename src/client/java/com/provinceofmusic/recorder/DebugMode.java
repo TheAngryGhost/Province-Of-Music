@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import java.time.Instant;
 
 public class DebugMode implements NoteListener {
-    boolean isOn = false;
+    public static boolean isOn = false;
 
     public DebugMode(){
         NoteListenerHelper.addListener(this);

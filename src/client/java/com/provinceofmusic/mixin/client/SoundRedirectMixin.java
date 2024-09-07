@@ -19,7 +19,7 @@ public class SoundRedirectMixin{
         for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
             if(tempSound.registeredName.equals(sound.getId().toString())){
                 ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
-                if(NoteReplacer.replaceMusic) {
+                if(NoteReplacer.replaceMusic && ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
                     info.cancel();
                 }
             }
@@ -27,7 +27,7 @@ public class SoundRedirectMixin{
                 for (String tempSound2 : tempSound.remaps) {
                     if(tempSound2.equals(sound.getId().toString())){
                         ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
-                        if(NoteReplacer.replaceMusic) {
+                        if(NoteReplacer.replaceMusic && ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
                             info.cancel();
                         }
                     }

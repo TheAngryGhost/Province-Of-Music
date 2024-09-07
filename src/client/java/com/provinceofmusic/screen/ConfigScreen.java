@@ -3,8 +3,7 @@ package com.provinceofmusic.screen;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.jukebox.SamplePack;
-import com.provinceofmusic.ui.POMTooltipManager;
-import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
+import com.provinceofmusic.recorder.DebugMode;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
@@ -54,11 +53,20 @@ public class ConfigScreen extends LightweightGuiDescription {
         root.add(button2, 0, 7, 7, 1);
         button2.setOnClick(recordingRunnable);
 
+        WToggleButton debugModeToggle = new WToggleButton(Text.literal("Debug Mode"));
+        root.add(debugModeToggle, 6, 0, 3, 1);
+        debugModeToggle.setToggle(ProvinceOfMusicClient.configSettings.debugMode);
 
 
 
-        Runnable runnable = () -> {
-            ProvinceOfMusicClient.setConfigSettings();
+
+        Runnable saveRunnable = () -> {
+            NoteReplacer.musicVolume = slider.getValue() / 100f;
+            ProvinceOfMusicClient.configSettings.volume = NoteReplacer.musicVolume;
+            DebugMode.isOn = debugModeToggle.getToggle();
+            ProvinceOfMusicClient.configSettings.debugMode = DebugMode.isOn;
+
+            ProvinceOfMusicClient.saveConfigSettings();
 
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
                 NoteReplacer.interupt = true;
@@ -80,7 +88,6 @@ public class ConfigScreen extends LightweightGuiDescription {
 
             WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
             root.add(savedPopup, 0, 10, 2, 1);
-            NoteReplacer.musicVolume = slider.getValue() / 100f;
             Thread t = new Thread(() -> {
                 try {
                     Thread.sleep(1000);
@@ -97,7 +104,7 @@ public class ConfigScreen extends LightweightGuiDescription {
         };
 
         WButton saveButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
-        saveButton.setOnClick(runnable);
+        saveButton.setOnClick(saveRunnable);
         root.add(saveButton, 0, 9, 7, 1);
 
         root.validate(this);

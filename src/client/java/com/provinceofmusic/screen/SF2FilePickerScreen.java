@@ -45,12 +45,6 @@ public class SF2FilePickerScreen  extends LightweightGuiDescription {
 
         ArrayList<File> data = inScreen.thisPack.getInstrumentFiles();
 
-        //ArrayList<String> data = new ArrayList<>();
-        //for (int i = 0; i < files.size(); i++){
-        //    data.add(files.get(i));
-        //}
-
-
         BiConsumer<File, WButton> configurator = (File s, WButton destination) -> {
             destination.setLabel(Text.literal(s.getName()));
             destination.setOnClick(() -> {

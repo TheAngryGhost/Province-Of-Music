@@ -16,15 +16,6 @@ public class SamplePack {
     public String author = "None Listed";
     public ArrayList<InstrumentDef> instrumentDefs = new ArrayList<>();
 
-    //public ArrayList<Instrument> getInstruments(){
-    //    ArrayList<Instrument> out = new ArrayList<>();
-    //    for (InstrumentDef instrumentDef : instrumentDefs) {
-    //        Instrument temp = new Instrument(new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDef.dir), instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
-    //        out.add(temp);
-    //    }
-    //    return out;
-    //}
-
     public ArrayList<Instrument> getInstruments(ArrayList<Instrument> out){
         if(out == null){
             out = new ArrayList<>();
@@ -37,6 +28,9 @@ public class SamplePack {
             if(file.exists()){
                 Instrument temp = new Instrument(file, instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
                 out.add(temp);
+            }
+            else{
+                ProvinceOfMusicClient.LOGGER.warn("sf2 file not found File: " + instrumentDef.dir + " Ignoring this instrument");
             }
         }
         return out;
@@ -84,7 +78,7 @@ public class SamplePack {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Imported Successfully");
+        ProvinceOfMusicClient.LOGGER.info("Imported SamplePack Successfully");
         return out;
     }
 

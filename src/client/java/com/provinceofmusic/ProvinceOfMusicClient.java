@@ -76,8 +76,8 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
 		});
 
-		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Province of Music"));
-		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "Province of Music"));
+		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
+		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 
@@ -122,11 +122,11 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 			configSettings = gson.fromJson(Files.readString(jsonTemp.toPath(), Charset.defaultCharset()) + "", POMConfigObject.class);
 		} catch (IOException e) {
 			configSettings = new POMConfigObject();
-			setConfigSettings();
+			saveConfigSettings();
 		}
 	}
 
-	public static void setConfigSettings(){
+	public static void saveConfigSettings(){
 		File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings"+".json");
 		GsonBuilder builder = new GsonBuilder();
 		builder.setPrettyPrinting().serializeNulls();

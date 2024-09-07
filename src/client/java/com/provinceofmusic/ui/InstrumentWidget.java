@@ -27,9 +27,9 @@ import java.util.function.Consumer;
 public class InstrumentWidget extends WPlainPanel {
 
     public WTextField dir;
-    public WTextField transpose;
+    public POMIntegerInputWidget transpose;
     public WTextField noteType;
-    public WTextField volume;
+    public POMFloatInputWidget volume;
 
     public WToggleButton toggleButton;
 
@@ -61,7 +61,7 @@ public class InstrumentWidget extends WPlainPanel {
 
         WLabel transposeLabel = new WLabel(Text.literal("transpose"));
         this.add(transposeLabel, 10 + 50 + 50 + 15 + 50-3, 3, 10, 10);
-        transpose = new WTextField();
+        transpose = new POMIntegerInputWidget();
         this.add(transpose, 10 + 50 + 50 + 15 + 50-3,0 + 10 + 3, 50, 5);
         transpose.setMaxLength(150);
 
@@ -87,36 +87,11 @@ public class InstrumentWidget extends WPlainPanel {
 
 
         toggleButton = new WToggleButton();
-        //if(instrument != null){
-            //if(instrument.singlePitch){
-            //    toggleButton = new WToggleButton(Text.of("☑"));
-            //}
-            //else{
-            //    toggleButton = new WToggleButton(Text.of("☐"));
-            //}
-            //toggleButton.setToggle(instrument.singlePitch);
-        //}
-        //else{
-            //toggleButton = new WToggleButton(Text.of("☐"));
-        //}
         this.add(toggleButton, 10 + 50 + 50 + 15 + 50-3 - 10 - 3 + 20 + 40 + 20, 5 + 25 + 5 + 5 + 5, 50, 10);
-        toggleButton.setOnToggle(aBoolean -> {
-            //if(toggleButton.getToggle()){
-            //    toggleButton.setLabel(Text.of("☑"));
-            //}
-            //else{
-            //    toggleButton.setLabel(Text.of("☐"));
-            //}
-        });
-        //TooltipBuilder t = new TooltipBuilder();
-        //t.add(Text.of("Hello"));
-        //toggleButton.addTooltip(t);
-
-        //NoteTypePickerScreen
 
         WLabel volumeLabel = new WLabel(Text.literal("volume"));
         this.add(volumeLabel, 10 + 50 + 50 + 15 + 50-3, 5 + 25 + 5, 10, 10);
-        volume = new WTextField();
+        volume = new POMFloatInputWidget();
         this.add(volume, 10 + 50 + 50 + 15 + 50-3,25 + 10 + 10, 30, 5);
         volume.setMaxLength(150);
 
@@ -124,12 +99,18 @@ public class InstrumentWidget extends WPlainPanel {
         Runnable runnable3 = () -> {
 
             screen.copyChangesToCache();
-            screen.instrumentWidgets.remove(index);
+            screen.instrumentWidgets.remove(this);
             screen.thisPack.instrumentDefs.remove(index);
 
+            for(InstrumentWidget ins : screen.instrumentWidgets){
+                if(ins.index > index){
+                    ins.index--;
+                }
+            }
+
+            screen.copyChangesToCache();
 
 
-            System.out.println(index);
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(screen.thisPack)));
 
 

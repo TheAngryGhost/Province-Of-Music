@@ -44,7 +44,7 @@ public class NoteReplacer implements NoteListener {
                 if (instrumentSound.registeredName.equals(tempInstrument.noteType)) {
                     instrumentCache.add(tempInstrument);
 
-                    final int newVolume = Math.min(volume, 100);
+                    final int newVolume = Math.max(0, Math.min(volume, 100));
 
                     float newPitchBend = pitch - (int)pitch;
 
@@ -61,6 +61,14 @@ public class NoteReplacer implements NoteListener {
                     }
                     else{
                         pitchAfterSinglePitch = (int)pitch + tempInstrument.transpose;
+                    }
+                    if(pitchAfterSinglePitch < 0 || pitchAfterSinglePitch > 127){
+                        ProvinceOfMusicClient.LOGGER.error("Note Pitch out of Range (Your transpose value is too extreme of a value. If not using single pitch : originalPitch + transpose is > 127 or < 0. If using single pitch : 60 + transpose is > 127 or < 0) Value: " + tempInstrument.transpose + "Note Type: " + tempInstrument.noteType);
+                        return;
+                    }
+                    if(tempInstrument.volume < 0 || tempInstrument.volume > 1){
+                        ProvinceOfMusicClient.LOGGER.error("Note Volume out of Range (Your Volume value is too extreme of a value. Keep it between 0 and 1) Value: " + tempInstrument.volume + "Note Type: " + tempInstrument.noteType);
+                        return;
                     }
 
 
@@ -139,11 +147,19 @@ public class NoteReplacer implements NoteListener {
     public void RunSetup(){
 
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
-            System.out.println("Trying to load SamplePack");
+            ProvinceOfMusicClient.LOGGER.debug("Trying to load SamplePack");
             instruments = null;
-            SamplePack pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
-            instruments = pack.getInstruments(instruments);
-            System.out.println("Loaded Successfully");
+            if(ProvinceOfMusicClient.configSettings.activeSamplePack != null && SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack).exists()) {
+                SamplePack pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
+                instruments = pack.getInstruments(instruments);
+                ProvinceOfMusicClient.LOGGER.debug("Loaded SamplePack successfully");
+            }
+            else{
+                ProvinceOfMusicClient.configSettings.activeSamplePack = null;
+                ProvinceOfMusicClient.saveConfigSettings();
+                ProvinceOfMusicClient.LOGGER.warn("SamplePack load failed (Replacing active SamplePack with no SamplePack)");
+            }
+
 
         }
 

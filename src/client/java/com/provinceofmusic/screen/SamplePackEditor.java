@@ -26,7 +26,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
     public SamplePack thisPack;
 
-    WListPanel packList;
+    WListPanel instrumentList;
 
     public ArrayList<InstrumentWidget> instrumentWidgets = new ArrayList<>();
 
@@ -36,20 +36,16 @@ public class SamplePackEditor extends LightweightGuiDescription {
     public SamplePackEditor(SamplePack inPack){
         thisPack = inPack;
 
-
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-
         root.setSize(256 + 100, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
-
-
 
         WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0x000000);
         root.add(title, 0, 0, 9, 3);
 
         WButton deletePackButton = new WButton(Text.literal("Delete Pack").withColor(0xFF0000).styled(style -> style.withBold(true)));
-        Runnable runnable3 = () -> {
+        Runnable deletePackButtonRunnable = () -> {
             SaveChanges();
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
                 if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name)){
@@ -62,7 +58,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
             BackOutToPreviousScreen();
         };
         root.add(deletePackButton, 8, 0, 5,1);
-        deletePackButton.setOnClick(runnable3);
+        deletePackButton.setOnClick(deletePackButtonRunnable);
 
         WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
         root.add(openFolderButton, 14, 1, 5, 1);
@@ -77,20 +73,20 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
-        Runnable runnable4 = () -> {
+        Runnable backButtonRunnable = () -> {
             BackOutToPreviousScreen();
         };
         root.add(backButton, 1, 3, 3,1);
-        backButton.setOnClick(runnable4);
+        backButton.setOnClick(backButtonRunnable);
 
         WButton changeImageButton = new WButton(Text.literal("Change Img"));
-        Runnable runnable5 = () -> {
+        root.add(changeImageButton, 4, 3, 4,1);
+        Runnable changeImageButtonRunnable = () -> {
 
             FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
             dialog.setFile("*.png");
             dialog.setMode(FileDialog.LOAD);
             dialog.setVisible(true);
-
 
             if(dialog.getFiles()[0] != null){
                 if(dialog.getFiles()[0].exists()){
@@ -105,11 +101,8 @@ public class SamplePackEditor extends LightweightGuiDescription {
                     dialog.dispose();
                 }
             }
-
-
         };
-        root.add(changeImageButton, 4, 3, 4,1);
-        changeImageButton.setOnClick(runnable5);
+        changeImageButton.setOnClick(changeImageButtonRunnable);
 
 
         WLabel nameLabel = new WLabel(Text.literal("Name"), 0x000000);
@@ -126,51 +119,33 @@ public class SamplePackEditor extends LightweightGuiDescription {
         authorField.setText(thisPack.author);
         root.add(authorField, 7, 2, 5, 1);
 
-
-
-
-
         ArrayList<InstrumentDef> data = new ArrayList<>();
         for (int i = 0; i < thisPack.instrumentDefs.size(); i++){
             data.add(thisPack.instrumentDefs.get(i));
         }
         BiConsumer<InstrumentDef, InstrumentWidget> configurator = (InstrumentDef s, InstrumentWidget destination) -> {
-            destination.dir.setText(s.dir);
+            destination.instrumentDirectory.setText(s.dir);
             destination.volume.setText("" + s.volume);
             destination.noteType.setText(s.noteType);
             destination.transpose.setText("" + s.transpose);
             destination.screen = this;
             destination.instrument = s;
             destination.index = data.indexOf(s);
-            destination.toggleButton.setToggle(s.singlePitch);
-            if(s.singlePitch){
-                //destination.toggleButton.setLabel(Text.of("☑"));
-            }
-            else{
-                //destination.toggleButton.setLabel(Text.of("☐"));
-            }
+            destination.singlePitchToggle.setToggle(s.singlePitch);
             instrumentWidgets.add(destination);
         };
-        packList = new WListPanel(data, InstrumentWidget::new, configurator);
-        packList.setListItemHeight(72-6);
-
-
-
+        instrumentList = new WListPanel(data, InstrumentWidget::new, configurator);
+        instrumentList.setListItemHeight(72-6);
 
         if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.add(packList, 0, 4, 14 + 5, 8);
+            root.add(instrumentList, 0, 4, 14 + 5, 8);
         } else{
-            root.add(packList, 0, 5, 14 + 5, 17);
+            root.add(instrumentList, 0, 5, 14 + 5, 17);
         }
 
-
-
-
         WButton saveChangesButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
-        Runnable runnable = () -> {
+        Runnable saveChangesButtonRunnable = () -> {
             SaveChanges();
-            //BackOutToPreviousScreen
-            //MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
             WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
             root.add(savedPopup, 13, 2, 2, 1);
             Thread t = new Thread(() -> {
@@ -183,28 +158,24 @@ public class SamplePackEditor extends LightweightGuiDescription {
             });
             t.start();
         };
-        saveChangesButton.setOnClick(runnable);
+        saveChangesButton.setOnClick(saveChangesButtonRunnable);
         root.add(saveChangesButton, 8,3, 6, 1);
 
-
-
-
-
         WButton addNewButton = new WButton(Text.literal("+"));
-        Runnable runnable2 = () -> {
+        root.add(addNewButton, 0,3, 1, 1);
+        Runnable addNewButtonRunnable = () -> {
             copyChangesToCache();
             InstrumentDef temp = new InstrumentDef("null", "null", 0, 1.0f, false);
             thisPack.instrumentDefs.add(temp);
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(thisPack)));
 
         };
-        addNewButton.setOnClick(runnable2);
-        root.add(addNewButton, 0,3, 1, 1);
+        addNewButton.setOnClick(addNewButtonRunnable);
     }
 
     public void copyChangesToCache() {
         for (InstrumentWidget ins: instrumentWidgets) {
-            InstrumentDef temp = new InstrumentDef(ins.dir.getText(), ins.noteType.getText(), ins.transpose.getInt(), ins.volume.getFloat(), ins.toggleButton.getToggle());
+            InstrumentDef temp = new InstrumentDef(ins.instrumentDirectory.getText(), ins.noteType.getText(), ins.transpose.getInt(), ins.volume.getFloat(), ins.singlePitchToggle.getToggle());
             thisPack.instrumentDefs.set(ins.index, temp);
         }
 
@@ -213,29 +184,12 @@ public class SamplePackEditor extends LightweightGuiDescription {
     public void SaveChanges(){
         copyChangesToCache();
         String namecache = thisPack.name;
-        //thisPack.name = nameField.getText();
-
 
         SamplePack.RenameSamplePack(thisPack, nameField.getText());
         thisPack.author = authorField.getText();
         thisPack.name = nameField.getText();
         thisPack.WriteSamplePack();
 
-
-
-
-
-
-
-
-
-
-        //if(!namecache.equals(nameField.getText())){
-        //    if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(namecache)){
-        //        ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
-        //    }
-        //    SamplePack.DeletePack(namecache);
-        //}
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
             if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name) || ProvinceOfMusicClient.configSettings.activeSamplePack.equals(namecache)){
                 NoteReplacer.interupt = true;

@@ -1,10 +1,7 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.jukebox.InstrumentDef;
-import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.listeners.NoteListenerHelper;
-import com.provinceofmusic.recorder.ReplayMusic;
 import com.provinceofmusic.ui.InstrumentWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -14,7 +11,6 @@ import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.WListPanel;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -27,11 +23,6 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
     public NoteTypePickerScreen(){
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        //if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-        //    root.setSize(256, 240);
-        //} else{
-        //    root.setSize(256, 400);
-        //}
         root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
@@ -39,18 +30,16 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
         root.add(title, 0, 0, 9, 3);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
-        Runnable runnable4 = () -> {
+        Runnable backButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
         };
         root.add(backButton, 9, 0, 3,1);
-        backButton.setOnClick(runnable4);
+        backButton.setOnClick(backButtonRunnable);
 
         ArrayList<String> data = new ArrayList<>();
         for (int i = 0; i < NoteListenerHelper.instrumentSounds.size(); i++){
             data.add(NoteListenerHelper.instrumentSounds.get(i).registeredName);
         }
-
-
         BiConsumer<String, WButton> configurator = (String s, WButton destination) -> {
             destination.setLabel(Text.literal(s));
             destination.setOnClick(() -> {
@@ -58,13 +47,12 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
                 MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
             });
         };
-
-        WListPanel packList = new WListPanel(data, WButton::new, configurator);
-        packList.setListItemHeight(18);
+        WListPanel noteTypeList = new WListPanel(data, WButton::new, configurator);
+        noteTypeList.setListItemHeight(18);
         if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.add(packList, 0, 1, 14, 10);
+            root.add(noteTypeList, 0, 1, 14, 10);
         } else{
-            root.add(packList, 0, 1, 14, 18);
+            root.add(noteTypeList, 0, 1, 14, 18);
         }
     }
 }

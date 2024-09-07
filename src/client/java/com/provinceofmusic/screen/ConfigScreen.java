@@ -29,39 +29,38 @@ public class ConfigScreen extends LightweightGuiDescription {
         WSprite icon = new WSprite(Identifier.of("provinceofmusic","icon.png"));
         root.add(icon, 0, 1, 3, 3);
 
-        WLabel label = new WLabel(Text.literal("Music Volume"), 0x000000);
-        root.add(label, 0, 2+3, 1, 1);
+        WLabel rootLabel = new WLabel(Text.literal("Music Volume"), 0x000000);
+        root.add(rootLabel, 0, 2+3, 1, 1);
 
-        WSlider slider = new WSlider(0, 100, Axis.HORIZONTAL);
-        slider.setValue((int) (ProvinceOfMusicClient.configSettings.volume * 100));
-        NoteReplacer.musicVolume = slider.getValue() / 100f;
-        root.add(slider, 0, 3+2, 5, 1);
+        WSlider volumeSlider = new WSlider(0, 100, Axis.HORIZONTAL);
+        volumeSlider.setValue((int) (ProvinceOfMusicClient.configSettings.volume * 100));
+        NoteReplacer.musicVolume = volumeSlider.getValue() / 100f;
+        root.add(volumeSlider, 0, 3+2, 5, 1);
 
-        Runnable samplePackRunnable = () -> {
-            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
-        };
-
+        WButton recordedMusicMenuButton = new WButton(Text.literal("Recorded Music Editor"));
+        root.add(recordedMusicMenuButton, 0, 7, 7, 1);
         Runnable recordingRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new NoteRecordScreen()));
         };
+        recordedMusicMenuButton.setOnClick(recordingRunnable);
 
-        WButton button = new WButton(Text.literal("Sample Pack Editor"));
-        button.setOnClick(samplePackRunnable);
-        root.add(button, 0, 6, 6, 1);
+        WButton samplePackMenuButton = new WButton(Text.literal("Sample Pack Editor"));
+        Runnable samplePackRunnable = () -> {
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
+        };
+        root.add(samplePackMenuButton, 0, 6, 6, 1);
+        samplePackMenuButton.setOnClick(samplePackRunnable);
 
-        WButton button2 = new WButton(Text.literal("Recorded Music Editor"));
-        root.add(button2, 0, 7, 7, 1);
-        button2.setOnClick(recordingRunnable);
 
         WToggleButton debugModeToggle = new WToggleButton(Text.literal("Debug Mode"));
         root.add(debugModeToggle, 6, 0, 3, 1);
         debugModeToggle.setToggle(ProvinceOfMusicClient.configSettings.debugMode);
 
 
-
-
+        WButton saveButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
+        root.add(saveButton, 0, 9, 7, 1);
         Runnable saveRunnable = () -> {
-            NoteReplacer.musicVolume = slider.getValue() / 100f;
+            NoteReplacer.musicVolume = volumeSlider.getValue() / 100f;
             ProvinceOfMusicClient.configSettings.volume = NoteReplacer.musicVolume;
             DebugMode.isOn = debugModeToggle.getToggle();
             ProvinceOfMusicClient.configSettings.debugMode = DebugMode.isOn;
@@ -80,10 +79,6 @@ public class ConfigScreen extends LightweightGuiDescription {
 
                 Timer timer = new Timer(true);
                 timer.schedule(task, 300);
-
-
-
-
             }
 
             WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
@@ -97,15 +92,8 @@ public class ConfigScreen extends LightweightGuiDescription {
                 root.remove(savedPopup);
             });
             t.start();
-
-
-
-
         };
-
-        WButton saveButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
         saveButton.setOnClick(saveRunnable);
-        root.add(saveButton, 0, 9, 7, 1);
 
         root.validate(this);
     }

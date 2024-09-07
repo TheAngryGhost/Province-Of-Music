@@ -26,16 +26,16 @@ public class NoteRecordScreen extends LightweightGuiDescription {
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        //title label
+        //title activeSamplePackLabel
         WLabel title = new WLabel(Text.literal("Recording Editor"), 0x000000);
         root.add(title, 0, 0, 9, 3);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
-        Runnable runnable4 = () -> {
+        root.add(backButton, 6, 0, 3,1);
+        Runnable backButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
         };
-        root.add(backButton, 6, 0, 3,1);
-        backButton.setOnClick(runnable4);
+        backButton.setOnClick(backButtonRunnable);
         //backButton.isHovered()
 
         WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));

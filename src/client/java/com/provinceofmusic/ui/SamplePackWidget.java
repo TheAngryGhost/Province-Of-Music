@@ -23,8 +23,8 @@ public class SamplePackWidget extends WPlainPanel {
     public SamplePack thisPack;
 
     public SamplePackWidget(){
-        WButton backgroundButton = new WButton(Text.literal(""));
-        this.add(backgroundButton, 0, 0, 235, 36);
+        this.setSize(7, 3);
+        this.setBackgroundPainter(BackgroundPainter.createColorful(0x000000));
 
         nameLabel = new WLabel(Text.literal("unnamed"));
         this.add(nameLabel, 5, 8-3, 5, 5);
@@ -34,14 +34,12 @@ public class SamplePackWidget extends WPlainPanel {
         this.add(authorLabel, 5, 20+3, 5, 5);
         authorLabel.setColor(0xFFFFFF);
 
-        this.setSize(7, 3);
-
-        this.setBackgroundPainter(BackgroundPainter.createColorful(0x000000));
-
-        Runnable runnable = () -> {
+        WButton backgroundButton = new WButton(Text.literal(""));
+        this.add(backgroundButton, 0, 0, 235, 36);
+        Runnable backgroundButtonRunnable = () -> {
             if(SamplePackConfig.setActive){
                 ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
-                SamplePackConfig.label.setText(Text.literal(ProvinceOfMusicClient.configSettings.activeSamplePack));
+                SamplePackConfig.activeSamplePackLabel.setText(Text.literal(ProvinceOfMusicClient.configSettings.activeSamplePack));
                 SamplePackConfig.setActive = false;
                 ProvinceOfMusicClient.saveConfigSettings();
             }
@@ -49,6 +47,6 @@ public class SamplePackWidget extends WPlainPanel {
                 MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(thisPack)));
             }
         };
-        backgroundButton.setOnClick(runnable);
+        backgroundButton.setOnClick(backgroundButtonRunnable);
     }
 }

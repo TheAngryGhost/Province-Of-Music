@@ -1,8 +1,6 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.jukebox.InstrumentDef;
-import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.ui.InstrumentWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -25,11 +23,6 @@ public class SF2FilePickerScreen  extends LightweightGuiDescription {
         prevScreen = inScreen;
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        //if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-        //    root.setSize(256, 240);
-        //} else{
-        //    root.setSize(256, 400);
-        //}
         root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
@@ -37,30 +30,26 @@ public class SF2FilePickerScreen  extends LightweightGuiDescription {
         root.add(title, 0, 0, 9, 3);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
-        Runnable runnable4 = () -> {
+        Runnable backButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
         };
         root.add(backButton, 9, 0, 3,1);
-        backButton.setOnClick(runnable4);
+        backButton.setOnClick(backButtonRunnable);
 
         ArrayList<File> data = inScreen.thisPack.getInstrumentFiles();
-
         BiConsumer<File, WButton> configurator = (File s, WButton destination) -> {
             destination.setLabel(Text.literal(s.getName()));
             destination.setOnClick(() -> {
-                widget.dir.setText(s.getName());
+                widget.instrumentDirectory.setText(s.getName());
                 MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
             });
         };
-
-        WListPanel packList = new WListPanel(data, WButton::new, configurator);
-        packList.setListItemHeight(18);
+        WListPanel sf2FileList = new WListPanel(data, WButton::new, configurator);
+        sf2FileList.setListItemHeight(18);
         if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.add(packList, 0, 1, 14, 10);
+            root.add(sf2FileList, 0, 1, 14, 10);
         } else{
-            root.add(packList, 0, 1, 14, 18);
+            root.add(sf2FileList, 0, 1, 14, 18);
         }
-
-
     }
 }

@@ -23,23 +23,15 @@ public class SamplePackConfig extends LightweightGuiDescription {
 
     public static boolean setActive = false;
 
-    public static WLabel label;
+    public static WLabel activeSamplePackLabel;
     public SamplePackConfig() {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-
-
-
-
         WLabel title = new WLabel(Text.literal("Sample Pack Configuration"), 0x000000);
         root.add(title, 0, 0, 9, 3);
-
-
-
-
 
         WButton selectPackButton = new WButton(Text.literal("Select Pack"));
         root.add(selectPackButton, 0, 1, 6, 1);
@@ -48,25 +40,14 @@ public class SamplePackConfig extends LightweightGuiDescription {
         };
         selectPackButton.setOnClick(selectPackButtonRunnable);
 
-
-
-
-
-        label = new WLabel(Text.literal("no pack selected"), 0x000000);
+        activeSamplePackLabel = new WLabel(Text.literal("no pack selected"), 0x000000);
         if(ProvinceOfMusicClient.configSettings.activeSamplePack == null){
-            label.setText(Text.literal("no pack selected"));
+            activeSamplePackLabel.setText(Text.literal("no pack selected"));
         }
         else {
-            label.setText(Text.literal(ProvinceOfMusicClient.configSettings.activeSamplePack));
+            activeSamplePackLabel.setText(Text.literal(ProvinceOfMusicClient.configSettings.activeSamplePack));
         }
-        root.add(label, 0, 2, 1, 1);
-
-
-
-
-
-
-
+        root.add(activeSamplePackLabel, 0, 2, 1, 1);
 
         WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
         root.add(openFolderButton, 9, 1, 5, 1);
@@ -79,33 +60,12 @@ public class SamplePackConfig extends LightweightGuiDescription {
         };
         openFolderButton.setOnClick(openFolderButtonRunnable);
 
-
-
-
-
-
-
-
-
-
-
-
         WButton refreshButton = new WButton(Text.literal("Refresh List ⟳"));
         root.add(refreshButton, 9, 2, 5, 1);
         Runnable refreshButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
         };
         refreshButton.setOnClick(refreshButtonRunnable);
-
-
-
-
-
-
-
-
-
-
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
         root.add(backButton, 0, 4, 3, 1);
@@ -115,11 +75,6 @@ public class SamplePackConfig extends LightweightGuiDescription {
         };
         backButton.setOnClick(backButtonRunnable);
 
-
-
-
-
-
         WButton createNewButton = new WButton(Text.literal("Create New"));
         root.add(createNewButton, 9, 4, 4, 1);
         Runnable createNewButtonRunnable = () -> {
@@ -127,12 +82,6 @@ public class SamplePackConfig extends LightweightGuiDescription {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
         };
         createNewButton.setOnClick(createNewButtonRunnable);
-
-
-
-
-
-
 
         ArrayList<File> samplePacks = FetchSamplePackFiles();
         ArrayList<SamplePack> data = new ArrayList<>();
@@ -142,21 +91,14 @@ public class SamplePackConfig extends LightweightGuiDescription {
         BiConsumer<SamplePack, SamplePackWidget> configurator = (SamplePack s, SamplePackWidget destination) -> {
             destination.nameLabel.setText(Text.literal(s.name));
             destination.authorLabel.setText(Text.literal(s.author));
-            System.err.println(ProvinceOfMusicClient.samplepacksdir + "\\" + s.name + "\\" + "icon.png");
 
             File inputImage = new File(ProvinceOfMusicClient.samplepacksdir + "\\" + s.name + "\\" + "icon.png");
-            //Identifier noimgfound = new Identifier("provinceofmusic","noiconfound.png");
             Identifier noimgfound = Identifier.of("provinceofmusic","noiconfound.png");
-
-            //System.err.println("provinceofmusic" + "      " + s.name.replaceAll("[^\\p{L}0-9/_-]", "") + "" + "icon.png" + " exists");
 
             if(inputImage != null){
                 if (inputImage.exists()) {
                     String path = s.name.replaceAll("[^\\p{L}0-9/._-]", "").toLowerCase() + "" + "icon.png";
-                    //String path = "ProvincePackicon.png";
-                    //Identifier test = new Identifier("provinceofmusic", path);
                     Identifier test = Identifier.of("provinceofmusic", path);
-                    //System.err.println(ProvinceOfMusicClient.samplepacksdir + "\\" + s.name + "\\" + "icon.png" + " exists");
                     InputStream inputStream;
                     try {
                         inputStream = new FileInputStream(inputImage);
@@ -187,20 +129,6 @@ public class SamplePackConfig extends LightweightGuiDescription {
         WListPanel packList = new WListPanel(data, SamplePackWidget::new, configurator);
         packList.setListItemHeight(2*18);
         root.add(packList, 0, 5, 14, 6);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     public ArrayList<File> FetchSamplePackFiles(){

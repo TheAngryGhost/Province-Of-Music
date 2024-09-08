@@ -109,6 +109,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         root.add(nameLabel, 1, 1, 5, 1);
 
         nameField = new WTextField();
+        nameField.setMaxLength(1000);
         nameField.setText(thisPack.name);
         root.add(nameField, 1, 2, 5, 1);
 
@@ -116,6 +117,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         root.add(authorLabel, 7, 1, 5, 1);
 
         authorField = new WTextField();
+        authorField.setMaxLength(1000);
         authorField.setText(thisPack.author);
         root.add(authorField, 7, 2, 5, 1);
 

@@ -38,7 +38,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        root.setSize(256 + 100, 200 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(356, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
         WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0x000000);
@@ -135,12 +135,12 @@ public class SamplePackEditor extends LightweightGuiDescription {
             instrumentWidgets.add(destination);
         };
         instrumentList = new WListPanel(data, InstrumentWidget::new, configurator);
-        instrumentList.setListItemHeight(72-6);
+        instrumentList.setListItemHeight(66);
 
         if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
-            root.add(instrumentList, 0, 4, 14 + 5, 8);
+            root.add(instrumentList, 0, 4, 19, 8);
         } else{
-            root.add(instrumentList, 0, 5, 14 + 5, 17);
+            root.add(instrumentList, 0, 5, 19, 17);
         }
 
         WButton saveChangesButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));

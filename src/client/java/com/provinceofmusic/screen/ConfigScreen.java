@@ -30,12 +30,12 @@ public class ConfigScreen extends LightweightGuiDescription {
         root.add(icon, 0, 1, 3, 3);
 
         WLabel rootLabel = new WLabel(Text.literal("Music Volume"), 0x000000);
-        root.add(rootLabel, 0, 2+3, 1, 1);
+        root.add(rootLabel, 0, 5, 1, 1);
 
         WSlider volumeSlider = new WSlider(0, 100, Axis.HORIZONTAL);
         volumeSlider.setValue((int) (ProvinceOfMusicClient.configSettings.volume * 100));
         NoteReplacer.musicVolume = volumeSlider.getValue() / 100f;
-        root.add(volumeSlider, 0, 3+2, 5, 1);
+        root.add(volumeSlider, 0, 5, 5, 1);
 
         WButton recordedMusicMenuButton = new WButton(Text.literal("Recorded Music Editor"));
         root.add(recordedMusicMenuButton, 0, 7, 7, 1);

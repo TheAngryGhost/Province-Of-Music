@@ -127,7 +127,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
             destination.thisPack = s;
         };
         WListPanel packList = new WListPanel(data, SamplePackWidget::new, configurator);
-        packList.setListItemHeight(2*18);
+        packList.setListItemHeight(36);
         root.add(packList, 0, 5, 14, 6);
     }
 

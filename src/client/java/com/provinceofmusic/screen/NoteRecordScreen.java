@@ -20,13 +20,11 @@ import java.util.function.BiConsumer;
 public class NoteRecordScreen extends LightweightGuiDescription {
 
     public NoteRecordScreen(){
-        //base panel
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        //title activeSamplePackLabel
         WLabel title = new WLabel(Text.literal("Recording Editor"), 0x000000);
         root.add(title, 0, 0, 9, 3);
 
@@ -36,7 +34,6 @@ public class NoteRecordScreen extends LightweightGuiDescription {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
         };
         backButton.setOnClick(backButtonRunnable);
-        //backButton.isHovered()
 
         WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
         root.add(openFolderButton, 10, 0, 5, 1);

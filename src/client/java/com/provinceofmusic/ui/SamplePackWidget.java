@@ -26,14 +26,6 @@ public class SamplePackWidget extends WPlainPanel {
         this.setSize(7, 3);
         this.setBackgroundPainter(BackgroundPainter.createColorful(0x000000));
 
-        nameLabel = new WLabel(Text.literal("unnamed"));
-        this.add(nameLabel, 5, 8-3, 5, 5);
-        nameLabel.setColor(0xFFFFFF);
-
-        authorLabel = new WLabel(Text.literal("unknown author"));
-        this.add(authorLabel, 5, 20+3, 5, 5);
-        authorLabel.setColor(0xFFFFFF);
-
         WButton backgroundButton = new WButton(Text.literal(""));
         this.add(backgroundButton, 0, 0, 235, 36);
         Runnable backgroundButtonRunnable = () -> {
@@ -48,5 +40,13 @@ public class SamplePackWidget extends WPlainPanel {
             }
         };
         backgroundButton.setOnClick(backgroundButtonRunnable);
+
+        nameLabel = new WLabel(Text.literal("unnamed"));
+        this.add(nameLabel, 5, 5, 5, 5);
+        nameLabel.setColor(0xFFFFFF);
+
+        authorLabel = new WLabel(Text.literal("unknown author"));
+        this.add(authorLabel, 5, 23, 5, 5);
+        authorLabel.setColor(0xFFFFFF);
     }
 }

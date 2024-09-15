@@ -29,14 +29,6 @@ public class ConfigScreen extends LightweightGuiDescription {
         WSprite icon = new WSprite(Identifier.of("provinceofmusic","icon.png"));
         root.add(icon, 0, 1, 3, 3);
 
-        WLabel rootLabel = new WLabel(Text.literal("Music Volume"), 0x000000);
-        root.add(rootLabel, 0, 5, 1, 1);
-
-        WSlider volumeSlider = new WSlider(0, 100, Axis.HORIZONTAL);
-        volumeSlider.setValue((int) (ProvinceOfMusicClient.configSettings.volume * 100));
-        NoteReplacer.musicVolume = volumeSlider.getValue() / 100f;
-        root.add(volumeSlider, 0, 5, 5, 1);
-
         WButton recordedMusicMenuButton = new WButton(Text.literal("Recorded Music Editor"));
         root.add(recordedMusicMenuButton, 0, 7, 7, 1);
         Runnable recordingRunnable = () -> {
@@ -60,8 +52,7 @@ public class ConfigScreen extends LightweightGuiDescription {
         WButton saveButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
         root.add(saveButton, 0, 9, 7, 1);
         Runnable saveRunnable = () -> {
-            NoteReplacer.musicVolume = volumeSlider.getValue() / 100f;
-            ProvinceOfMusicClient.configSettings.volume = NoteReplacer.musicVolume;
+
             DebugMode.isOn = debugModeToggle.getToggle();
             ProvinceOfMusicClient.configSettings.debugMode = DebugMode.isOn;
 

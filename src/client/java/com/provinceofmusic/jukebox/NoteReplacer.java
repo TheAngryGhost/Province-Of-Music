@@ -4,7 +4,9 @@ import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.listeners.NoteListener;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -21,7 +23,7 @@ public class NoteReplacer implements NoteListener {
     public static ArrayList<Instrument> instruments = new ArrayList<>();
     public static boolean replaceMusic = true;
 
-    public static float musicVolume = 0.5f;
+    public static float musicVolume = 0;
 
     public static boolean interupt = false;
     
@@ -38,6 +40,7 @@ public class NoteReplacer implements NoteListener {
 
         ArrayList<Instrument> instrumentCache = new ArrayList<>();
         ArrayList<Integer> channelCache = new ArrayList<>();
+        musicVolume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS);
 
         if(!interupt){
             for (Instrument tempInstrument : instruments) {
@@ -162,8 +165,6 @@ public class NoteReplacer implements NoteListener {
 
 
         }
-
-        musicVolume = ProvinceOfMusicClient.configSettings.volume;
 
         NoteListenerHelper.addListener(this);
     }

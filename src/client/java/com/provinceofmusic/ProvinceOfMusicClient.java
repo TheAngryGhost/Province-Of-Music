@@ -30,7 +30,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	MusicRecorder musicRecorder = new MusicRecorder();
 	NoteReplacer noteReplacer = new NoteReplacer();
 
-	DebugMode debugMode = new DebugMode();
+	DebugMode debugMode = new DebugMode(); //this many not be used but this class needs to be instantiated at least once for it to work
 
 	public static NoteListenerHelper noteListenerHelper = new NoteListenerHelper();
 

@@ -59,11 +59,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.0")
+	modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
 
 	modApi "com.terraformersmc:modmenu:11.0.1"
 
-	modImplementation include("io.github.cottonmc:LibGui:11.0.0+1.21")
+	modImplementation include("io.github.cottonmc:LibGui:11.1.0+1.21")
 }
 
 processResources {

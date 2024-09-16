@@ -20,7 +20,7 @@ public class ConfigScreen extends LightweightGuiDescription {
     public ConfigScreen() {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
-        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 250 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
         WLabel title = new WLabel(Text.literal("Province of Music"), 0x000000);

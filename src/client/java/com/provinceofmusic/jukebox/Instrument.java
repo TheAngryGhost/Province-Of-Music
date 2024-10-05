@@ -1,5 +1,7 @@
 package com.provinceofmusic.jukebox;
 
+import com.provinceofmusic.midi.event.Controller;
+
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;

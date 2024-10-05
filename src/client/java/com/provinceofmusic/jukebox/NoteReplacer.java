@@ -9,7 +9,9 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 
+import javax.sound.midi.ControllerEventListener;
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -40,7 +42,7 @@ public class NoteReplacer implements NoteListener {
 
         ArrayList<Instrument> instrumentCache = new ArrayList<>();
         ArrayList<Integer> channelCache = new ArrayList<>();
-        musicVolume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS);
+        musicVolume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS) * MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.MASTER);
 
         if(!interupt){
             for (Instrument tempInstrument : instruments) {
@@ -80,10 +82,15 @@ public class NoteReplacer implements NoteListener {
                             ShortMessage noteOn = new ShortMessage();
                             // Pitch bend value for one semitone up
                             ShortMessage pitchBend = new ShortMessage();
+                            ShortMessage volumeChange = new ShortMessage();
+
                             pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
-                            noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * ((Math.log10(0.9 * musicVolume + 0.1)) + 1) * tempInstrument.volume));
+                            noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * tempInstrument.volume));
+                            volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (musicVolume * 127));
+
                             tempInstrument.receiver.send(noteOn, -1);
                             tempInstrument.receiver.send(pitchBend, -1);
+                            tempInstrument.receiver.send(volumeChange, -1);
                         }
                     } catch (InvalidMidiDataException e) {
                         throw new RuntimeException(e);

@@ -139,7 +139,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         instrumentList = new WListPanel(data, InstrumentWidget::new, configurator);
         instrumentList.setListItemHeight(66);
 
-        if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
+        if(ProvinceOfMusicClient.guiSize == 3){
             root.add(instrumentList, 0, 4, 19, 8);
         } else{
             root.add(instrumentList, 0, 5, 19, 17);

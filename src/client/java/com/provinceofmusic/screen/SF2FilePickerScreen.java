@@ -46,7 +46,7 @@ public class SF2FilePickerScreen  extends LightweightGuiDescription {
         };
         WListPanel sf2FileList = new WListPanel(data, WButton::new, configurator);
         sf2FileList.setListItemHeight(18);
-        if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
+        if(ProvinceOfMusicClient.guiSize == 3){
             root.add(sf2FileList, 0, 1, 14, 10);
         } else{
             root.add(sf2FileList, 0, 1, 14, 18);

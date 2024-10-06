@@ -49,7 +49,7 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
         };
         WListPanel noteTypeList = new WListPanel(data, WButton::new, configurator);
         noteTypeList.setListItemHeight(18);
-        if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 3){
+        if(ProvinceOfMusicClient.guiSize == 3){
             root.add(noteTypeList, 0, 1, 14, 10);
         } else{
             root.add(noteTypeList, 0, 1, 14, 18);

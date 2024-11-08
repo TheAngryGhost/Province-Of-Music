@@ -19,8 +19,11 @@ public class Instrument {
 
     public int channel = 0;
 
+    public String insFileName;
+
     public Instrument(File insFile, String noteType) {
         try{
+            insFileName = insFile.getName();
             Synthesizer synth;
             this.noteType = noteType;
             synth = MidiSystem.getSynthesizer();

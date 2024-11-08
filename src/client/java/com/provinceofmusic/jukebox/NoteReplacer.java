@@ -76,6 +76,11 @@ public class NoteReplacer implements NoteListener {
                         return;
                     }
 
+                    if(tempInstrument.receiver == null){
+                        ProvinceOfMusicClient.LOGGER.error("Could not use Instrument. File could be missing or corrupt. File: " + tempInstrument.insFileName + "Note Type: " + tempInstrument.noteType);
+                        return;
+                    }
+
 
                     try {
                         if(!interupt){

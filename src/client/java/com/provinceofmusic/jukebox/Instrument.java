@@ -44,6 +44,7 @@ public class Instrument {
 
     public Instrument(File insFile, String noteType, int transpose) {
         try{
+            insFileName = insFile.getName();
             Synthesizer synth;
             this.noteType = noteType;
             this.transpose = transpose;
@@ -65,6 +66,7 @@ public class Instrument {
 
     public Instrument(File insFile, String noteType, int transpose, float volume, boolean singlePitch) {
         try{
+            insFileName = insFile.getName();
             Synthesizer synth;
             this.noteType = noteType;
             this.transpose = transpose;

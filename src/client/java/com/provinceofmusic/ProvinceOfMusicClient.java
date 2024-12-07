@@ -6,6 +6,10 @@ import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import com.provinceofmusic.recorder.DebugMode;
 import com.provinceofmusic.recorder.MusicRecorder;
+import com.provinceofmusic.screen.ConfigScreen;
+import com.provinceofmusic.screen.SamplePackConfig;
+import com.provinceofmusic.screen.SamplePackEditor;
+import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -29,6 +33,11 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	MusicRecorder musicRecorder = new MusicRecorder();
 	NoteReplacer noteReplacer = new NoteReplacer();
+
+	public static KeyBinding openConfigScreenBinding;
+	public static KeyBinding openSamplePackConfigScreenBinding;
+
+
 
 	DebugMode debugMode = new DebugMode(); //this many not be used but this class needs to be instantiated at least once for it to work
 
@@ -65,9 +74,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		});
 
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 
-		});
 
 		musicRecorder.main();
 		noteReplacer.main();
@@ -78,9 +85,27 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
 		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
+		openConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open POM Settings", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
+		openSamplePackConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Sample Pack Config", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
+
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+
+		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-
+			if(openConfigScreenBinding.wasPressed()){
+				MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
+			}
+			if(openSamplePackConfigScreenBinding.wasPressed()){
+				if(ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
+					if(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack).exists()) {
+						SamplePack pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
+						if(pack != null) {
+							MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(pack)));
+						}
+					}
+				}
+			}
 		});
 	}
 

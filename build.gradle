@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.6-SNAPSHOT'
+	id 'fabric-loom' version '1.9-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -18,7 +18,7 @@ repositories {
 	// for more information about repositories.
 
 	mavenCentral()
-
+	maven { url 'https://maven.fabricmc.net/' }
 	maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
@@ -61,9 +61,9 @@ dependencies {
 
 	modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
 
-	modApi "com.terraformersmc:modmenu:11.0.1"
+	modApi "com.terraformersmc:modmenu:13.0.1"
 
-	modImplementation include("io.github.cottonmc:LibGui:11.1.0+1.21")
+	modImplementation include("io.github.cottonmc:LibGui:12.0.1+1.21.2")
 }
 
 processResources {
@@ -96,8 +96,15 @@ jar {
 
 // configure the maven publication
 publishing {
+	//publications {
+	//	mavenJava(MavenPublication) {
+	//		from components.java
+	//	}
+	//}
+
 	publications {
-		mavenJava(MavenPublication) {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
 			from components.java
 		}
 	}

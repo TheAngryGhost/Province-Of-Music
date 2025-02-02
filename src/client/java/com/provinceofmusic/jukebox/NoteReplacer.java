@@ -88,14 +88,17 @@ public class NoteReplacer implements NoteListener {
                             // Pitch bend value for one semitone up
                             ShortMessage pitchBend = new ShortMessage();
                             ShortMessage volumeChange = new ShortMessage();
+                            //ShortMessage reverbTest = new ShortMessage();
 
                             pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
                             noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * tempInstrument.volume));
                             volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (musicVolume * 127));
+                            //reverbTest.setMessage(ShortMessage.CONTROL_CHANGE, channel, 91, 50);
 
                             tempInstrument.receiver.send(noteOn, -1);
                             tempInstrument.receiver.send(pitchBend, -1);
                             tempInstrument.receiver.send(volumeChange, -1);
+                            //tempInstrument.receiver.send(reverbTest, -1);
                         }
                     } catch (InvalidMidiDataException e) {
                         throw new RuntimeException(e);

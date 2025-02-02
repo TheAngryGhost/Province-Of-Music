@@ -110,6 +110,12 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	}
 
 	public void setupFiles(){
+
+		configsettingsdir = new File("provinceofmusic/");
+		if (!configsettingsdir.exists()){
+			configsettingsdir.mkdirs();
+		}
+
 		recordedmusicdir = new File("provinceofmusic/recorded-music/");
 		if (!recordedmusicdir.exists()){
 			recordedmusicdir.mkdirs();
@@ -123,11 +129,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		playrulesheetsdir = new File("provinceofmusic/playrulesheets/");
 		if (!playrulesheetsdir.exists()){
 			playrulesheetsdir.mkdirs();
-		}
-
-		configsettingsdir = new File("provinceofmusic/");
-		if (!configsettingsdir.exists()){
-			configsettingsdir.mkdirs();
 		}
 
 		samplepacksdir = new File("provinceofmusic/samplepacks");

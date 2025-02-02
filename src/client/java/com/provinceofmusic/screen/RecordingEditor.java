@@ -41,9 +41,13 @@ public class RecordingEditor extends LightweightGuiDescription {
         root.add(openFolderButton, 9, 0, 6, 1);
         Runnable openFolderButtonRunnable = () -> {
             try {
+
                 Desktop.getDesktop().open(ProvinceOfMusicClient.exportedmusicdir.getAbsoluteFile());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println(e);
+
+
+                //throw new RuntimeException(e);
             }
         };
         openFolderButton.setOnClick(openFolderButtonRunnable);

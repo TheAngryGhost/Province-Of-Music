@@ -1,7 +1,7 @@
 package com.provinceofmusic.recorder;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.jukebox.InstrumentSound;
+import com.provinceofmusic.jukebox.NoteSoundMinecraft;
 import com.provinceofmusic.listeners.NoteListener;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -19,14 +19,14 @@ public class MusicRecorder implements NoteListener {
 
     public static KeyBinding recordBinding;
     @Override
-    public void onNotePlayed(String instrument, int ticksPassed, float pitch, int volume) {
+    public void onNotePlayed(NoteSoundMinecraft note) {
         if (!is_writing_to_file) return;
 
-        float pitchValue = NoteListenerHelper.convertPitchMidiToMinecraft(pitch, instrument);
+        //float pitchValue = NoteListenerHelper.convertPitchMidiToMinecraft(pitch, instrument);
 
         try {
             FileWriter myWriter = new FileWriter(file_to_write, true);
-            myWriter.append(NoteListenerHelper.SoundIdToInstrumentSound(instrument).registeredName + "," + time_passed + "," + pitchValue + "," + volume / 100f + "\n");
+            myWriter.append(note.instrument + "," + time_passed + "," + note.pitch + "," + note.volume + "\n");
             myWriter.close();
         } catch (IOException e) {
             ProvinceOfMusicClient.LOGGER.error("Error writing to file " + file_to_write + ".");

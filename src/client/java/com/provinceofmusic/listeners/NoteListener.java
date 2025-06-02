@@ -1,10 +1,11 @@
 package com.provinceofmusic.listeners;
 
 import com.provinceofmusic.jukebox.InstrumentSound;
+import com.provinceofmusic.jukebox.NoteSoundMinecraft;
 
 public interface NoteListener{
 
-    default void onNotePlayed(String instrument, int ticksPassed, float pitch, int volume){
+    default void onNotePlayed(NoteSoundMinecraft sound){
 
     }
 

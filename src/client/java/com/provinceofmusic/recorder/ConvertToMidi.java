@@ -1,7 +1,7 @@
 package com.provinceofmusic.recorder;
 
-import com.provinceofmusic.jukebox.InstrumentSound;
-import com.provinceofmusic.listeners.NoteListenerHelper;
+import com.provinceofmusic.jukebox.NoteSoundMidi;
+import com.provinceofmusic.jukebox.NoteSoundMinecraft;
 import com.provinceofmusic.midi.MidiFile;
 import com.provinceofmusic.midi.MidiTrack;
 import com.provinceofmusic.midi.event.meta.Tempo;
@@ -48,19 +48,15 @@ public class ConvertToMidi {
 
         int currentTick = 0;
         for(int i = 0; i < types.size(); i++){
-            String noteType = types.get(i);
-            int noteTick = Integer.parseInt(ticks.get(i));
-            float notePitch = Float.parseFloat(pitches.get(i));
-            float noteVolume = Float.parseFloat(volumes.get(i));
+            NoteSoundMinecraft noteSoundMinecraft = new NoteSoundMinecraft(types.get(i), Integer.parseInt(ticks.get(i)), Float.parseFloat(pitches.get(i)), Float.parseFloat(volumes.get(i)));
+            NoteSoundMidi noteSoundMidi = new NoteSoundMidi(noteSoundMinecraft);
 
-            InstrumentSound instrumentSound = NoteListenerHelper.SoundIdToInstrumentSound(noteType);
+            currentTick += noteSoundMidi.ticksPassed;
 
-            currentTick += noteTick;
-
-            assert instrumentSound != null;
-            int insertNoteChannel = instrumentSound.exportChannel;
-            int insertNotePitch = (int) NoteListenerHelper.convertPitchMinecraftToMidi(notePitch, noteType);
-            int insertNoteVelocity =  (int) (noteVolume * 100f);
+            assert noteSoundMidi.instrument != null;
+            int insertNoteChannel = noteSoundMidi.instrument.exportChannel;
+            int insertNotePitch = Math.round(noteSoundMidi.pitch);
+            int insertNoteVelocity =  noteSoundMidi.volume;
             int insertNoteTick = currentTick * (240 / 6);
             int insertNoteDuration = 120;
 

@@ -2,6 +2,7 @@ package com.provinceofmusic.listeners;
 
 import com.provinceofmusic.jukebox.InstrumentRemap;
 import com.provinceofmusic.jukebox.InstrumentSound;
+import com.provinceofmusic.jukebox.NoteSoundMinecraft;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,16 +107,8 @@ public class NoteListenerHelper {
     }
 
     public void onSoundPlayed(float pitch, float volume, String id) {
-
-        InstrumentSound instrumentSound = SoundIdToInstrumentSound(id);
-
-        //float insertNotePitch = ((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrumentSound.transpose;
-        assert instrumentSound != null;
-        float insertNotePitch = convertPitchMinecraftToMidi(pitch, id);
-        int insertNoteVelocity =  (int) (volume * 100f);
-
         for (NoteListener hl : listeners){
-            hl.onNotePlayed(id, ellapsedTicks, insertNotePitch, insertNoteVelocity);
+            hl.onNotePlayed(new NoteSoundMinecraft(id, ellapsedTicks, pitch, volume));
         }
         ellapsedTicks = 0;
     }
@@ -154,15 +147,4 @@ public class NoteListenerHelper {
         assert instrument != null;
         return (((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrument.transpose + SoundIdToAdditionalTranspose(id));
     }
-
-    public static float convertPitchMidiToMinecraft(float pitch, String id){
-        InstrumentSound instrument = SoundIdToInstrumentSound(id);
-        assert instrument != null;
-        return (float) Math.pow(2, (((((pitch - instrument.transpose - SoundIdToAdditionalTranspose(id)) - 0.5f) + 1) - 66.5f) / 12f));
-    }
-
-    //public static String verifyLower(){
-//
-   //  }
-
 }

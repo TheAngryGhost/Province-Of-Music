@@ -30,9 +30,11 @@ public class NoteReplacer implements NoteListener {
     public static boolean interupt = false;
     
     @Override
-    public void onNotePlayed(String instrument, int ticksPassed, float pitch, int volume) {
+    public void onNotePlayed(NoteSoundMinecraft note) {
         if (!replaceMusic) return;
-        playMusicFrame(NoteListenerHelper.SoundIdToInstrumentSound(instrument), pitch, volume);
+        NoteSoundMidi noteSoundMidi = new NoteSoundMidi(note);
+        playMusicFrame(noteSoundMidi.instrument, noteSoundMidi.pitch, noteSoundMidi.volume);
+        //playMusicFrame(NoteListenerHelper.SoundIdToInstrumentSound(instrument), pitch, volume);
 
     }
 

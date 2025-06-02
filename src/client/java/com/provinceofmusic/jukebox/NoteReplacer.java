@@ -50,7 +50,15 @@ public class NoteReplacer implements NoteListener {
                 if (instrumentSound.registeredName.equals(tempInstrument.noteType)) {
                     instrumentCache.add(tempInstrument);
 
-                    final int newVolume = Math.max(0, Math.min(volume, 100));
+                    /*
+                    weighted volume function
+                    y=-\left(\frac{1}{100+2x}\right)\left(x-100\right)^{2}+100
+                    */
+
+                    float clampedVolume = Math.max(0, Math.min(volume, 100));
+                    float weightedVolume = (float) (-1*(1/(100+2*clampedVolume)*Math.pow(clampedVolume-100,2))+100);
+
+                    final int newVolume = Math.round(weightedVolume);
 
                     float newPitchBend = pitch - (int)pitch;
 

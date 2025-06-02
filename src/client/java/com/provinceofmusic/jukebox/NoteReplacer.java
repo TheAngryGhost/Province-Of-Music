@@ -30,10 +30,9 @@ public class NoteReplacer implements NoteListener {
     public static boolean interupt = false;
     
     @Override
-    public void onNotePlayed(InstrumentSound instrument, int ticksPassed, float pitch, int volume) {
+    public void onNotePlayed(String instrument, int ticksPassed, float pitch, int volume) {
         if (!replaceMusic) return;
-
-        playMusicFrame(instrument, pitch, volume);
+        playMusicFrame(NoteListenerHelper.SoundIdToInstrumentSound(instrument), pitch, volume);
 
     }
 

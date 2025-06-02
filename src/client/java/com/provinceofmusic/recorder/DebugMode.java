@@ -16,9 +16,9 @@ public class DebugMode implements NoteListener {
         NoteListenerHelper.addListener(this);
     }
     @Override
-    public void onNotePlayed(InstrumentSound instrument, int ticksPassed, float pitch, int volume) {
+    public void onNotePlayed(String instrument, int ticksPassed, float pitch, int volume) {
         if(isOn){
-            String message = "Note Played " + "Ins: " + instrument.registeredName + " Pitch: " + pitch + " Volume: " + volume + " Time: " + Instant.now();
+            String message = "Note Played " + "Ins: " + (NoteListenerHelper.SoundIdToInstrumentSound(instrument).registeredName) + " Pitch: " + pitch + " Volume: " + volume + " Time: " + Instant.now();
             ProvinceOfMusicClient.LOGGER.info("[DEBUG] " + message);
             assert MinecraftClient.getInstance().player != null;
             MinecraftClient.getInstance().player.sendMessage(Text.of("[DEBUG] " + message), false);

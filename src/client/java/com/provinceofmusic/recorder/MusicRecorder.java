@@ -19,14 +19,14 @@ public class MusicRecorder implements NoteListener {
 
     public static KeyBinding recordBinding;
     @Override
-    public void onNotePlayed(InstrumentSound instrument, int ticksPassed, float pitch, int volume) {
+    public void onNotePlayed(String instrument, int ticksPassed, float pitch, int volume) {
         if (!is_writing_to_file) return;
 
         float pitchValue = NoteListenerHelper.convertPitchMidiToMinecraft(pitch, instrument);
 
         try {
             FileWriter myWriter = new FileWriter(file_to_write, true);
-            myWriter.append(instrument.registeredName + "," + time_passed + "," + pitchValue + "," + volume / 100f + "\n");
+            myWriter.append(NoteListenerHelper.SoundIdToInstrumentSound(instrument).registeredName + "," + time_passed + "," + pitchValue + "," + volume / 100f + "\n");
             myWriter.close();
         } catch (IOException e) {
             ProvinceOfMusicClient.LOGGER.error("Error writing to file " + file_to_write + ".");

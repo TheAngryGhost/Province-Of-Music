@@ -59,7 +59,7 @@ public class ConvertToMidi {
 
             assert instrumentSound != null;
             int insertNoteChannel = instrumentSound.exportChannel;
-            int insertNotePitch = (int) NoteListenerHelper.convertPitchMinecraftToMidi(notePitch, instrumentSound);
+            int insertNotePitch = (int) NoteListenerHelper.convertPitchMinecraftToMidi(notePitch, noteType);
             int insertNoteVelocity =  (int) (noteVolume * 100f);
             int insertNoteTick = currentTick * (240 / 6);
             int insertNoteDuration = 120;

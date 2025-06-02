@@ -1,5 +1,6 @@
 package com.provinceofmusic.listeners;
 
+import com.provinceofmusic.jukebox.InstrumentRemap;
 import com.provinceofmusic.jukebox.InstrumentSound;
 
 import java.util.ArrayList;
@@ -27,25 +28,71 @@ public class NoteListenerHelper {
 
     public NoteListenerHelper(){
 
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.harp", new String[]{"minecraft:block.note_block.harp", "minecraft:note.harp"}, 0 , 1));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.bass", new String[]{"minecraft:block.note_block.bass", "minecraft:note.bassattack"}, -24 , 2));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.snare", new String[]{"minecraft:block.note_block.snare", "minecraft:note.snare"}, 0 , 3));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.hat", new String[]{"minecraft:block.note_block.hat", "minecraft:note.hat"}, 0 , 4));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.drum", new String[]{"minecraft:block.note_block.basedrum", "minecraft:note.bd"}, 0 , 5));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.harp", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.harp"), //legacy
+                new InstrumentRemap("minecraft:note.harp"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.harp_lower", -12) // lower
+        }, 0 , 1));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.bass", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.bass"), //legacy
+                new InstrumentRemap("minecraft:note.bassattack"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.bass_lower", -12) // lower
+        }, -24 , 2));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.snare", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.snare"), //legacy
+                new InstrumentRemap("minecraft:note.snare"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.snare_lower", -12) // lower
+        }, 0 , 3));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.hat", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.hat"), //legacy
+                new InstrumentRemap("minecraft:note.hat"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.hat_lower", -12) // lower
+        }, 0 , 4));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.drum", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.basedrum"), //legacy
+                new InstrumentRemap("minecraft:note.bd"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.drum_lower", -12) // lower
+        }, 0 , 5));
 
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.bell", new String[]{"minecraft:block.note_block.bell"}, 24 , 6));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.flute", new String[]{"minecraft:block.note_block.flute"}, 12 , 7));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.guitar", new String[]{"minecraft:block.note_block.guitar"}, -12 , 8));
-
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.brass", 0 , 9));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.kora", -12 , 10));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.marimba", 0 , 11));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.piano", 0 , 12));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.pizz", -12 , 13));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.tamborine", 0 , 14));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.tom", 0 , 15));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.vibraphone", 0 , 16));
-        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.woodblock", 0 , 17));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.bell", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.bell"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.bell_lower", -12) // lower
+        }, 24 , 6));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.flute", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.flute"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.flute_lower", -12) // lower
+        }, 12 , 7));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.guitar", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:block.note_block.guitar"), //legacy
+                new InstrumentRemap("minecraft:wynn.instrument.guitar_lower", -12) // lower
+        }, -12 , 8));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.brass", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.brass_lower", -12) // lower
+        }, 0 , 9));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.kora", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.kora_lower", -12) // lower
+        }, -12 , 10));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.marimba", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.marimba_lower", -12) // lower
+        }, 0 , 11));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.piano", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.piano_lower", -12) // lower
+        }, 0 , 12));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.pizz", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.pizz_lower", -12) // lower
+        }, -12 , 13));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.tamborine", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.tamborine_lower", -12) // lower
+        }, 0 , 14));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.tom", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.tom_lower", -12) // lower
+        }, 0 , 15));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.vibraphone", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.vibraphone_lower", -12) // lower
+        }, 0 , 16));
+        instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.woodblock", new InstrumentRemap[]{
+                new InstrumentRemap("minecraft:wynn.instrument.woodblock_lower", -12) // lower
+        }, 0 , 17));
 
         //legacy
         instrumentSounds.add(new InstrumentSound("minecraft:block.note_block.chime", 24 , 18));
@@ -64,11 +111,11 @@ public class NoteListenerHelper {
 
         //float insertNotePitch = ((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrumentSound.transpose;
         assert instrumentSound != null;
-        float insertNotePitch = convertPitchMinecraftToMidi(pitch, instrumentSound);
+        float insertNotePitch = convertPitchMinecraftToMidi(pitch, id);
         int insertNoteVelocity =  (int) (volume * 100f);
 
         for (NoteListener hl : listeners){
-            hl.onNotePlayed(instrumentSound, ellapsedTicks, insertNotePitch, insertNoteVelocity);
+            hl.onNotePlayed(id, ellapsedTicks, insertNotePitch, insertNoteVelocity);
         }
         ellapsedTicks = 0;
     }
@@ -81,8 +128,8 @@ public class NoteListenerHelper {
                 return instrumentSound;
             }
             else {
-                for (String tempSound2 : tempSound.remaps) {
-                    if(tempSound2.equals(id)){
+                for (InstrumentRemap remap : tempSound.remaps) {
+                    if(remap.remapSoundName.equals(id)){
                         instrumentSound = tempSound;
                         return instrumentSound;
                     }
@@ -92,11 +139,30 @@ public class NoteListenerHelper {
         return null;
     }
 
-    public static float convertPitchMinecraftToMidi(float pitch, InstrumentSound instrument){
-        return (((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrument.transpose);
+    public static int SoundIdToAdditionalTranspose(String id){
+        InstrumentSound instrumentSound = SoundIdToInstrumentSound(id);
+        for (InstrumentRemap remap : instrumentSound.remaps) {
+            if(remap.remapSoundName.equals(id)){
+                return remap.additionalTranspose;
+            }
+        }
+        return 0;
     }
 
-    public static float convertPitchMidiToMinecraft(float pitch, InstrumentSound instrument){
-        return (float) Math.pow(2, (((((pitch - instrument.transpose) - 0.5f) + 1) - 66.5f) / 12f));
+    public static float convertPitchMinecraftToMidi(float pitch, String id){
+        InstrumentSound instrument = SoundIdToInstrumentSound(id);
+        assert instrument != null;
+        return (((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrument.transpose + SoundIdToAdditionalTranspose(id));
     }
+
+    public static float convertPitchMidiToMinecraft(float pitch, String id){
+        InstrumentSound instrument = SoundIdToInstrumentSound(id);
+        assert instrument != null;
+        return (float) Math.pow(2, (((((pitch - instrument.transpose - SoundIdToAdditionalTranspose(id)) - 0.5f) + 1) - 66.5f) / 12f));
+    }
+
+    //public static String verifyLower(){
+//
+   //  }
+
 }

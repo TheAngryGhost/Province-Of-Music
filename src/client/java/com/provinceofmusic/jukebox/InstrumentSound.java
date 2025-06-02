@@ -5,7 +5,7 @@ import java.util.Collections;
 
 public class InstrumentSound {
     public String registeredName;
-    public ArrayList<String> remaps = new ArrayList<>();
+    public ArrayList<InstrumentRemap> remaps = new ArrayList<>();
     public int transpose;
     public int exportChannel;
 
@@ -13,17 +13,17 @@ public class InstrumentSound {
 
     }
 
-    public InstrumentSound(String registeredName, ArrayList<String> remaps, int transpose, int exportChannel){
+    public InstrumentSound(String registeredName, ArrayList<InstrumentRemap> remaps, int transpose, int exportChannel){
         this.registeredName = registeredName;
         this.remaps = remaps;
         this.transpose = transpose;
         this.exportChannel = exportChannel;
     }
 
-    public InstrumentSound(String registeredName, String[] remaps, int transpose, int exportChannel){
+    public InstrumentSound(String registeredName, InstrumentRemap[] remaps, int transpose, int exportChannel){
         this.registeredName = registeredName;
 
-        ArrayList<String> temp = new ArrayList<>();
+        ArrayList<InstrumentRemap> temp = new ArrayList<>();
         Collections.addAll(temp, remaps);
         this.remaps = temp;
         this.transpose = transpose;

@@ -1,6 +1,7 @@
 package com.provinceofmusic.mixin.client;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
+import com.provinceofmusic.jukebox.InstrumentRemap;
 import com.provinceofmusic.jukebox.InstrumentSound;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.listeners.NoteListenerHelper;
@@ -24,8 +25,8 @@ public class SoundRedirectMixin{
                 }
             }
             else {
-                for (String tempSound2 : tempSound.remaps) {
-                    if(tempSound2.equals(sound.getId().toString())){
+                for (InstrumentRemap remap : tempSound.remaps) {
+                    if(remap.equals(sound.getId().toString())){
                         ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
                         if(NoteReplacer.replaceMusic && ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
                             info.cancel();

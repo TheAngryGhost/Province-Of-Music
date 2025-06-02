@@ -26,7 +26,7 @@ public class SoundRedirectMixin{
             }
             else {
                 for (InstrumentRemap remap : tempSound.remaps) {
-                    if(remap.equals(sound.getId().toString())){
+                    if(remap.remapSoundName.equals(sound.getId().toString())){
                         ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
                         if(NoteReplacer.replaceMusic && ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
                             info.cancel();

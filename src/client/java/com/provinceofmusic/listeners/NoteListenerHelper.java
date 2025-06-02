@@ -32,67 +32,67 @@ public class NoteListenerHelper {
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.harp", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.harp"), //legacy
                 new InstrumentRemap("minecraft:note.harp"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.harp_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.harp_lower", -24) // lower
         }, 0 , 1));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.bass", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.bass"), //legacy
                 new InstrumentRemap("minecraft:note.bassattack"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.bass_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.bass_lower", -24) // lower
         }, -24 , 2));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.snare", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.snare"), //legacy
                 new InstrumentRemap("minecraft:note.snare"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.snare_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.snare_lower", -24) // lower
         }, 0 , 3));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.hat", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.hat"), //legacy
                 new InstrumentRemap("minecraft:note.hat"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.hat_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.hat_lower", -24) // lower
         }, 0 , 4));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.drum", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.basedrum"), //legacy
                 new InstrumentRemap("minecraft:note.bd"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.drum_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.drum_lower", -24) // lower
         }, 0 , 5));
 
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.bell", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.bell"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.bell_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.bell_lower", -24) // lower
         }, 24 , 6));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.flute", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.flute"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.flute_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.flute_lower", -24) // lower
         }, 12 , 7));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.guitar", new InstrumentRemap[]{
                 new InstrumentRemap("minecraft:block.note_block.guitar"), //legacy
-                new InstrumentRemap("minecraft:wynn.instrument.guitar_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.guitar_lower", -24) // lower
         }, -12 , 8));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.brass", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.brass_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.brass_lower", -24) // lower
         }, 0 , 9));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.kora", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.kora_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.kora_lower", -24) // lower
         }, -12 , 10));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.marimba", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.marimba_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.marimba_lower", -24) // lower
         }, 0 , 11));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.piano", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.piano_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.piano_lower", -24) // lower
         }, 0 , 12));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.pizz", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.pizz_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.pizz_lower", -24) // lower
         }, -12 , 13));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.tamborine", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.tamborine_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.tamborine_lower", -24) // lower
         }, 0 , 14));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.tom", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.tom_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.tom_lower", -24) // lower
         }, 0 , 15));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.vibraphone", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.vibraphone_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.vibraphone_lower", -24) // lower
         }, 0 , 16));
         instrumentSounds.add(new InstrumentSound("minecraft:wynn.instrument.woodblock", new InstrumentRemap[]{
-                new InstrumentRemap("minecraft:wynn.instrument.woodblock_lower", -12) // lower
+                new InstrumentRemap("minecraft:wynn.instrument.woodblock_lower", -24) // lower
         }, 0 , 17));
 
         //legacy

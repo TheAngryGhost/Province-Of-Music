@@ -2,21 +2,32 @@ package com.provinceofmusic;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.provinceofmusic.download.WMRUpdater;
+import com.provinceofmusic.download.RamManager;
 import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import com.provinceofmusic.recorder.DebugMode;
 import com.provinceofmusic.recorder.MusicRecorder;
 import com.provinceofmusic.screen.ConfigScreen;
-import com.provinceofmusic.screen.SamplePackConfig;
+import com.provinceofmusic.screen.POMSetupScreen;
 import com.provinceofmusic.screen.SamplePackEditor;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Objects;
 
 public class ProvinceOfMusicClient implements ClientModInitializer {
 
@@ -53,11 +65,16 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static int guiSize = 1;
 
+	private boolean popupShown = false;
+
+	private boolean showPopup = false;
+
 	@Override
 	public void onInitializeClient() {
 		setupFiles();
 		getConfigSettings();
 		setupListeners();
+		setupCommands();
     }
 
 	public void setupListeners(){
@@ -77,10 +94,32 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 
 		musicRecorder.main();
-		noteReplacer.main();
-		noteReplacer.RunSetup();
+		if(RamManager.isRamGood()){
+			noteReplacer.main();
+			noteReplacer.RunSetup();
+		}
+		else{
+			showPopup = true;
+		}
+
 
 		ClientTickEvents.START_WORLD_TICK.register(client -> {
+		});
+
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if(ProvinceOfMusicClient.configSettings.activeSamplePack.contains("Wynn Music Remastered") && !ProvinceOfMusicClient.configSettings.activeSamplePack.equals(WMRUpdater.currentVersion)){
+				Text message = Text.literal("[Click here to Update Wynn Music Remastered]")
+						.setStyle(Style.EMPTY
+								.withColor(Formatting.YELLOW)
+								.withClickEvent(new ClickEvent(
+										ClickEvent.Action.RUN_COMMAND,
+										"/updateWMR"
+								))
+						);
+				assert client.player != null;
+				client.player.sendMessage(Text.literal("You are running an outdated version of Wynn Music Remastered").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
+				client.player.sendMessage(message, false);
+			}
 		});
 
 		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
@@ -90,6 +129,13 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 
+		});
+
+		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+			if (screen instanceof TitleScreen && !popupShown && showPopup) {
+				popupShown = true;
+				MinecraftClient.getInstance().setScreen(new CottonClientScreen(new POMSetupScreen(false)));
+			}
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -150,6 +196,10 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 			configSettings = new POMConfigObject();
 			saveConfigSettings();
 		}
+
+		if(Objects.requireNonNull(samplepacksdir.listFiles()).length == 0 && !configSettings.saidNoToDownload){
+			showPopup = true;
+		}
 	}
 
 	public static void saveConfigSettings(){
@@ -165,5 +215,20 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
+		if(ProvinceOfMusicClient.configSettings.activeSamplePack == null){
+			NoteReplacer.replaceMusic = false;
+		}
+	}
+
+	public static void setupCommands(){
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+			dispatcher.register(ClientCommandManager.literal("updateWMR")
+					.executes(context -> {
+						context.getSource().getPlayer().sendMessage(Text.literal("Updating..."), false);
+						WMRUpdater.download();
+						return 1;
+					}));
+		});
 	}
 }

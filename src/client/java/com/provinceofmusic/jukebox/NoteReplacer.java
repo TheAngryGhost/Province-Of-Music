@@ -97,17 +97,17 @@ public class NoteReplacer implements NoteListener {
                             // Pitch bend value for one semitone up
                             ShortMessage pitchBend = new ShortMessage();
                             ShortMessage volumeChange = new ShortMessage();
-                            //ShortMessage reverbTest = new ShortMessage();
+                            ShortMessage reverb = new ShortMessage();
 
                             pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
                             noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * tempInstrument.volume));
                             volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (musicVolume * 127));
-                            //reverbTest.setMessage(ShortMessage.CONTROL_CHANGE, channel, 91, 50);
+                            reverb.setMessage(ShortMessage.CONTROL_CHANGE, channel, 91, 50);
 
                             tempInstrument.receiver.send(noteOn, -1);
                             tempInstrument.receiver.send(pitchBend, -1);
                             tempInstrument.receiver.send(volumeChange, -1);
-                            //tempInstrument.receiver.send(reverbTest, -1);
+                            tempInstrument.receiver.send(reverb, -1);
                         }
                     } catch (InvalidMidiDataException e) {
                         throw new RuntimeException(e);
@@ -160,11 +160,11 @@ public class NoteReplacer implements NoteListener {
                 replaceMusic = !replaceMusic;
                 assert client.player != null;
                 if (replaceMusic) {
-                    ProvinceOfMusicClient.LOGGER.info("Playing better music");
-                    client.player.sendMessage(Text.of("Playing better music"), false);
+                    ProvinceOfMusicClient.LOGGER.info("Playing Sample Pack music");
+                    client.player.sendMessage(Text.of("Playing Sample Pack music"), false);
                 } else {
-                    ProvinceOfMusicClient.LOGGER.info("Playing original music");
-                    client.player.sendMessage(Text.of("Playing original music"), false);
+                    ProvinceOfMusicClient.LOGGER.info("Playing Default music");
+                    client.player.sendMessage(Text.of("Playing Default music"), false);
 
                 }
             }

@@ -4,6 +4,9 @@ import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Sampler {
     //public Receiver receiver = null;
@@ -33,6 +36,8 @@ public class Sampler {
     public static boolean disable = false;
 
     public static ArrayList<Sampler> reallocationQueue = new ArrayList<>();
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     //TODO change this to an actual thread pool
     public static Thread sampleReceiverReallocator = new Thread(){
@@ -183,7 +188,15 @@ public class Sampler {
 
         if(newThreads > 0){
             newThreads--;
-            reallocationQueue.add(this);
+            scheduler.schedule(() -> {
+                try {
+                    System.out.println("ran out of room for sample " + sample.getName());
+                    createNewReciever();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }, 200, TimeUnit.MILLISECONDS);
+            //reallocationQueue.add(this);
         }
     }
 

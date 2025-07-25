@@ -129,7 +129,7 @@ public class NoteReplacer implements NoteListener {
                     for (Sampler sampler : samplers) {
                         if(sampler.sample.toPath().toString().equals(path)){
                             //sampler.variants.add(instrumentDef);
-                            sampler.createNewReciever();
+                            //sampler.createNewReciever();
                             break;
                         }
                     }

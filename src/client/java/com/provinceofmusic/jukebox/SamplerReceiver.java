@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.provinceofmusic.jukebox.NoteReplacer.interupt;
 
@@ -26,9 +29,53 @@ public class SamplerReceiver {
     public long channel6LastPlayTime = 0;
     public long channel7LastPlayTime = 0;
 
-    public ArrayList<Integer> channelCancelQueue = new ArrayList<>();
-    public ArrayList<Integer> pitchCancelQueue = new ArrayList<>();
-    public ArrayList<Long> playTimeQueue = new ArrayList<>();
+    public long channel8LastPlayTime = 0;
+    public long channel9LastPlayTime = 0;
+    public long channel10LastPlayTime = 0;
+    public long channel11LastPlayTime = 0;
+    public long channel12LastPlayTime = 0;
+    public long channel13LastPlayTime = 0;
+    public long channel14LastPlayTime = 0;
+    public long channel15LastPlayTime = 0;
+
+    //TODO remove these 4
+    public static ArrayList<SamplerReceiver> receiverQueue = new ArrayList<>();
+    public static ArrayList<Integer> channelCancelQueue = new ArrayList<>();
+    public static ArrayList<Integer> pitchCancelQueue = new ArrayList<>();
+    public static ArrayList<Long> playTimeQueue = new ArrayList<>();
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    //TODO remove this
+    public static Thread cleanerThread = new Thread(){
+        @Override
+        public void run() {
+            super.run();
+            while(!disable){
+                for(int i = 0; i < playTimeQueue.size(); i++){
+                    if(!playTimeQueue.isEmpty() && System.currentTimeMillis() - playTimeQueue.get(i) > 200){
+                        try {
+                            ShortMessage noteOff = new ShortMessage();
+                            noteOff.setMessage(ShortMessage.NOTE_OFF, channelCancelQueue.get(i), pitchCancelQueue.get(i), 0);
+                            receiverQueue.get(i).receiver.send(noteOff, -1);
+                            channelCancelQueue.remove(i);
+                            pitchCancelQueue.remove(i);
+                            playTimeQueue.remove(i);
+                            receiverQueue.remove(i);
+                            i--;
+                        } catch (InvalidMidiDataException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+                try {
+                    sleep(10);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    };
 
     public static boolean disable = false;
 
@@ -51,36 +98,6 @@ public class SamplerReceiver {
 
             receiver = synth.getReceiver();
             //System.out.println("receiver" + receiver + (receiver == null));
-
-            Thread cleanerThread = new Thread(){
-                @Override
-                public void run() {
-                    super.run();
-                    while(!disable){
-                        for(int i = 0; i < playTimeQueue.size(); i++){
-                            if(System.currentTimeMillis() - playTimeQueue.get(i) > 200){
-                                try {
-                                    ShortMessage noteOff = new ShortMessage();
-                                    noteOff.setMessage(ShortMessage.NOTE_OFF, channelCancelQueue.get(i), pitchCancelQueue.get(i), 0);
-                                    receiver.send(noteOff, -1);
-                                    channelCancelQueue.remove(i);
-                                    pitchCancelQueue.remove(i);
-                                    playTimeQueue.remove(i);
-                                    i--;
-                                } catch (InvalidMidiDataException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-                        try {
-                            sleep(50);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-            };
-            cleanerThread.start();
 
 
         } catch (MidiUnavailableException e) {
@@ -140,6 +157,49 @@ public class SamplerReceiver {
             channel7LastPlayTime = System.currentTimeMillis();
             return 7;
         }
+        //ExtraChannels?
+        if(channel8LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel8LastPlayTime = System.currentTimeMillis();
+            return 8;
+        }
+        if(channel9LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel9LastPlayTime = System.currentTimeMillis();
+            return 9;
+        }
+        if(channel10LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel10LastPlayTime = System.currentTimeMillis();
+            return 10;
+        }
+        if(channel11LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel11LastPlayTime = System.currentTimeMillis();
+            return 11;
+        }
+        if(channel12LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel12LastPlayTime = System.currentTimeMillis();
+            return 8;
+        }
+        if(channel13LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel13LastPlayTime = System.currentTimeMillis();
+            return 13;
+        }
+        if(channel14LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel14LastPlayTime = System.currentTimeMillis();
+            return 14;
+        }
+        if(channel15LastPlayTime < System.currentTimeMillis() - elapsedTimeTillFree){
+            //System.out.println("using channel 7");
+            channel15LastPlayTime = System.currentTimeMillis();
+            return 15;
+        }
+
+
         //System.out.println("using channel -1");
         return -1;
     }
@@ -151,7 +211,7 @@ public class SamplerReceiver {
             if(!override) {
                 return false;
             }
-            channel = (int)(Math.random() * 8);
+            channel = (int)(Math.random() * 16);
         }
 
         //System.out.println("channel " + channel);
@@ -211,7 +271,7 @@ public class SamplerReceiver {
         }
 
         try {
-            if(!interupt){
+            if(!interupt){ //TODO try and reremember what interupt does
                 ShortMessage noteOn = new ShortMessage();
                 // Pitch bend value for one semitone up
                 ShortMessage pitchBend = new ShortMessage();
@@ -228,10 +288,22 @@ public class SamplerReceiver {
                 receiver.send(volumeChange, -1);
                 receiver.send(reverb, -1);
 
+                /*
                 channelCancelQueue.add(channel);
                 pitchCancelQueue.add(pitchAfterSinglePitch);
                 playTimeQueue.add(System.currentTimeMillis());
-
+                receiverQueue.add(this);
+                 */
+                int finalChannel = channel;
+                scheduler.schedule(() -> {
+                    try {
+                        ShortMessage off = new ShortMessage();
+                        off.setMessage(ShortMessage.NOTE_OFF, finalChannel, pitchAfterSinglePitch, 0);
+                        receiver.send(off, -1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }, 200, TimeUnit.MILLISECONDS);
             }
         } catch (InvalidMidiDataException e) {
             throw new RuntimeException(e);

@@ -31,6 +31,38 @@ public class Sampler {
     public float newThreads = 0;
 
     public static boolean disable = false;
+
+    public static ArrayList<Sampler> reallocationQueue = new ArrayList<>();
+
+    //TODO change this to an actual thread pool
+    public static Thread sampleReceiverReallocator = new Thread(){
+        @Override
+        public void run() {
+            super.run();
+            while (!disable){
+                while(!reallocationQueue.isEmpty()){
+                    Sampler currentSampler = reallocationQueue.getFirst();
+                    System.out.println("ran out of room for sample " + currentSampler.sample.getName());
+                    currentSampler.createNewReciever();
+                    reallocationQueue.removeFirst();
+                    try {
+                        sleep(150);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                try {
+                    sleep(50);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            //createNewReciever();
+            //createNewReciever().playNote(pitch,volume,instrumentDef);
+            //TODO make it play on this receiver once everything else works
+        }
+    };
     /*
     public Sampler(File insFile, String noteType) {
         try{
@@ -151,24 +183,8 @@ public class Sampler {
 
         if(newThreads > 0){
             newThreads--;
+            reallocationQueue.add(this);
         }
-        else{
-            return;
-        }
-
-        Thread sampleReceiverReallocator = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                System.out.println("ran out of room for sample " + sample.getName());
-                createNewReciever();
-
-                //createNewReciever();
-                //createNewReciever().playNote(pitch,volume,instrumentDef);
-                //TODO make it play on this receiver once everything else works
-            }
-        };
-        sampleReceiverReallocator.start();
     }
 
     /*

@@ -9,10 +9,9 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 
-import javax.sound.midi.ControllerEventListener;
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,12 +21,14 @@ public class NoteReplacer implements NoteListener {
     public static KeyBinding replaceNoteBinding;
     
     
-    public static ArrayList<Instrument> instruments = new ArrayList<>();
+    public static ArrayList<Sampler> samplers = new ArrayList<>();
     public static boolean replaceMusic = true;
 
     public static float musicVolume = 0;
 
     public static boolean interupt = false;
+
+    public static SamplePack pack;
     
     @Override
     public void onNotePlayed(NoteSoundMinecraft note) {
@@ -38,110 +39,42 @@ public class NoteReplacer implements NoteListener {
 
     }
 
-    public static void playMusicFrame(InstrumentSound instrumentSound, float pitch, int volume){
-        //this function is written like this to produce the least amount of TimerTasks possible
+    public static void playMusicFrame(Instrument instrument, float pitch, int volume){
+        //this function is written like this to produce the least amount of TimerTasks possible //TODO remove this
 
-        ArrayList<Instrument> instrumentCache = new ArrayList<>();
-        ArrayList<Integer> channelCache = new ArrayList<>();
-        musicVolume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS) * MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.MASTER);
-
+        ArrayList<Sampler> samplerCache = new ArrayList<>(); //TODO remove this
+        ArrayList<Integer> channelCache = new ArrayList<>(); //TODO remove this
+        musicVolume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS) * MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.MASTER); //TODO remove this
+        //TODO remove musicVolume
         if(!interupt){
-            for (Instrument tempInstrument : instruments) {
-                if (instrumentSound.registeredName.equals(tempInstrument.noteType)) {
-                    instrumentCache.add(tempInstrument);
-
-                    /*
-                    weighted volume function
-                    y=-\left(\frac{1}{100+2x}\right)\left(x-100\right)^{2}+100
-                    */
-
-                    float clampedVolume = Math.max(0, Math.min(volume, 100));
-                    float weightedVolume = (float) (-1*(1/(100+2*clampedVolume)*Math.pow(clampedVolume-100,2))+100);
-
-                    final int newVolume = Math.round(weightedVolume);
-
-                    float newPitchBend = pitch - (int)pitch;
-
-                    int channel = tempInstrument.channel;
-                    channelCache.add(channel);
-
-                    int pitchBendValue = (int)(8192 + 4096 * newPitchBend); // Center (8192) + One semitone (4096)
-                    int lsb = pitchBendValue & 0x7F; // Least significant 7 bits
-                    int msb = (pitchBendValue >> 7) & 0x7F; // Most significant 7 bits
-
-                    int pitchAfterSinglePitch;
-                    if (tempInstrument.singlePitch) {
-                        pitchAfterSinglePitch = 60 + tempInstrument.transpose;
-                    }
-                    else{
-                        pitchAfterSinglePitch = (int)pitch + tempInstrument.transpose;
-                    }
-                    if(pitchAfterSinglePitch < 0 || pitchAfterSinglePitch > 127){
-                        ProvinceOfMusicClient.LOGGER.error("Note Pitch out of Range (Your transpose value is too extreme of a value. If not using single pitch : originalPitch + transpose is > 127 or < 0. If using single pitch : 60 + transpose is > 127 or < 0) Value: " + tempInstrument.transpose + "Note Type: " + tempInstrument.noteType);
-                        return;
-                    }
-                    if(tempInstrument.volume < 0 || tempInstrument.volume > 1){
-                        ProvinceOfMusicClient.LOGGER.error("Note Volume out of Range (Your Volume value is too extreme of a value. Keep it between 0 and 1) Value: " + tempInstrument.volume + "Note Type: " + tempInstrument.noteType);
-                        return;
-                    }
-
-                    if(tempInstrument.receiver == null){
-                        ProvinceOfMusicClient.LOGGER.error("Could not use Instrument. File could be missing or corrupt. File: " + tempInstrument.insFileName + "Note Type: " + tempInstrument.noteType);
-                        return;
-                    }
 
 
-                    try {
-                        if(!interupt){
-                            ShortMessage noteOn = new ShortMessage();
-                            // Pitch bend value for one semitone up
-                            ShortMessage pitchBend = new ShortMessage();
-                            ShortMessage volumeChange = new ShortMessage();
-                            ShortMessage reverb = new ShortMessage();
 
-                            pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
-                            noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * tempInstrument.volume));
-                            volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (musicVolume * 127));
-                            reverb.setMessage(ShortMessage.CONTROL_CHANGE, channel, 91, 50);
-
-                            tempInstrument.receiver.send(noteOn, -1);
-                            tempInstrument.receiver.send(pitchBend, -1);
-                            tempInstrument.receiver.send(volumeChange, -1);
-                            tempInstrument.receiver.send(reverb, -1);
+            for (InstrumentDef instrumentDef : pack.instrumentDefs) {
+                if(instrumentDef.noteType.equals(instrument.registeredName)){
+                    String path = ProvinceOfMusicClient.samplepacksdir + "\\" + pack.name + "\\" + "instrumentfiles" + "\\" + instrumentDef.dir;
+                    for (Sampler sampler : samplers) {
+                        if(sampler.sample.toPath().toString().equals(path)){
+                            //sampler.variants.add(instrumentDef);
+                            //System.out.println(sampler.sample.toPath());
+                            //System.out.println(path);
+                            sampler.playNoteVariant(pitch,volume,instrumentDef);
+                            break;
                         }
-                    } catch (InvalidMidiDataException e) {
-                        throw new RuntimeException(e);
                     }
-                    tempInstrument.incrementChannel();
                 }
+
             }
 
 
-            Timer timer = new Timer(true);
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        for (int i = 0; i < instrumentCache.size(); i++) {
-                            Instrument instrument = instrumentCache.get(i);
-                            int channel = channelCache.get(i);
-                            int pitchAfterSinglePitch;
-                            if (instrument.singlePitch) {
-                                pitchAfterSinglePitch = 60 + instrument.transpose;
-                            } else {
-                                pitchAfterSinglePitch = (int) pitch + instrument.transpose;
-                            }
-                            ShortMessage noteOff = new ShortMessage();
-                            noteOff.setMessage(ShortMessage.NOTE_OFF, channel, pitchAfterSinglePitch, 0);
-                            instrument.receiver.send(noteOff, -1);
-                        }
 
-                    } catch (InvalidMidiDataException e) {
-                        throw new RuntimeException(e);
-                    }
+            /*
+            for (Sampler tempSampler : samplers) {
+                if (instrument.registeredName.equals(tempSampler.noteType)) {
+                    tempSampler.playNote(pitch,volume);
                 }
-            };
-            timer.schedule(task, 200);
+            }
+            */
 
         }
 
@@ -175,10 +108,36 @@ public class NoteReplacer implements NoteListener {
 
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
             ProvinceOfMusicClient.LOGGER.debug("Trying to load SamplePack");
-            instruments = null;
+            //samplers = null;
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null && SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack).exists()) {
-                SamplePack pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
-                instruments = pack.getInstruments(instruments);
+                pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
+
+                //creating Samplers
+                ArrayList<File> sampleFiles = pack.getInstrumentFiles();
+                for (File file : sampleFiles){
+                    if (file.exists()){
+                        Sampler temp = new Sampler(file);
+                        samplers.add(temp);
+                    }
+                    else{
+                        ProvinceOfMusicClient.LOGGER.warn("sf2 file not found File: " + file + " Ignoring this instrument");
+                    }
+                }
+                //setting variants //TODO remove dead code of variants so delete variants
+                for (InstrumentDef instrumentDef : pack.instrumentDefs) {
+                    String path = ProvinceOfMusicClient.samplepacksdir + "\\" + pack.name + "\\" + "instrumentfiles" + "\\" + instrumentDef.dir;
+                    for (Sampler sampler : samplers) {
+                        if(sampler.sample.toPath().toString().equals(path)){
+                            //sampler.variants.add(instrumentDef);
+                            sampler.createNewReciever();
+                            break;
+                        }
+                    }
+                }
+
+                //TODO add extra recievers for instruments of high frequency like all the kick snare hi hat harp piano bass
+
+                //samplers = pack.getInstruments(samplers);
                 ProvinceOfMusicClient.LOGGER.debug("Loaded SamplePack successfully");
             }
             else{

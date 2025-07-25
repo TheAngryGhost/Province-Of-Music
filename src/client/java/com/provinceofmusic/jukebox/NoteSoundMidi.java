@@ -3,12 +3,12 @@ package com.provinceofmusic.jukebox;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 
 public class NoteSoundMidi {
-    public InstrumentSound instrument;
+    public Instrument instrument;
     public int ticksPassed;
     public float pitch;
     public int volume;
 
-    public NoteSoundMidi(InstrumentSound instrument, int ticksPassed, float pitch, int volume){
+    public NoteSoundMidi(Instrument instrument, int ticksPassed, float pitch, int volume){
         this.instrument = instrument;
         this.ticksPassed = ticksPassed;
         this.pitch = pitch;

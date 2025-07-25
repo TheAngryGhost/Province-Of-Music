@@ -2,7 +2,7 @@ package com.provinceofmusic.mixin.client;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.InstrumentRemap;
-import com.provinceofmusic.jukebox.InstrumentSound;
+import com.provinceofmusic.jukebox.Instrument;
 import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import net.minecraft.client.sound.SoundInstance;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SoundRedirectMixin{
     @Inject(method = "play", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundInstance;getVolume()F"), cancellable = true)
     public void onPlaySound(SoundInstance sound, CallbackInfo info) {
-        for(InstrumentSound tempSound : NoteListenerHelper.instrumentSounds){
+        for(Instrument tempSound : NoteListenerHelper.instruments){
             if(tempSound.registeredName.equals(sound.getId().toString())){
                 ProvinceOfMusicClient.noteListenerHelper.onSoundPlayed(sound.getPitch(), sound.getVolume(), sound.getId().toString());
                 if(NoteReplacer.replaceMusic && ProvinceOfMusicClient.configSettings.activeSamplePack != null) {

@@ -37,8 +37,8 @@ public class NoteTypePickerScreen extends LightweightGuiDescription {
         backButton.setOnClick(backButtonRunnable);
 
         ArrayList<String> data = new ArrayList<>();
-        for (int i = 0; i < NoteListenerHelper.instrumentSounds.size(); i++){
-            data.add(NoteListenerHelper.instrumentSounds.get(i).registeredName);
+        for (int i = 0; i < NoteListenerHelper.instruments.size(); i++){
+            data.add(NoteListenerHelper.instruments.get(i).registeredName);
         }
         BiConsumer<String, WButton> configurator = (String s, WButton destination) -> {
             destination.setLabel(Text.literal(s));

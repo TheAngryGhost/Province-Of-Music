@@ -1,6 +1,5 @@
 package com.provinceofmusic.listeners;
 
-import com.provinceofmusic.jukebox.InstrumentSound;
 import com.provinceofmusic.jukebox.NoteSoundMinecraft;
 
 public interface NoteListener{

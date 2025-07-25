@@ -16,7 +16,7 @@ public class SamplePack {
     public String author = "None Listed";
     public ArrayList<InstrumentDef> instrumentDefs = new ArrayList<>();
 
-    public ArrayList<Instrument> getInstruments(ArrayList<Instrument> out){
+    public ArrayList<Sampler> getInstruments(ArrayList<Sampler> out){
         if(out == null){
             out = new ArrayList<>();
         }
@@ -26,7 +26,7 @@ public class SamplePack {
         for (InstrumentDef instrumentDef : instrumentDefs) {
             File file = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDef.dir);
             if(file.exists()){
-                Instrument temp = new Instrument(file, instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
+                Sampler temp = new Sampler(file, instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
                 out.add(temp);
             }
             else{

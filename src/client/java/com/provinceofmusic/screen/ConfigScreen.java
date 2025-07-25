@@ -7,7 +7,6 @@ import com.provinceofmusic.recorder.DebugMode;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
-import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -63,7 +62,7 @@ public class ConfigScreen extends LightweightGuiDescription {
                 TimerTask task = new TimerTask() {
                     @Override
                     public void run() {
-                        NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.instruments);
+                        NoteReplacer.samplers = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.samplers);
                         NoteReplacer.interupt = false;
                     }
                 };

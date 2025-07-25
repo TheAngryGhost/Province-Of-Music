@@ -92,7 +92,7 @@ public class WMRUpdater {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    NoteReplacer.instruments = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.instruments);
+                    NoteReplacer.samplers = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.samplers);
                     NoteReplacer.interupt = false;
                 }
             };

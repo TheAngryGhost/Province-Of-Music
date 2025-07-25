@@ -51,7 +51,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
                 if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name)){
                     ProvinceOfMusicClient.configSettings.activeSamplePack = null;
                     ProvinceOfMusicClient.saveConfigSettings();
-                    NoteReplacer.instruments = new ArrayList<>();
+                    NoteReplacer.samplers = new ArrayList<>();
                 }
             }
             SamplePack.DeletePack(thisPack.name);
@@ -201,7 +201,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
                     @Override
                     public void run() {
                         ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
-                        NoteReplacer.instruments = thisPack.getInstruments(NoteReplacer.instruments);
+                        NoteReplacer.samplers = thisPack.getInstruments(NoteReplacer.samplers);
                         ProvinceOfMusicClient.saveConfigSettings();
                         NoteReplacer.interupt = false;
                     }

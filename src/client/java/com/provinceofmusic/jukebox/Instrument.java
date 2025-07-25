@@ -1,98 +1,38 @@
 package com.provinceofmusic.jukebox;
 
-import com.provinceofmusic.midi.event.Controller;
-
-import javax.sound.midi.*;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Instrument {
-    public Receiver receiver = null;
+    public String registeredName;
+    public ArrayList<InstrumentRemap> remaps = new ArrayList<>();
+    public int transpose;
+    public int exportChannel;
 
-    public String noteType;
+    public Instrument(){
 
-    public int transpose = 0;
-
-    public float volume = 1f;
-
-    public boolean singlePitch = false;
-
-    public int channel = 0;
-
-    public String insFileName;
-
-    public Instrument(File insFile, String noteType) {
-        try{
-            insFileName = insFile.getName();
-            Synthesizer synth;
-            this.noteType = noteType;
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-            synth.unloadAllInstruments(synth.getDefaultSoundbank());
-
-            // Load the custom soundbank
-            Soundbank soundbank = MidiSystem.getSoundbank(insFile);
-            synth.loadAllInstruments(soundbank);
-
-            receiver = synth.getReceiver();
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidMidiDataException | IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    public Instrument(File insFile, String noteType, int transpose) {
-        try{
-            insFileName = insFile.getName();
-            Synthesizer synth;
-            this.noteType = noteType;
-            this.transpose = transpose;
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-            synth.unloadAllInstruments(synth.getDefaultSoundbank());
-
-            // Load the custom soundbank
-            Soundbank soundbank = MidiSystem.getSoundbank(insFile);
-            synth.loadAllInstruments(soundbank);
-
-            receiver = synth.getReceiver();
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidMidiDataException | IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Instrument(String registeredName, ArrayList<InstrumentRemap> remaps, int transpose, int exportChannel){
+        this.registeredName = registeredName;
+        this.remaps = remaps;
+        this.transpose = transpose;
+        this.exportChannel = exportChannel;
     }
 
-    public Instrument(File insFile, String noteType, int transpose, float volume, boolean singlePitch) {
-        try{
-            insFileName = insFile.getName();
-            Synthesizer synth;
-            this.noteType = noteType;
-            this.transpose = transpose;
-            this.volume = volume;
-            this.singlePitch = singlePitch;
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-            synth.unloadAllInstruments(synth.getDefaultSoundbank());
+    public Instrument(String registeredName, InstrumentRemap[] remaps, int transpose, int exportChannel){
+        this.registeredName = registeredName;
 
-            // Load the custom soundbank
-            Soundbank soundbank = MidiSystem.getSoundbank(insFile);
-            synth.loadAllInstruments(soundbank);
-
-            receiver = synth.getReceiver();
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidMidiDataException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        ArrayList<InstrumentRemap> temp = new ArrayList<>();
+        Collections.addAll(temp, remaps);
+        this.remaps = temp;
+        this.transpose = transpose;
+        this.exportChannel = exportChannel;
     }
 
-    public void incrementChannel(){
-        channel++;
-        if(channel > 8 - 1){
-            channel = 0;
-        }
+    public Instrument(String registeredName, int transpose, int exportChannel){
+        this.registeredName = registeredName;
+        this.transpose = transpose;
+        this.exportChannel = exportChannel;
     }
-
 }

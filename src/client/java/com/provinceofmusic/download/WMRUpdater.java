@@ -87,20 +87,6 @@ public class WMRUpdater {
         ProvinceOfMusicClient.configSettings.activeSamplePack = currentVersion;
         ProvinceOfMusicClient.saveConfigSettings();
 
-        if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
-            NoteReplacer.interupt = true;
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    NoteReplacer.samplers = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.samplers);
-                    NoteReplacer.interupt = false;
-                }
-            };
-
-            Timer timer = new Timer(true);
-            timer.schedule(task, 300);
-        }
-
         try {
             Files.delete(Path.of(destination));
         } catch (IOException e) {

@@ -38,13 +38,15 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ProvinceOfMusicClient implements ClientModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("provinceofmusic");
 
-	MusicRecorder musicRecorder = new MusicRecorder();
-	NoteReplacer noteReplacer = new NoteReplacer();
+	public static MusicRecorder musicRecorder = new MusicRecorder();
+	public static NoteReplacer noteReplacer = new NoteReplacer();
 
 	public static KeyBinding openConfigScreenBinding;
 	public static KeyBinding openSamplePackConfigScreenBinding;
@@ -91,9 +93,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		});
 
-		Sampler.sampleReceiverReallocator.start();
-		SamplerReceiver.cleanerThread.start();
-
 		musicRecorder.main();
 		if(RamManager.isRamGood()){
 			noteReplacer.main();
@@ -108,6 +107,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			//TODO add a one min delay after world start up before this is ran
 			if(ProvinceOfMusicClient.configSettings.activeSamplePack.contains("Wynn Music Remastered") && !ProvinceOfMusicClient.configSettings.activeSamplePack.equals(WMRUpdater.currentVersion)){
 				Text message = Text.literal("[Click here to Update Wynn Music Remastered]")
 						.setStyle(Style.EMPTY
@@ -124,7 +124,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		});
 
 		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
-		NoteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
+		noteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
 		openConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open POM Settings", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
 		openSamplePackConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Sample Pack Config", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
 
@@ -219,6 +219,21 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		if(ProvinceOfMusicClient.configSettings.activeSamplePack == null){
 			NoteReplacer.replaceMusic = false;
+		}
+		else {
+			if(RamManager.isRamGood()) {
+				NoteReplacer.interupt = true;
+				TimerTask task = new TimerTask() {
+					@Override
+					public void run() {
+						noteReplacer.RunSetup();
+						NoteReplacer.interupt = false;
+					}
+				};
+
+				Timer timer = new Timer(true);
+				timer.schedule(task, 300);
+			}
 		}
 	}
 

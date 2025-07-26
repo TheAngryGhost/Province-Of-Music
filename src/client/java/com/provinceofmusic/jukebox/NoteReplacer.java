@@ -9,12 +9,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.ShortMessage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class NoteReplacer implements NoteListener {
 
@@ -58,7 +54,7 @@ public class NoteReplacer implements NoteListener {
                             //sampler.variants.add(instrumentDef);
                             //System.out.println(sampler.sample.toPath());
                             //System.out.println(path);
-                            sampler.playNoteVariant(pitch,volume,instrumentDef);
+                            sampler.playNote(pitch,volume,instrumentDef);
                             break;
                         }
                     }
@@ -104,40 +100,16 @@ public class NoteReplacer implements NoteListener {
         });
     }
 
+    //TODO make the save changes run this instead
     public void RunSetup(){
 
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
             ProvinceOfMusicClient.LOGGER.debug("Trying to load SamplePack");
-            //samplers = null;
+
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null && SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack).exists()) {
                 pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
+                samplers = pack.getInstruments(NoteReplacer.samplers);
 
-                //creating Samplers
-                ArrayList<File> sampleFiles = pack.getInstrumentFiles();
-                for (File file : sampleFiles){
-                    if (file.exists()){
-                        Sampler temp = new Sampler(file);
-                        samplers.add(temp);
-                    }
-                    else{
-                        ProvinceOfMusicClient.LOGGER.warn("sf2 file not found File: " + file + " Ignoring this instrument");
-                    }
-                }
-                //setting variants //TODO remove dead code of variants so delete variants
-                for (InstrumentDef instrumentDef : pack.instrumentDefs) {
-                    String path = ProvinceOfMusicClient.samplepacksdir + "\\" + pack.name + "\\" + "instrumentfiles" + "\\" + instrumentDef.dir;
-                    for (Sampler sampler : samplers) {
-                        if(sampler.sample.toPath().toString().equals(path)){
-                            //sampler.variants.add(instrumentDef);
-                            //sampler.createNewReciever();
-                            break;
-                        }
-                    }
-                }
-
-                //TODO add extra recievers for instruments of high frequency like all the kick snare hi hat harp piano bass
-
-                //samplers = pack.getInstruments(samplers);
                 ProvinceOfMusicClient.LOGGER.debug("Loaded SamplePack successfully");
             }
             else{

@@ -51,7 +51,6 @@ public class SamplePackEditor extends LightweightGuiDescription {
                 if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name)){
                     ProvinceOfMusicClient.configSettings.activeSamplePack = null;
                     ProvinceOfMusicClient.saveConfigSettings();
-                    NoteReplacer.samplers = new ArrayList<>();
                 }
             }
             SamplePack.DeletePack(thisPack.name);
@@ -187,7 +186,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
     public void SaveChanges(){
         copyChangesToCache();
-        String namecache = thisPack.name;
+        String nameCache = thisPack.name;
 
         SamplePack.RenameSamplePack(thisPack, nameField.getText());
         thisPack.author = authorField.getText();
@@ -195,20 +194,9 @@ public class SamplePackEditor extends LightweightGuiDescription {
         thisPack.WriteSamplePack();
 
         if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
-            if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name) || ProvinceOfMusicClient.configSettings.activeSamplePack.equals(namecache)){
-                NoteReplacer.interupt = true;
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
-                        NoteReplacer.samplers = thisPack.getInstruments(NoteReplacer.samplers);
-                        ProvinceOfMusicClient.saveConfigSettings();
-                        NoteReplacer.interupt = false;
-                    }
-                };
-                Timer timer = new Timer(true);
-                timer.schedule(task, 300);
-
+            if(ProvinceOfMusicClient.configSettings.activeSamplePack.equals(thisPack.name) || ProvinceOfMusicClient.configSettings.activeSamplePack.equals(nameCache)){
+                ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;
+                ProvinceOfMusicClient.saveConfigSettings();
             }
         }
     }

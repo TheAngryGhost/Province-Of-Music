@@ -57,19 +57,6 @@ public class ConfigScreen extends LightweightGuiDescription {
 
             ProvinceOfMusicClient.saveConfigSettings();
 
-            if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
-                NoteReplacer.interupt = true;
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        NoteReplacer.samplers = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack)).getInstruments(NoteReplacer.samplers);
-                        NoteReplacer.interupt = false;
-                    }
-                };
-
-                Timer timer = new Timer(true);
-                timer.schedule(task, 300);
-            }
 
             WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
             root.add(savedPopup, 0, 10, 2, 1);

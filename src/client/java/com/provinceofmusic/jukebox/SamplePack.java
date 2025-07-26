@@ -16,17 +16,42 @@ public class SamplePack {
     public String author = "None Listed";
     public ArrayList<InstrumentDef> instrumentDefs = new ArrayList<>();
 
+
+    //TODO rewrite this code is complete garbage
     public ArrayList<Sampler> getInstruments(ArrayList<Sampler> out){
+        /*
         if(out == null){
             out = new ArrayList<>();
         }
         else{
             out.clear();
         }
+        */
+        //some strange garbage collector thing
+        if(out != null && !out.isEmpty()){
+            for(Sampler s: out){
+                for(SamplerReceiver s2: s.samplerReceivers){
+                    //s2.receiver.close();
+                    //s2.scheduler.close();
+                    s2.receiver.close();
+                    s2.scheduler.shutdownNow();
+                }
+                s.samplerReceivers.clear();
+                //s.scheduler.close();
+                s.scheduler.shutdownNow();
+                //s.samplerReceivers = null;
+            }
+            //samplers = null;
+            out.clear();
+            //samplers = new ArrayList<>();
+            //return;
+        }
+
+
         for (InstrumentDef instrumentDef : instrumentDefs) {
             File file = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDef.dir);
             if(file.exists()){
-                Sampler temp = new Sampler(file, instrumentDef.noteType, instrumentDef.transpose, instrumentDef.volume, instrumentDef.singlePitch);
+                Sampler temp = new Sampler(file);
                 out.add(temp);
             }
             else{
@@ -36,6 +61,17 @@ public class SamplePack {
         return out;
     }
 
+    //TODO rewrite this code is complete garbage and this shouldn't exist because of the other one here ^^^^^ at the top
+    public ArrayList<File> getInstrumentFiles(){
+        File folderTemp2 = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles");
+        ArrayList<File> tempFiles = new ArrayList<>();
+        File[] files = folderTemp2.listFiles();
+        assert files != null;
+        for (File file : files) {
+            tempFiles.add(file);
+        }
+        return tempFiles;
+    }
 
 
     public void WriteSamplePack(){
@@ -144,16 +180,5 @@ public class SamplePack {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public ArrayList<File> getInstrumentFiles(){
-        File folderTemp2 = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles");
-        ArrayList<File> tempFiles = new ArrayList<>();
-        File[] files = folderTemp2.listFiles();
-        assert files != null;
-        for (File file : files) {
-            tempFiles.add(file);
-        }
-        return tempFiles;
     }
 }

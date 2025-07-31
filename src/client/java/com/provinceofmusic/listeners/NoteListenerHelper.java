@@ -113,7 +113,7 @@ public class NoteListenerHelper {
         ellapsedTicks = 0;
     }
 
-    public static Instrument SoundIdToInstrumentSound(String id){
+    public static Instrument soundIdToInstrument(String id){
         Instrument instrument;
         for(Instrument tempSound : instruments){
             if(tempSound.registeredName.equals(id)){
@@ -132,8 +132,8 @@ public class NoteListenerHelper {
         return null;
     }
 
-    public static int SoundIdToAdditionalTranspose(String id){
-        Instrument instrument = SoundIdToInstrumentSound(id);
+    public static int soundIdToAdditionalTranspose(String id){
+        Instrument instrument = soundIdToInstrument(id);
         for (InstrumentRemap remap : instrument.remaps) {
             if(remap.remapSoundName.equals(id)){
                 return remap.additionalTranspose;
@@ -143,8 +143,8 @@ public class NoteListenerHelper {
     }
 
     public static float convertPitchMinecraftToMidi(float pitch, String id){
-        Instrument instrument = SoundIdToInstrumentSound(id);
+        Instrument instrument = soundIdToInstrument(id);
         assert instrument != null;
-        return (((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrument.transpose + SoundIdToAdditionalTranspose(id));
+        return (((((log2(pitch) * 12f) + 66.5f) - 1) + 0.5f) + instrument.transpose + soundIdToAdditionalTranspose(id));
     }
 }

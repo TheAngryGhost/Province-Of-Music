@@ -32,6 +32,7 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.midi.MidiSystem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -222,12 +223,12 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		}
 		else {
 			if(RamManager.isRamGood()) {
-				NoteReplacer.interupt = true;
+				//NoteReplacer.interupt = true;
 				TimerTask task = new TimerTask() {
 					@Override
 					public void run() {
 						noteReplacer.RunSetup();
-						NoteReplacer.interupt = false;
+						//NoteReplacer.interupt = false;
 					}
 				};
 

@@ -18,7 +18,7 @@ public class NoteSoundMidi {
     public NoteSoundMidi(NoteSoundMinecraft input){
         ticksPassed = input.ticksPassed;
         volume = (int) (input.volume * 100f);
-        instrument = NoteListenerHelper.SoundIdToInstrumentSound(input.instrument);
+        instrument = NoteListenerHelper.soundIdToInstrument(input.instrument);
         pitch = NoteListenerHelper.convertPitchMinecraftToMidi(input.pitch, input.instrument);
     }
 }

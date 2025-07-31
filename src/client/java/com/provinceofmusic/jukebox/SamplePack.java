@@ -18,7 +18,7 @@ public class SamplePack {
 
 
     //TODO rewrite this code is complete garbage
-    public ArrayList<Sampler> getInstruments(ArrayList<Sampler> out){
+    public ArrayList<Sampler> getInstruments(){
         /*
         if(out == null){
             out = new ArrayList<>();
@@ -28,25 +28,37 @@ public class SamplePack {
         }
         */
         //some strange garbage collector thing
+        //TODO maybe clear the reference to the sampler in the receiver could cause ram issues IDK
+
+        /*
         if(out != null && !out.isEmpty()){
             for(Sampler s: out){
                 for(SamplerReceiver s2: s.samplerReceivers){
                     //s2.receiver.close();
                     //s2.scheduler.close();
                     s2.receiver.close();
+                    s2.receiver = null;
+                    s2.sampler = null;
                     s2.scheduler.shutdownNow();
+                    s2.scheduler.close();
                 }
                 s.samplerReceivers.clear();
                 //s.scheduler.close();
                 s.scheduler.shutdownNow();
+                s.samplerReceivers = null;
+                s.sample = null;
                 //s.samplerReceivers = null;
             }
+            NoteReplacer.samplers = null;
             //samplers = null;
             out.clear();
             //samplers = new ArrayList<>();
-            //return;
-        }
+            return new ArrayList<>();
 
+
+        }
+        */
+        ArrayList<Sampler> out = new ArrayList<>();
 
         for (InstrumentDef instrumentDef : instrumentDefs) {
             File file = new File(ProvinceOfMusicClient.samplepacksdir + "/" + name + "/" + "instrumentfiles" + "/" + instrumentDef.dir);
@@ -58,6 +70,7 @@ public class SamplePack {
                 ProvinceOfMusicClient.LOGGER.warn("sf2 file not found File: " + instrumentDef.dir + " Ignoring this instrument");
             }
         }
+
         return out;
     }
 

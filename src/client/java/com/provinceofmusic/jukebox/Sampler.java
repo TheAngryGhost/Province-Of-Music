@@ -16,7 +16,7 @@ public class Sampler {
 
     public float newThreads = 0;
 
-    public final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    public static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
 
     public void createNewReceiver(){
         SamplerReceiver temp = new SamplerReceiver(this);
@@ -24,6 +24,9 @@ public class Sampler {
     }
 
     public Sampler(File insFile) {
+        if(scheduler == null){
+            scheduler = Executors.newScheduledThreadPool(3);
+        }
         sample = insFile;
         insFileName = insFile.getName();
         createNewReceiver();
@@ -38,10 +41,15 @@ public class Sampler {
         newThreads += (float) 1 /8;
         samplerReceivers.get((int) (Math.random() * samplerReceivers.size())).playNote(pitch,volume,instrumentDef,true);
 
+        if(newThreads < -2){ //just in case lag builds up lots of repeated actions
+            newThreads = -2;
+        }
+
         if(newThreads > 0){
             newThreads--;
             scheduler.schedule(() -> {
                 try {
+                    System.out.println("new receiver created");
                     createNewReceiver();
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundCategory;
 
 import javax.sound.midi.*;
+import javax.sound.sampled.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,22 +18,27 @@ import java.util.concurrent.TimeUnit;
 public class SamplerReceiver {
     public Sampler sampler = null;
     public Receiver receiver = null;
+
+    public Synthesizer synth = null;
+    public Soundbank soundbank = null;
     public int elapsedTimeTillFree = 300;
 
     public long[] channelsLastPlayTime = new long[16];
 
-    public final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    public static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
 
     public SamplerReceiver(Sampler inSampler){
+        if(scheduler == null){
+            scheduler = Executors.newScheduledThreadPool(3);
+        }
         sampler = inSampler;
         try{
-            Synthesizer synth;
             synth = MidiSystem.getSynthesizer();
             synth.open();
             synth.unloadAllInstruments(synth.getDefaultSoundbank());
 
             // Load the custom soundbank
-            Soundbank soundbank = MidiSystem.getSoundbank(sampler.sample);
+            soundbank = MidiSystem.getSoundbank(sampler.sample);
             synth.loadAllInstruments(soundbank);
 
             receiver = synth.getReceiver();
@@ -126,5 +132,26 @@ public class SamplerReceiver {
         }
 
         return true;
+    }
+
+    //https://github.com/ModistAndrew/RomanticTp/blob/master/src/main/java/modist/romantictp/client/sound/midi/MidiFilter.java
+    public void stopAll() {
+        try {
+            for (int ch = 0; ch < 16; ch++) {
+                for (int i = 0; i < 128; i++) {
+                    ShortMessage off = new ShortMessage();
+                    off.setMessage(ShortMessage.NOTE_OFF, ch, i, 0);
+                    receiver.send(off, -1);
+                }
+                ShortMessage controlChange1 = new ShortMessage();
+                controlChange1.setMessage(ShortMessage.NOTE_OFF, ch, 123, 0);
+                ShortMessage controlChange2 = new ShortMessage();
+                controlChange2.setMessage(ShortMessage.NOTE_OFF, ch, 64, 0);
+                receiver.send(controlChange1, -1);
+                receiver.send(controlChange2, -1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

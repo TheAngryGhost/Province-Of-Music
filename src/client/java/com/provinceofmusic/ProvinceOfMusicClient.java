@@ -97,6 +97,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		musicRecorder.main();
 		if(RamManager.isRamGood()){
 			noteReplacer.main();
+			Sampler.recycler.start();
 			noteReplacer.RunSetup();
 		}
 		else{

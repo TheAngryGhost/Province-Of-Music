@@ -5,10 +5,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundCategory;
 
 import javax.sound.midi.*;
+import javax.sound.midi.Instrument;
 import javax.sound.sampled.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -25,34 +27,21 @@ public class SamplerReceiver {
 
     public long[] channelsLastPlayTime = new long[16];
 
+    public long samplerReceiverLastPlayTime = Long.MAX_VALUE / 2;
+
     public static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
 
-    public SamplerReceiver(Sampler inSampler){
-        if(scheduler == null){
-            scheduler = Executors.newScheduledThreadPool(3);
-        }
-        sampler = inSampler;
-        try{
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-            synth.unloadAllInstruments(synth.getDefaultSoundbank());
+    public static Stack<SamplerReceiver> samplerReceiverPool = new Stack<>();
 
-            // Load the custom soundbank
-            soundbank = MidiSystem.getSoundbank(sampler.sample);
-            synth.loadAllInstruments(soundbank);
+    public SamplerReceiver(){
 
-            receiver = synth.getReceiver();
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidMidiDataException | IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public int tryGetFreeChannel(){
         for (int i = 0; i < 16; i++){
             if(channelsLastPlayTime[i] < System.currentTimeMillis() - elapsedTimeTillFree){
                 channelsLastPlayTime[i] = System.currentTimeMillis();
+                samplerReceiverLastPlayTime = System.currentTimeMillis();
                 return i;
             }
         }
@@ -60,6 +49,7 @@ public class SamplerReceiver {
     }
 
     public boolean playNote(float pitch, int volume, InstrumentDef instrumentDef, boolean override){
+
         int freeChannel = tryGetFreeChannel();
 
         if(freeChannel == -1){
@@ -114,6 +104,9 @@ public class SamplerReceiver {
             noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * instrumentDef.volume));
             volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (musicVolume * 127));
             reverb.setMessage(ShortMessage.CONTROL_CHANGE, channel, 91, 50);
+
+            //System.out.println("Stage 1");
+
             receiver.send(noteOn, -1);
             receiver.send(pitchBend, -1);
             receiver.send(volumeChange, -1);
@@ -127,6 +120,7 @@ public class SamplerReceiver {
                     e.printStackTrace();
                 }
             }, 200, TimeUnit.MILLISECONDS);
+            //System.out.println("Stage 2");
         } catch (InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
@@ -153,5 +147,78 @@ public class SamplerReceiver {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void startup(Sampler inSampler) {
+        sampler = inSampler;
+
+        try {
+            //if (synth == null) {
+            synth = MidiSystem.getSynthesizer();
+            synth.open();
+            synth.unloadAllInstruments(synth.getDefaultSoundbank());
+            //}
+
+            // Load the custom soundbank
+            soundbank = MidiSystem.getSoundbank(sampler.sample);
+            synth.loadAllInstruments(soundbank);
+
+            //if (receiver == null) {
+            receiver = synth.getReceiver();
+            //}
+        } catch (InvalidMidiDataException | IOException | MidiUnavailableException e) {
+                throw new RuntimeException(e);
+        }
+    }
+
+    public void shutdown(){
+        shutdown(true);
+    }
+
+    public void shutdown(boolean instant){
+        sampler = null;
+        synth.unloadAllInstruments(soundbank);
+        if(!instant){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        soundbank = null;
+        receiver.close();
+        if(!instant){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        synth.close();
+        if(!instant){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        synth = null;
+        receiver = null;
+        samplerReceiverPool.add(this);
+        System.gc();
+    }
+
+    public static SamplerReceiver retrieveSamplerReceiver(Sampler inSampler){
+        SamplerReceiver out;
+        if(samplerReceiverPool.isEmpty()){
+            System.out.println("new Receiver created none found in reserve");
+            out = new SamplerReceiver();
+        }
+        else{
+            System.out.println("found in reserve reviving old Receiver");
+            out = samplerReceiverPool.pop();
+        }
+        out.startup(inSampler);
+        return out;
     }
 }

@@ -1,4 +1,4 @@
-package com.provinceofmusic.download;
+package com.provinceofmusic.background;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.NoteReplacer;
@@ -9,15 +9,13 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class WMRUpdater {
 
-    public static String link = "https://www.dropbox.com/scl/fi/rfis4jx5yk9cztarchfkf/Wynn-Music-Remastered-1.2.0.zip?rlkey=iwxzvw9atj8f1z5rbre3z978g&st=gi0vujwc&dl=1";
-    public static String currentVersion = "Wynn Music Remastered 1.2.0";
+    public static String link = "https://www.dropbox.com/scl/fi/4i80ci4ghjn8ehvrvp0cb/Wynn-Music-Remastered-1.3.0.zip?rlkey=gvi9gzfihie46hgprmiab0bsf&st=vdgzsxk9&dl=1";
+    public static String currentVersion = "Wynn Music Remastered 1.3.0";
 
     public static void download() {
         // Your direct download link

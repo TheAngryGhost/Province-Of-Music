@@ -1,6 +1,7 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
+import com.provinceofmusic.background.PackUpgrader;
 import com.provinceofmusic.jukebox.SamplePack;
 import com.provinceofmusic.ui.SamplePackWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
@@ -25,6 +26,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
 
     public static WLabel activeSamplePackLabel;
     public SamplePackConfig() {
+        PackUpgrader.main();
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
@@ -83,7 +85,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
         };
         createNewButton.setOnClick(createNewButtonRunnable);
 
-        ArrayList<File> samplePacks = FetchSamplePackFiles();
+        ArrayList<File> samplePacks = SamplePack.FetchSamplePackFiles();
         ArrayList<SamplePack> data = new ArrayList<>();
         for (int i = 0; i < samplePacks.size(); i++){
             data.add(SamplePack.getSamplePack(samplePacks.get(i)));
@@ -129,14 +131,5 @@ public class SamplePackConfig extends LightweightGuiDescription {
         WListPanel packList = new WListPanel(data, SamplePackWidget::new, configurator);
         packList.setListItemHeight(36);
         root.add(packList, 0, 5, 14, 6);
-    }
-
-    public ArrayList<File> FetchSamplePackFiles(){
-        ArrayList<File> tempFiles = new ArrayList<>();
-        int fileCount = ProvinceOfMusicClient.samplepacksdir.listFiles().length;
-        for(int i = 0; i < fileCount; i++){
-            tempFiles.add(ProvinceOfMusicClient.samplepacksdir.listFiles()[i]);
-        }
-        return tempFiles;
     }
 }

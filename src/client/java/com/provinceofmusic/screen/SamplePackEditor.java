@@ -2,7 +2,6 @@ package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.jukebox.InstrumentDef;
-import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.jukebox.SamplePack;
 import com.provinceofmusic.ui.InstrumentWidget;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
@@ -18,8 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.BiConsumer;
 
 public class SamplePackEditor extends LightweightGuiDescription {
@@ -92,10 +89,10 @@ public class SamplePackEditor extends LightweightGuiDescription {
                     File file = dialog.getFiles()[0];
 
                     try {
-                        if(new File(SamplePack.getFile(thisPack.name).toPath() + "\\icon.png").exists()){
-                            Files.delete(Path.of(SamplePack.getFile(thisPack.name).toPath() + "\\icon.png"));
+                        if(new File(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "\\icon.png").exists()){
+                            Files.delete(Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "\\icon.png"));
                         }
-                        Files.copy(file.toPath(), Path.of(SamplePack.getFile(thisPack.name).toPath() + "\\icon.png"));
+                        Files.copy(file.toPath(), Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "\\icon.png"));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

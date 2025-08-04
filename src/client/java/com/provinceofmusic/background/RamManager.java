@@ -1,4 +1,4 @@
-package com.provinceofmusic.download;
+package com.provinceofmusic.background;
 
 public class RamManager {
     public static boolean isRamGood(){
@@ -9,6 +9,6 @@ public class RamManager {
         long freeMemory  = runtime.freeMemory();    // Unused memory within the allocated portion
         long usedMemory  = allocated - freeMemory;  // Actual memory in use
 
-        return maxMemory / 1024 / 1024 >= 8176;
+        return maxMemory / 1024 / 1024 >= 4096;
     }
 }

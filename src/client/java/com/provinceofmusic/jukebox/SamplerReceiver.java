@@ -5,14 +5,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundCategory;
 
 import javax.sound.midi.*;
-import javax.sound.midi.Instrument;
-import javax.sound.sampled.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +28,8 @@ public class SamplerReceiver {
 
     public static Stack<SamplerReceiver> samplerReceiverPool = new Stack<>();
 
+    public boolean ready = true;
+
     public SamplerReceiver(){
 
     }
@@ -48,41 +45,44 @@ public class SamplerReceiver {
         return -1;
     }
 
-    public boolean playNote(float pitch, int volume, InstrumentDef instrumentDef, boolean override){
+    public boolean playNote(float inPitch, int inVelocity, InstrumentDef instrumentDef, boolean override){
+        if(!ready){
+            return false;
+        }
 
+        //find open channel
         int freeChannel = tryGetFreeChannel();
-
         if(freeChannel == -1){
             if(!override) {
                 return false;
             }
             freeChannel = (int)(Math.random() * 16);
         }
-
         final int channel = freeChannel;
 
-        float musicVolume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS) * MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.MASTER);
+        //calculate note velocity.
+        float clampedVelocity = Math.max(0, Math.min(inVelocity, 100));
+        float weightedVelocity = (float) (-1*(1/(100+2*clampedVelocity)*Math.pow(clampedVelocity-100,2))+100);
+        final int velocity = (int) (Math.round(weightedVelocity) * instrumentDef.volume);
 
-        float clampedVolume = Math.max(0, Math.min(volume, 100));
-        float weightedVolume = (float) (-1*(1/(100+2*clampedVolume)*Math.pow(clampedVolume-100,2))+100);
-
-        final int newVolume = Math.round(weightedVolume);
-
-        float newPitchBend = pitch - (int)pitch;
-
+        //calculate a pitch bend for greater precision, better than integer precision
+        float newPitchBend = inPitch - (int) inPitch;
         int pitchBendValue = (int)(8192 + 4096 * newPitchBend); // Center (8192) + One semitone (4096)
         int lsb = pitchBendValue & 0x7F; // Least significant 7 bits
         int msb = (pitchBendValue >> 7) & 0x7F; // Most significant 7 bits
 
-        int pitchAfterSinglePitch;
+        //calculate pitch
+        int pitch;
         if (instrumentDef.singlePitch) {
-            pitchAfterSinglePitch = 60 + instrumentDef.transpose;
+            pitch = 60 + instrumentDef.transpose;
         }
         else{
-            pitchAfterSinglePitch = (int)pitch + instrumentDef.transpose;
+            pitch = (int) inPitch + instrumentDef.transpose;
         }
-        if(pitchAfterSinglePitch < 0 || pitchAfterSinglePitch > 127){
-            ProvinceOfMusicClient.LOGGER.error("Note Pitch out of Range (Your transpose value is too extreme of a value. If not using single pitch : originalPitch + transpose is > 127 or < 0. If using single pitch : 60 + transpose is > 127 or < 0) Value: " + instrumentDef.transpose + "Note Type: " + instrumentDef.noteType);
+
+        //tests to make sure your game won't crash when this note plays
+        if(pitch < 0 || pitch > 127){
+            ProvinceOfMusicClient.LOGGER.error("Note Pitch out of Range (Your transpose value is too extreme of a value. If not using single inPitch : originalPitch + transpose is > 127 or < 0. If using single inPitch : 60 + transpose is > 127 or < 0) Value: " + instrumentDef.transpose + "Note Type: " + instrumentDef.noteType);
             return true;
         }
         if(instrumentDef.volume < 0 || instrumentDef.volume > 1){
@@ -94,19 +94,18 @@ public class SamplerReceiver {
             return true;
         }
 
+        //calculate volume
+        float volume = MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS) * MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.MASTER);
+
         try {
             ShortMessage noteOn = new ShortMessage();
-            // Pitch bend value for one semitone up
             ShortMessage pitchBend = new ShortMessage();
             ShortMessage volumeChange = new ShortMessage();
             ShortMessage reverb = new ShortMessage();
             pitchBend.setMessage(ShortMessage.PITCH_BEND, 0, lsb, msb);
-            noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitchAfterSinglePitch, (int) ((float) (newVolume) * instrumentDef.volume));
-            volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (musicVolume * 127));
+            noteOn.setMessage(ShortMessage.NOTE_ON, channel, pitch, velocity);
+            volumeChange.setMessage(ShortMessage.CONTROL_CHANGE, channel, 7, (int) (volume * 127));
             reverb.setMessage(ShortMessage.CONTROL_CHANGE, channel, 91, 50);
-
-            //System.out.println("Stage 1");
-
             receiver.send(noteOn, -1);
             receiver.send(pitchBend, -1);
             receiver.send(volumeChange, -1);
@@ -114,13 +113,12 @@ public class SamplerReceiver {
             scheduler.schedule(() -> {
                 try {
                     ShortMessage off = new ShortMessage();
-                    off.setMessage(ShortMessage.NOTE_OFF, channel, pitchAfterSinglePitch, 0);
+                    off.setMessage(ShortMessage.NOTE_OFF, channel, pitch, 0);
                     receiver.send(off, -1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }, 200, TimeUnit.MILLISECONDS);
-            //System.out.println("Stage 2");
         } catch (InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
@@ -150,22 +148,20 @@ public class SamplerReceiver {
     }
 
     public void startup(Sampler inSampler) {
+        ready = false;
         sampler = inSampler;
 
         try {
-            //if (synth == null) {
             synth = MidiSystem.getSynthesizer();
             synth.open();
             synth.unloadAllInstruments(synth.getDefaultSoundbank());
-            //}
 
             // Load the custom soundbank
             soundbank = MidiSystem.getSoundbank(sampler.sample);
             synth.loadAllInstruments(soundbank);
 
-            //if (receiver == null) {
             receiver = synth.getReceiver();
-            //}
+            ready = true;
         } catch (InvalidMidiDataException | IOException | MidiUnavailableException e) {
                 throw new RuntimeException(e);
         }
@@ -211,11 +207,9 @@ public class SamplerReceiver {
     public static SamplerReceiver retrieveSamplerReceiver(Sampler inSampler){
         SamplerReceiver out;
         if(samplerReceiverPool.isEmpty()){
-            System.out.println("new Receiver created none found in reserve");
             out = new SamplerReceiver();
         }
         else{
-            System.out.println("found in reserve reviving old Receiver");
             out = samplerReceiverPool.pop();
         }
         out.startup(inSampler);

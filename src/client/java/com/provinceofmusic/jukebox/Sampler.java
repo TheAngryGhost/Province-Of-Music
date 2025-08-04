@@ -59,7 +59,7 @@ public class Sampler {
                 return;
             }
         }
-        newThreads += (float) 1 /8;
+        newThreads += (float) 1/8;
         if(!samplerReceivers.isEmpty()){
             samplerReceivers.get((int) (Math.random() * samplerReceivers.size())).playNote(pitch,volume,instrumentDef,true);
         }
@@ -73,7 +73,6 @@ public class Sampler {
             newThreads--;
             scheduler.schedule(() -> {
                 try {
-                    System.out.println("new receiver created");
                     createNewReceiver();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -93,7 +92,6 @@ public class Sampler {
         for (int i = 0; i < samplerReceivers.size()- 1; i++) {
             SamplerReceiver curSR = samplerReceivers.get(i);
             if(curSR.samplerReceiverLastPlayTime + 200000 < System.currentTimeMillis()){
-                System.out.println("recycling thread");
                 curSR.shutdown(false);
                 samplerReceivers.remove(i);
                 i--;

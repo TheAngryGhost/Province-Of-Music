@@ -2,8 +2,9 @@ package com.provinceofmusic;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.provinceofmusic.download.WMRUpdater;
-import com.provinceofmusic.download.RamManager;
+import com.provinceofmusic.background.PackUpgrader;
+import com.provinceofmusic.background.WMRUpdater;
+import com.provinceofmusic.background.RamManager;
 import com.provinceofmusic.jukebox.*;
 import com.provinceofmusic.listeners.NoteListenerHelper;
 import com.provinceofmusic.recorder.DebugMode;
@@ -32,17 +33,15 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.midi.MidiSystem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ProvinceOfMusicClient implements ClientModInitializer {
+	//TODO clean up this class this is trash
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("provinceofmusic");
 
@@ -75,6 +74,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		setupFiles();
+		PackUpgrader.main();
 		getConfigSettings();
 		setupListeners();
 		setupCommands();
@@ -83,7 +83,6 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	public void setupListeners(){
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			musicRecorder.PassTime();
-			noteReplacer.PassTime();
 			noteListenerHelper.tick();
 			if(MinecraftClient.getInstance().options.getGuiScale().getValue() == 0){
 				guiSize = 3;
@@ -110,7 +109,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			//TODO add a one min delay after world start up before this is ran
-			if(ProvinceOfMusicClient.configSettings.activeSamplePack.contains("Wynn Music Remastered") && !ProvinceOfMusicClient.configSettings.activeSamplePack.equals(WMRUpdater.currentVersion)){
+			if(ProvinceOfMusicClient.configSettings.activeSamplePack != null && ProvinceOfMusicClient.configSettings.activeSamplePack.contains("Wynn Music Remastered") && !ProvinceOfMusicClient.configSettings.activeSamplePack.equals(WMRUpdater.currentVersion)){
 				Text message = Text.literal("[Click here to Update Wynn Music Remastered]")
 						.setStyle(Style.EMPTY
 								.withColor(Formatting.YELLOW)
@@ -147,8 +146,8 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 			}
 			if(openSamplePackConfigScreenBinding.wasPressed()){
 				if(ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
-					if(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack).exists()) {
-						SamplePack pack = SamplePack.getSamplePack(SamplePack.getFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
+					if(SamplePack.getSamplePackAsFile(ProvinceOfMusicClient.configSettings.activeSamplePack).exists()) {
+						SamplePack pack = SamplePack.getSamplePack(SamplePack.getSamplePackAsFile(ProvinceOfMusicClient.configSettings.activeSamplePack));
 						if(pack != null) {
 							MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(pack)));
 						}
@@ -194,7 +193,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		Gson gson = builder.create();
 
 		try {
-			configSettings = gson.fromJson(Files.readString(jsonTemp.toPath(), Charset.defaultCharset()) + "", POMConfigObject.class);
+			configSettings = gson.fromJson(Files.readString(jsonTemp.toPath(), Charset.defaultCharset()), POMConfigObject.class);
 		} catch (IOException e) {
 			configSettings = new POMConfigObject();
 			saveConfigSettings();
@@ -224,17 +223,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		}
 		else {
 			if(RamManager.isRamGood()) {
-				//NoteReplacer.interupt = true;
-				TimerTask task = new TimerTask() {
-					@Override
-					public void run() {
-						noteReplacer.RunSetup();
-						//NoteReplacer.interupt = false;
-					}
-				};
-
-				Timer timer = new Timer(true);
-				timer.schedule(task, 300);
+				noteReplacer.RunSetup();
 			}
 		}
 	}

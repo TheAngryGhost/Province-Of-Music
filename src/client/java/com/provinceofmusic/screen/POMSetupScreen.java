@@ -1,8 +1,8 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.download.WMRUpdater;
-import com.provinceofmusic.download.RamManager;
+import com.provinceofmusic.background.WMRUpdater;
+import com.provinceofmusic.background.RamManager;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
@@ -61,17 +61,15 @@ public class POMSetupScreen extends LightweightGuiDescription {
         }
 
         if(!RamManager.isRamGood()){
-            WLabel ramWarnText = new WLabel(Text.literal("This mod requires 8GB of RAM to be allocated to Minecraft."), 0x000000);
-            WLabel ramWarnText2 = new WLabel(Text.literal("Currently you do not have enough RAM installed."), 0x000000);
-            WLabel ramWarnText3 = new WLabel(Text.literal("This mod will not work correctly unless more RAM is allocated"), 0x000000);
+            WLabel ramWarnText = new WLabel(Text.literal("This mod requires at least 4GB of RAM to be allocated to Minecraft."), 0x000000);
+            WLabel ramWarnText2 = new WLabel(Text.literal("This mod will not work correctly unless more RAM is allocated."), 0x000000);
             root.add(ramWarnText, 0, 9, 9, 3);
             root.add(ramWarnText2, 0, 10, 9, 3);
-            root.add(ramWarnText3, 0, 11, 9, 3);
         }
 
 
         WButton closePopupButton = new WButton(Text.literal("Close this popup"));
-        root.add(closePopupButton, 0, 12, 5, 1);
+        root.add(closePopupButton, 0, 11, 5, 1);
         Runnable closePopupButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(null);
         };

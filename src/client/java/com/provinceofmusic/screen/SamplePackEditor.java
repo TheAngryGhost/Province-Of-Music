@@ -60,7 +60,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         root.add(openFolderButton, 14, 1, 5, 1);
         Runnable openFolderButtonRunnable = () -> {
             try {
-                Desktop.getDesktop().open(new File("provinceofmusic/samplepacks" + "/" + thisPack.name).getAbsoluteFile());
+                Desktop.getDesktop().open(new File(Path.of(ProvinceOfMusicClient.samplepacksdir + "/" + thisPack.name).toString()).getAbsoluteFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -89,10 +89,10 @@ public class SamplePackEditor extends LightweightGuiDescription {
                     File file = dialog.getFiles()[0];
 
                     try {
-                        if(new File(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "\\icon.png").exists()){
-                            Files.delete(Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "\\icon.png"));
+                        if(new File(Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "/icon.png").toString()).exists()){
+                            Files.delete(Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "/icon.png"));
                         }
-                        Files.copy(file.toPath(), Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "\\icon.png"));
+                        Files.copy(file.toPath(), Path.of(SamplePack.getSamplePackAsFile(thisPack.name).toPath() + "/icon.png"));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

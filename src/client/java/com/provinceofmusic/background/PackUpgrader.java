@@ -5,6 +5,7 @@ import com.provinceofmusic.jukebox.SamplePack;
 import com.provinceofmusic.screen.SamplePackConfig;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -14,13 +15,13 @@ public class PackUpgrader {
         ArrayList<File> samplePackFiles = SamplePack.FetchSamplePackFiles();
         for(File samplePackFile : samplePackFiles){
             for(File innerFile: Objects.requireNonNull(samplePackFile.listFiles())){
-                if(innerFile.toString().equals(samplePackFile.toPath() + "\\" + samplePackFile.getName() + ".json")){
+                if(innerFile.toPath().equals(Path.of(samplePackFile.toPath() + "/" + samplePackFile.getName() + ".json"))){
                     ProvinceOfMusicClient.LOGGER.debug("Auto upgrading samplepacks to new system: " + samplePackFile.getName());
-                    innerFile.renameTo(new File(samplePackFile.toPath() + "\\pack.json"));
+                    innerFile.renameTo(new File(Path.of(samplePackFile.toPath() + "/pack.json").toString()));
                 }
-                if(innerFile.toString().equals(samplePackFile.toPath() + "\\instrumentfiles")){
+                if(innerFile.toPath().equals(Path.of(samplePackFile.toPath() + "/instrumentfiles"))){
                     ProvinceOfMusicClient.LOGGER.debug("Auto upgrading samplepacks to new system: " + samplePackFile.getName());
-                    innerFile.renameTo(new File(samplePackFile.toPath() + "\\samples"));
+                    innerFile.renameTo(new File(Path.of(samplePackFile.toPath() + "/samples").toString()));
                 }
 
 

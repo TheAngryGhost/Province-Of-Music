@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
@@ -94,7 +95,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
             destination.nameLabel.setText(Text.literal(s.name));
             destination.authorLabel.setText(Text.literal(s.author));
 
-            File inputImage = new File(ProvinceOfMusicClient.samplepacksdir + "\\" + s.name + "\\" + "icon.png");
+            File inputImage = new File(Path.of(ProvinceOfMusicClient.samplepacksdir + "/" + s.name + "/" + "icon.png").toString());
             Identifier noimgfound = Identifier.of("provinceofmusic","noiconfound.png");
 
             if(inputImage != null){

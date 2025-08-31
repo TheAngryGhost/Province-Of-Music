@@ -205,7 +205,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 	}
 
 	public static void saveConfigSettings(){
-		File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings"+".json");
+		File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings.json");
 		GsonBuilder builder = new GsonBuilder();
 		builder.setPrettyPrinting().serializeNulls();
 		Gson gson = builder.create();

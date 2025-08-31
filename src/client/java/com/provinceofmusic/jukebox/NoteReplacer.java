@@ -8,6 +8,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class NoteReplacer implements NoteListener {
@@ -34,10 +35,11 @@ public class NoteReplacer implements NoteListener {
         if(!interrupt){
             for (InstrumentDef instrumentDef : pack.instrumentDefs) {
                 if(instrumentDef.noteType.equals(instrument.registeredName)){
-                    String path = ProvinceOfMusicClient.samplepacksdir + "\\" + pack.name + "\\" + "samples" + "\\" + instrumentDef.dir;
+                    Path path = Path.of(ProvinceOfMusicClient.samplepacksdir + "/" + pack.name + "/" + "samples" + "/" + instrumentDef.dir);
+                    System.out.println(path);
                     if(samplers != null){
                         for (Sampler sampler : samplers) {
-                            if(sampler.sample.toPath().toString().equals(path)){
+                            if(sampler.sample.toPath().equals(path)){
                                 sampler.playNote(pitch,volume,instrumentDef);
                                 break;
                             }

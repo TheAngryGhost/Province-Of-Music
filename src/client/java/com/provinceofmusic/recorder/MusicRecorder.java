@@ -10,12 +10,15 @@ import net.minecraft.text.Text;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MusicRecorder implements NoteListener {
 
     private static int time_passed = 0;
     private static boolean is_writing_to_file = false;
-    private static String file_to_write;
+    private static Path file_to_write;
 
     public static KeyBinding recordBinding;
     @Override
@@ -25,7 +28,7 @@ public class MusicRecorder implements NoteListener {
         //float pitchValue = NoteListenerHelper.convertPitchMidiToMinecraft(pitch, instrument);
 
         try {
-            FileWriter myWriter = new FileWriter(file_to_write, true);
+            FileWriter myWriter = new FileWriter(file_to_write.toString(), true);
             myWriter.append(note.instrument + "," + time_passed + "," + note.pitch + "," + note.volume + "\n");
             myWriter.close();
         } catch (IOException e) {
@@ -49,7 +52,7 @@ public class MusicRecorder implements NoteListener {
                 is_writing_to_file = !is_writing_to_file;
                 assert client.player != null;
                 if (is_writing_to_file) {
-                    file_to_write = ProvinceOfMusicClient.recordedmusicdir + "\\" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
+                    file_to_write = Path.of(ProvinceOfMusicClient.recordedmusicdir + "/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv");
                     ProvinceOfMusicClient.LOGGER.info("Started recording to file " + file_to_write + ".");
                     client.player.sendMessage(Text.of("Started recording to file " + file_to_write + "."), false);
                 } else {

@@ -36,7 +36,6 @@ public class NoteReplacer implements NoteListener {
             for (InstrumentDef instrumentDef : pack.instrumentDefs) {
                 if(instrumentDef.noteType.equals(instrument.registeredName)){
                     Path path = Path.of(ProvinceOfMusicClient.samplepacksdir + "/" + pack.name + "/" + "samples" + "/" + instrumentDef.dir);
-                    System.out.println(path);
                     if(samplers != null){
                         for (Sampler sampler : samplers) {
                             if(sampler.sample.toPath().equals(path)){

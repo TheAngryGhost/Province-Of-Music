@@ -172,6 +172,7 @@ public class SamplerReceiver {
     }
 
     public void shutdown(boolean instant){
+        ready = false;
         sampler = null;
         synth.unloadAllInstruments(soundbank);
         if(!instant){

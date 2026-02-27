@@ -33,7 +33,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        WLabel title = new WLabel(Text.literal("Sample Pack Configuration"), 0x000000);
+        WLabel title = new WLabel(Text.literal("Sample Pack Configuration"), 0xFF000000);
         root.add(title, 0, 0, 9, 3);
 
         WButton selectPackButton = new WButton(Text.literal("Select Pack"));
@@ -43,7 +43,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
         };
         selectPackButton.setOnClick(selectPackButtonRunnable);
 
-        activeSamplePackLabel = new WLabel(Text.literal("no pack selected"), 0x000000);
+        activeSamplePackLabel = new WLabel(Text.literal("no pack selected"), 0xFF000000);
         if(ProvinceOfMusicClient.configSettings.activeSamplePack == null){
             activeSamplePackLabel.setText(Text.literal("no pack selected"));
         }
@@ -101,7 +101,7 @@ public class SamplePackConfig extends LightweightGuiDescription {
             if(inputImage != null){
                 if (inputImage.exists()) {
                     String path = s.name.replaceAll("[^\\p{L}0-9/._-]", "").toLowerCase() + "" + "icon.png";
-                    Identifier test = Identifier.of("provinceofmusic", path);
+                    Identifier ID = Identifier.of("provinceofmusic", path);
                     InputStream inputStream;
                     try {
                         inputStream = new FileInputStream(inputImage);
@@ -114,10 +114,10 @@ public class SamplePackConfig extends LightweightGuiDescription {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    destination.icon = new WSprite(test);
+                    destination.icon = new WSprite(ID);
 
                     TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-                    textureManager.registerTexture(test, new NativeImageBackedTexture(nativeImage));
+                    textureManager.registerTexture(ID, new NativeImageBackedTexture(ID::toString, nativeImage));
                 }
                 else {
                     destination.icon = new WSprite(noimgfound);

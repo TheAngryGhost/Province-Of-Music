@@ -1,8 +1,6 @@
 package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.jukebox.NoteReplacer;
-import com.provinceofmusic.jukebox.SamplePack;
 import com.provinceofmusic.recorder.DebugMode;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -12,9 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class ConfigScreen extends LightweightGuiDescription {
     public ConfigScreen() {
         WGridPanel root = new WGridPanel();
@@ -22,7 +17,7 @@ public class ConfigScreen extends LightweightGuiDescription {
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        WLabel title = new WLabel(Text.literal("Province of Music"), 0x000000);
+        WLabel title = new WLabel(Text.literal("Province of Music"), 0xFF000000);
         root.add(title, 0, 0, 9, 3);
 
         WSprite icon = new WSprite(Identifier.of("provinceofmusic","icon.png"));
@@ -58,7 +53,7 @@ public class ConfigScreen extends LightweightGuiDescription {
             ProvinceOfMusicClient.saveConfigSettings();
 
 
-            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
+            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0xFF000000);
             root.add(savedPopup, 0, 10, 2, 1);
             Thread t = new Thread(() -> {
                 try {

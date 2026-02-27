@@ -2,20 +2,21 @@ package com.provinceofmusic.ui;
 
 import io.github.cottonmc.cotton.gui.widget.WTextField;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
+import net.minecraft.client.input.CharInput;
 
 public class POMFloatInputWidget extends WTextField {
 
     String prev;
     @Override
-    public InputResult onCharTyped(char ch) {
+    public InputResult onCharTyped(CharInput input) {
         prev = getText();
-        super.onCharTyped(ch);
+        super.onCharTyped(input);
         if(!checkValid()){
             setText(prev);
         }
         return InputResult.PROCESSED;
     }
-
+    //TODO use a regex here
     boolean checkValid(){
         char[] characters = getText().toCharArray();
         boolean decimalExists = false;

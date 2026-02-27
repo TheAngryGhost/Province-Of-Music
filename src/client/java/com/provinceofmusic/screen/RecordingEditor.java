@@ -26,7 +26,7 @@ public class RecordingEditor extends LightweightGuiDescription {
         root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        WLabel title = new WLabel(Text.literal(fileInstance.getName()), 0x000000);
+        WLabel title = new WLabel(Text.literal(fileInstance.getName()), 0xFF000000);
         root.add(title, 0, 0, 9, 3);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
@@ -59,7 +59,7 @@ public class RecordingEditor extends LightweightGuiDescription {
         };
         exportButton.setOnClick(exportButtonRunnable);
 
-        WButton deleteButton = new WButton(Text.literal("Delete ☒").withColor(0xFF0000));
+        WButton deleteButton = new WButton(Text.literal("Delete ☒").withColor(0xFFFF0000));
         root.add(deleteButton, 1, 6, 3, 1);
         Runnable deleteButtonRunnable = () -> {
             ReplayMusic.StopMusic();

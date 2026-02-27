@@ -1,7 +1,6 @@
 package com.provinceofmusic.recorder;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
@@ -62,10 +61,7 @@ public class ReplayMusic {
 
 
                     for(int i = 0; currentline < type.size(); i++){
-
-                        Identifier NOTE_BLOCK_HARP_SOUND_ID = Identifier.of(type.get(currentline));
-                        SoundEvent NOTE_BLOCK_HARP_SOUND_EVENT = SoundEvent.of(NOTE_BLOCK_HARP_SOUND_ID);
-                        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(NOTE_BLOCK_HARP_SOUND_EVENT, Float.parseFloat(pitch.get(currentline)), Float.parseFloat(volume.get(currentline))));
+                        MinecraftClient.getInstance().getSoundManager().play(new POMSoundInstance(type.get(currentline), Float.parseFloat(pitch.get(currentline)), Float.parseFloat(volume.get(currentline))));
 
                         currentline++;
 

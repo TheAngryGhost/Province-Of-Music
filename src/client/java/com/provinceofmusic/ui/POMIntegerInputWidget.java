@@ -1,16 +1,16 @@
 package com.provinceofmusic.ui;
 
-import com.provinceofmusic.ProvinceOfMusicClient;
 import io.github.cottonmc.cotton.gui.widget.WTextField;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
+import net.minecraft.client.input.CharInput;
 
 public class POMIntegerInputWidget extends WTextField {
 
     String prev;
     @Override
-    public InputResult onCharTyped(char ch) {
+    public InputResult onCharTyped(CharInput input) {
         prev = getText();
-        super.onCharTyped(ch);
+        super.onCharTyped(input);
         if(!checkValid()){
             setText(prev);
         }

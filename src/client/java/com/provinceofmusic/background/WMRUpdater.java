@@ -1,7 +1,6 @@
 package com.provinceofmusic.background;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
-import com.provinceofmusic.jukebox.NoteReplacer;
 import com.provinceofmusic.jukebox.SamplePack;
 
 import java.io.*;
@@ -106,6 +105,7 @@ public class WMRUpdater {
             }
         }
 
-        NoteReplacer.replaceMusic = true;
+        ProvinceOfMusicClient.configSettings.samplePackMusicReplacement = true;
+        ProvinceOfMusicClient.saveConfigSettings(false);
     }
 }

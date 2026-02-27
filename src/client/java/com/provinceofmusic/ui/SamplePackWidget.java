@@ -41,12 +41,10 @@ public class SamplePackWidget extends WPlainPanel {
         };
         backgroundButton.setOnClick(backgroundButtonRunnable);
 
-        nameLabel = new WLabel(Text.literal("unnamed"));
+        nameLabel = new WLabel(Text.literal("unnamed"), 0xFFFFFFFF);
         this.add(nameLabel, 5, 5, 5, 5);
-        nameLabel.setColor(0xFFFFFF);
 
-        authorLabel = new WLabel(Text.literal("unknown author"));
+        authorLabel = new WLabel(Text.literal("unknown author"), 0xFFFFFFFF);
         this.add(authorLabel, 5, 23, 5, 5);
-        authorLabel.setColor(0xFFFFFF);
     }
 }

@@ -26,7 +26,7 @@ public class SF2FilePickerScreen  extends LightweightGuiDescription {
         root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        WLabel title = new WLabel(Text.literal("Select Type"), 0x000000);
+        WLabel title = new WLabel(Text.literal("Select Type"), 0xFF000000);
         root.add(title, 0, 0, 9, 3);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));

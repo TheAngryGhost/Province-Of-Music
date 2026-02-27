@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.9-SNAPSHOT'
+	id 'fabric-loom' version '1.15-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -59,11 +59,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
+	modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.2")
 
-	modApi "com.terraformersmc:modmenu:13.0.1"
+	modApi "com.terraformersmc:modmenu:17.0.0-beta.2"
 
-	modImplementation include("io.github.cottonmc:LibGui:12.0.1+1.21.2")
+	modImplementation include("io.github.cottonmc:LibGui:15.1.0+1.21.11")
 }
 
 processResources {

@@ -38,10 +38,10 @@ public class SamplePackEditor extends LightweightGuiDescription {
         root.setSize(356, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
-        WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0x000000);
+        WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0xFF000000);
         root.add(title, 0, 0, 9, 3);
 
-        WButton deletePackButton = new WButton(Text.literal("Delete Pack").withColor(0xFF0000).styled(style -> style.withBold(true)));
+        WButton deletePackButton = new WButton(Text.literal("Delete Pack").withColor(0xFFFF0000).styled(style -> style.withBold(true)));
         Runnable deletePackButtonRunnable = () -> {
             SaveChanges();
             if(ProvinceOfMusicClient.configSettings.activeSamplePack != null){
@@ -103,7 +103,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         changeImageButton.setOnClick(changeImageButtonRunnable);
 
 
-        WLabel nameLabel = new WLabel(Text.literal("Name"), 0x000000);
+        WLabel nameLabel = new WLabel(Text.literal("Name"), 0xFF000000);
         root.add(nameLabel, 1, 1, 5, 1);
 
         nameField = new WTextField();
@@ -111,7 +111,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         nameField.setText(thisPack.name);
         root.add(nameField, 1, 2, 5, 1);
 
-        WLabel authorLabel = new WLabel(Text.literal("Author"), 0x000000);
+        WLabel authorLabel = new WLabel(Text.literal("Author"), 0xFF000000);
         root.add(authorLabel, 7, 1, 5, 1);
 
         authorField = new WTextField();
@@ -146,7 +146,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         WButton saveChangesButton = new WButton(Text.literal("Save Changes \uD83D\uDDAB").styled(style -> style.withBold(true)));
         Runnable saveChangesButtonRunnable = () -> {
             SaveChanges();
-            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0x000000);
+            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0xFF000000);
             root.add(savedPopup, 13, 2, 2, 1);
             Thread t = new Thread(() -> {
                 try {

@@ -29,6 +29,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,10 +114,7 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 				Text message = Text.literal("[Click here to Update Wynn Music Remastered]")
 						.setStyle(Style.EMPTY
 								.withColor(Formatting.YELLOW)
-								.withClickEvent(new ClickEvent(
-										ClickEvent.Action.RUN_COMMAND,
-										"/updateWMR"
-								))
+								.withClickEvent(new ClickEvent.RunCommand("/updateWMR"))
 						);
 				assert client.player != null;
 				client.player.sendMessage(Text.literal("You are running an outdated version of Wynn Music Remastered").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
@@ -124,10 +122,12 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 			}
 		});
 
-		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
-		noteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
-		openConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open POM Settings", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
-		openSamplePackConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Sample Pack Config", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "Province of Music"));
+        KeyBinding.Category category = KeyBinding.Category.create(Identifier.of("province_of_music"));
+
+		musicRecorder.recordBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Record Midi", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
+		noteReplacer.replaceNoteBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Toggle Replace Music", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
+		openConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open POM Settings", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
+		openSamplePackConfigScreenBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Sample Pack Config", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 
@@ -204,29 +204,34 @@ public class ProvinceOfMusicClient implements ClientModInitializer {
 		}
 	}
 
+    //TODO: Move these to be with the config objects
 	public static void saveConfigSettings(){
-		File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings.json");
-		GsonBuilder builder = new GsonBuilder();
-		builder.setPrettyPrinting().serializeNulls();
-		Gson gson = builder.create();
-
-		try {
-			FileWriter fileWriter = new FileWriter(jsonTemp);
-			fileWriter.write(gson.toJson(configSettings));
-			fileWriter.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		if(ProvinceOfMusicClient.configSettings.activeSamplePack == null){
-			NoteReplacer.replaceMusic = false;
-		}
-		else {
-			if(RamManager.isRamGood()) {
-				noteReplacer.RunSetup();
-			}
-		}
+        saveConfigSettings(true);
 	}
+
+    public static void saveConfigSettings(boolean reload){
+        File jsonTemp = new File(ProvinceOfMusicClient.configsettingsdir + "/configSettings.json");
+        GsonBuilder builder = new GsonBuilder();
+        builder.setPrettyPrinting().serializeNulls();
+        Gson gson = builder.create();
+
+        try {
+            FileWriter fileWriter = new FileWriter(jsonTemp);
+            fileWriter.write(gson.toJson(configSettings));
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(ProvinceOfMusicClient.configSettings.activeSamplePack == null){
+            ProvinceOfMusicClient.configSettings.samplePackMusicReplacement = false;
+        }
+        else {
+            if(RamManager.isRamGood() && reload) {
+                noteReplacer.RunSetup();
+            }
+        }
+    }
 
 	public static void setupCommands(){
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {

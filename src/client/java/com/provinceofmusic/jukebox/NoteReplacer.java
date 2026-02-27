@@ -15,9 +15,7 @@ public class NoteReplacer implements NoteListener {
 
     public static KeyBinding replaceNoteBinding;
     
-    
     public static ArrayList<Sampler> samplers = new ArrayList<>();
-    public static boolean replaceMusic = true;
 
     public static boolean interrupt = false;
 
@@ -25,7 +23,7 @@ public class NoteReplacer implements NoteListener {
     
     @Override
     public void onNotePlayed(NoteSoundMinecraft note) {
-        if (!replaceMusic) return;
+        if (!ProvinceOfMusicClient.configSettings.samplePackMusicReplacement) return;
         NoteSoundMidi noteSoundMidi = new NoteSoundMidi(note);
         playMusicFrame(noteSoundMidi.instrument, noteSoundMidi.pitch, noteSoundMidi.volume);
     }
@@ -55,9 +53,10 @@ public class NoteReplacer implements NoteListener {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (replaceNoteBinding.wasPressed()) {
 
-                replaceMusic = !replaceMusic;
+                ProvinceOfMusicClient.configSettings.samplePackMusicReplacement = !ProvinceOfMusicClient.configSettings.samplePackMusicReplacement;
+                ProvinceOfMusicClient.saveConfigSettings(false);
                 assert client.player != null;
-                if (replaceMusic) {
+                if (ProvinceOfMusicClient.configSettings.samplePackMusicReplacement) {
                     ProvinceOfMusicClient.LOGGER.info("Playing Sample Pack music");
                     client.player.sendMessage(Text.of("Playing Sample Pack music"), false);
                 } else {

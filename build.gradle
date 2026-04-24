@@ -22,7 +22,8 @@ repositories {
 	maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
-	maven { url "https://maven.isxander.dev/releases" }
+	maven { url "https://maven.isxander.dev/#/releases" }
+	
 
 	mavenLocal()
 	maven {
@@ -30,11 +31,14 @@ repositories {
 		url 'https://maven.gegy.dev'
 	}
 
-	maven {
-		name = "CottonMC"
-		url = "https://server.bbkr.space/artifactory/libs-release"
-	}
+    maven {
+        name = "CottonMC"
+        url = "https://staging.alexiil.uk/maven/"
+    }
+
+
 }
+
 
 loom {
 	splitEnvironmentSourceSets()
@@ -50,7 +54,7 @@ loom {
 
 dependencies {
 	// To change the versions see the gradle.properties file
-	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	//implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -63,7 +67,8 @@ dependencies {
 
 	modApi "com.terraformersmc:modmenu:17.0.0-beta.2"
 
-	modImplementation include("io.github.cottonmc:LibGui:15.1.0+1.21.11")
+	modImplementation "io.github.cottonmc:LibGui:15.1.0+1.21.11"
+
 }
 
 processResources {

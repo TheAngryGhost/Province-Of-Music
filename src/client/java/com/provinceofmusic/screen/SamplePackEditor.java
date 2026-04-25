@@ -8,7 +8,9 @@ import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
+
 import net.minecraft.client.MinecraftClient;
+
 import net.minecraft.text.Text;
 
 import java.awt.*;
@@ -37,6 +39,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
         setRootPanel(root);
         root.setSize(356, 200 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
+
 
         WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0xFF000000);
         root.add(title, 0, 0, 9, 3);

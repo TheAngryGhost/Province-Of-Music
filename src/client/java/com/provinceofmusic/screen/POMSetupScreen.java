@@ -3,6 +3,7 @@ package com.provinceofmusic.screen;
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.background.WMRUpdater;
 import com.provinceofmusic.background.RamManager;
+import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
@@ -19,27 +20,47 @@ import java.util.Objects;
 public class POMSetupScreen extends LightweightGuiDescription {
 
     public POMSetupScreen(boolean justDownloaded) {
-        WGridPanel root = new WGridPanel();
+
+
+        int cell = 9;
+        int totalCellsX = (400 * (4 - ProvinceOfMusicClient.guiSize)) / cell;
+
+        int margin = 2;
+        int centerX = totalCellsX / 2;
+
+        int leftX = margin+3;
+        int leftW = centerX - margin - 2;
+
+        int rightX = centerX;
+        int rightW = totalCellsX - margin;
+
+
+
+        WGridPanel root = new WGridPanel(cell);
         setRootPanel(root);
-        root.setSize(256 * (4 - ProvinceOfMusicClient.guiSize), 200 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(400 * (4 - ProvinceOfMusicClient.guiSize), 220 * (4 - ProvinceOfMusicClient.guiSize));
         root.setInsets(Insets.ROOT_PANEL);
 
+        this.setUseDefaultRootBackground(false);
+        root.setBackgroundPainter(BackgroundPainter.createGuiSprite(Identifier.of("provinceofmusic", "menu_background") ));
+
+
         WLabel title = new WLabel(Text.literal("Province Of Music Setup"), 0xFF000000);
-        root.add(title, 0, 0, 9, 3);
+        root.add(title, leftX, 2, 9, 3);
 
         WSprite icon = new WSprite(Identifier.of("provinceofmusic","icon.png"));
-        root.add(icon, 0, 1, 3, 3);
+        root.add(icon, rightW-5, 2, 5, 5);
 
         if(!ProvinceOfMusicClient.configSettings.saidNoToDownload && Objects.requireNonNull(ProvinceOfMusicClient.samplepacksdir.listFiles()).length == 0){
             WLabel missingSamplePackText = new WLabel(Text.literal("It appears that you have no sample packs yet. "), 0xFF000000);
             WLabel missingSamplePackText2 = new WLabel(Text.literal("Wynncraft's default music will play unless one is installed."), 0xFF000000);
             WLabel missingSamplePackText3 = new WLabel(Text.literal("Would you like to download the Wynn Music Remastered sample pack?"), 0xFF000000);
-            root.add(missingSamplePackText, 0, 5, 9, 3);
-            root.add(missingSamplePackText2, 0, 6, 9, 3);
-            root.add(missingSamplePackText3, 0, 7, 9, 3);
+            root.add(missingSamplePackText, leftX, 5, 9, 3);
+            root.add(missingSamplePackText2, leftX, 6, 9, 3);
+            root.add(missingSamplePackText3, leftX, 7, 9, 3);
 
             WButton yesButton = new WButton(Text.literal("Yes"));
-            root.add(yesButton, 0, 8, 5, 1);
+            root.add(yesButton, leftX, 8, 5, 2);
             Runnable yesButtonRunnable = () -> {
                 WMRUpdater.download();
                 MinecraftClient.getInstance().setScreen(new CottonClientScreen(new POMSetupScreen(true)));
@@ -47,7 +68,7 @@ public class POMSetupScreen extends LightweightGuiDescription {
             yesButton.setOnClick(yesButtonRunnable);
 
             WButton noButton = new WButton(Text.literal("No"));
-            root.add(noButton, 6, 8, 5, 1);
+            root.add(noButton, 6, 8, 5, 2);
             Runnable noButtonRunnable = () -> {
                 ProvinceOfMusicClient.configSettings.saidNoToDownload = true;
                 ProvinceOfMusicClient.saveConfigSettings();
@@ -57,19 +78,19 @@ public class POMSetupScreen extends LightweightGuiDescription {
 
         if(justDownloaded) {
             WLabel downloadCompleteText = new WLabel(Text.literal("Download Complete"), 0xFF00AA00);
-            root.add(downloadCompleteText, 0, 8, 9, 3);
+            root.add(downloadCompleteText, leftX, 8, 9, 3);
         }
 
         if(!RamManager.isRamGood()){
             WLabel ramWarnText = new WLabel(Text.literal("This mod requires at least 4GB of RAM to be allocated to Minecraft."), 0xFF000000);
             WLabel ramWarnText2 = new WLabel(Text.literal("This mod will not work correctly unless more RAM is allocated."), 0xFF000000);
-            root.add(ramWarnText, 0, 9, 9, 3);
-            root.add(ramWarnText2, 0, 10, 9, 3);
+            root.add(ramWarnText, leftX, 9, 9, 3);
+            root.add(ramWarnText2, leftX, 10, 9, 3);
         }
 
 
         WButton closePopupButton = new WButton(Text.literal("Close this popup"));
-        root.add(closePopupButton, 0, 11, 5, 1);
+        root.add(closePopupButton, leftX+1, 20, 10, 2);
         Runnable closePopupButtonRunnable = () -> {
             MinecraftClient.getInstance().setScreen(null);
         };

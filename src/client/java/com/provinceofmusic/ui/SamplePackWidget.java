@@ -27,7 +27,7 @@ public class SamplePackWidget extends WPlainPanel {
         this.setBackgroundPainter(BackgroundPainter.createColorful(0x000000));
 
         WButton backgroundButton = new WButton(Text.literal(""));
-        this.add(backgroundButton, 0, 0, 235, 36);
+        this.add(backgroundButton, 0, 0, 185, 36);
         Runnable backgroundButtonRunnable = () -> {
             if(SamplePackConfig.setActive){
                 ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;

@@ -26,12 +26,8 @@ public class POMSetupScreen extends LightweightGuiDescription {
         int totalCellsX = (400 * (4 - ProvinceOfMusicClient.guiSize)) / cell;
 
         int margin = 2;
-        int centerX = totalCellsX / 2;
 
         int leftX = margin+3;
-        int leftW = centerX - margin - 2;
-
-        int rightX = centerX;
         int rightW = totalCellsX - margin;
 
 
@@ -60,7 +56,7 @@ public class POMSetupScreen extends LightweightGuiDescription {
             root.add(missingSamplePackText3, leftX, 7, 9, 3);
 
             WButton yesButton = new WButton(Text.literal("Yes"));
-            root.add(yesButton, leftX, 8, 5, 2);
+            root.add(yesButton, leftX+1, 9, 5, 2);
             Runnable yesButtonRunnable = () -> {
                 WMRUpdater.download();
                 MinecraftClient.getInstance().setScreen(new CottonClientScreen(new POMSetupScreen(true)));
@@ -68,10 +64,11 @@ public class POMSetupScreen extends LightweightGuiDescription {
             yesButton.setOnClick(yesButtonRunnable);
 
             WButton noButton = new WButton(Text.literal("No"));
-            root.add(noButton, 6, 8, 5, 2);
+            root.add(noButton, leftX+7, 9, 5, 2);
             Runnable noButtonRunnable = () -> {
                 ProvinceOfMusicClient.configSettings.saidNoToDownload = true;
                 ProvinceOfMusicClient.saveConfigSettings();
+                MinecraftClient.getInstance().setScreen(null);
             };
             noButton.setOnClick(noButtonRunnable);
         }
@@ -84,8 +81,8 @@ public class POMSetupScreen extends LightweightGuiDescription {
         if(!RamManager.isRamGood()){
             WLabel ramWarnText = new WLabel(Text.literal("This mod requires at least 4GB of RAM to be allocated to Minecraft."), 0xFF000000);
             WLabel ramWarnText2 = new WLabel(Text.literal("This mod will not work correctly unless more RAM is allocated."), 0xFF000000);
-            root.add(ramWarnText, leftX, 9, 9, 3);
-            root.add(ramWarnText2, leftX, 10, 9, 3);
+            root.add(ramWarnText, leftX, 13, 9, 3);
+            root.add(ramWarnText2, leftX, 12, 9, 3);
         }
 
 

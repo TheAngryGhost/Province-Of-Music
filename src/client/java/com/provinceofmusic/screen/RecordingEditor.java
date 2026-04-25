@@ -81,7 +81,7 @@ public class RecordingEditor extends LightweightGuiDescription {
 
         WButton deleteButton = new WButton(Text.literal("Delete ☒").withColor(0xFFFF0000));
         deleteButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(deleteButton, leftX, 18, leftW, 2);
+        root.add(deleteButton, leftX, 17, leftW, 2);
         deleteButton.setOnClick(() -> {
             ReplayMusic.StopMusic();
             fileInstance.delete();

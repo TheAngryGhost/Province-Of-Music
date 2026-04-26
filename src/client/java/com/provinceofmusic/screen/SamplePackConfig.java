@@ -7,7 +7,11 @@ import com.provinceofmusic.ui.SamplePackWidget;
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
-import io.github.cottonmc.cotton.gui.widget.*;
+import io.github.cottonmc.cotton.gui.widget.WButton;
+import io.github.cottonmc.cotton.gui.widget.WGridPanel;
+import io.github.cottonmc.cotton.gui.widget.WLabel;
+import io.github.cottonmc.cotton.gui.widget.WListPanel;
+import io.github.cottonmc.cotton.gui.widget.WSprite;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
@@ -17,8 +21,11 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.awt.*;
-import java.io.*;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
@@ -31,47 +38,62 @@ public class SamplePackConfig extends LightweightGuiDescription {
     public SamplePackConfig() {
         PackUpgrader.main();
 
+        int guiSize = ProvinceOfMusicClient.guiSize;
+        float[] scalers = {0.9f, 0.95f, 1.0f, 1.05f};
+        float scaler = (guiSize >= 1 && guiSize <= 4) ? scalers[guiSize - 1] : 1.0f;
+
+
         int cell = 9;
-        int totalCellsX = (400 * (4 - ProvinceOfMusicClient.guiSize)) / cell;
+        int margin = 2;
+        int rawCellsX = (int) ((405 * scaler) / cell);
+        int rawCellsY = (int) ((225 * scaler) / cell);
 
-        int margin = 1;
-        int centerX = (totalCellsX / 2 ) -1 ;
+        int totalCellsX = (rawCellsX % 2 == 0) ? rawCellsX : rawCellsX - 1; //just to make a perfect center
+        int totalCellsY = (rawCellsY % 2 == 0) ? rawCellsY : rawCellsY - 1;
 
-        int leftX = margin;
-        int leftW = centerX - margin - 2;
+        int width = totalCellsX * cell;
+        int height = totalCellsY * cell;
 
-        int rightX = centerX+1;
-        int rightW = totalCellsX - margin;
+        int centerX = totalCellsX / 2 ;
+        int leftS = margin-1;
+        int leftE = centerX - margin;
+        int rightS = centerX + margin;
+        int rightE = totalCellsX - margin;
+        int top = margin;
+        int bottom = totalCellsY - margin;
+        int leftAdjust = ((leftE - leftS) % 2 == 0) ? (leftE - leftS) : (leftE - leftS) - 1;
 
         WGridPanel root = new WGridPanel(cell);
         setRootPanel(root);
-        root.setSize(400 * (4 - ProvinceOfMusicClient.guiSize), 220 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(width, height);
         root.setInsets(Insets.ROOT_PANEL);
-        root.setGaps(1, 3);
+
+
 
         this.setUseDefaultRootBackground(false);
         root.setBackgroundPainter(BackgroundPainter.createGuiSprite(Identifier.of("provinceofmusic", "gui_overlay")));
 
         WLabel title = new WLabel(Text.literal("Sample Pack Configuration"), 0xFF000000);
         title.setHorizontalAlignment(HorizontalAlignment.CENTER);
-        root.add(title, leftX, margin, leftW, 1);
+        root.add(title, leftS, top, leftAdjust, 1);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
         backButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(backButton, leftX, 3, leftW, 2);
+        root.add(backButton, leftS, top + 2, leftAdjust, 2);
         backButton.setOnClick(() -> {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new ConfigScreen()));
             setActive = false;
         });
 
-        WButton selectPackButton = new WButton(Text.literal("Select Pack"));
-        selectPackButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(selectPackButton, leftX, 10, leftW, 2);
-        selectPackButton.setOnClick(() -> setActive = !setActive);
+
+        WButton refreshButton = new WButton(Text.literal("Refresh ⟳"));
+        refreshButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(refreshButton, leftS, top + 5, (leftAdjust / 2) - 1, 2);
+        refreshButton.setOnClick(() -> MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig())));
 
         WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
         openFolderButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(openFolderButton, leftX, 5, (leftW / 2) - 1, 2);
+        root.add(openFolderButton, leftS + (leftAdjust / 2), top + 5, (leftAdjust / 2), 2);
         openFolderButton.setOnClick(() -> {
             try {
                 Desktop.getDesktop().open(ProvinceOfMusicClient.samplepacksdir.getAbsoluteFile());
@@ -80,18 +102,11 @@ public class SamplePackConfig extends LightweightGuiDescription {
             }
         });
 
-        WButton refreshButton = new WButton(Text.literal("Refresh List ⟳"));
-        refreshButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(refreshButton, leftX + (leftW / 2) + 1, 5, (leftW / 2) - 1, 2);
-        refreshButton.setOnClick(() -> MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig())));
 
-        WButton createNewButton = new WButton(Text.literal("Create New"));
-        createNewButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(createNewButton, leftX, 18, leftW, 2);
-        createNewButton.setOnClick(() -> {
-            SamplePack.CreateNewPack();
-            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
-        });
+        WButton selectPackButton = new WButton(Text.literal("Select Pack"));
+        selectPackButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(selectPackButton, leftS, top + 9, leftAdjust, 2);
+        selectPackButton.setOnClick(() -> setActive = !setActive);
 
         activeSamplePackLabel = new WLabel(Text.literal(""), 0xFF000000);
         activeSamplePackLabel.setHorizontalAlignment(HorizontalAlignment.CENTER);
@@ -100,7 +115,15 @@ public class SamplePackConfig extends LightweightGuiDescription {
         } else {
             activeSamplePackLabel.setText(Text.literal(ProvinceOfMusicClient.configSettings.activeSamplePack));
         }
-        root.add(activeSamplePackLabel, leftX, 12, leftW, 1);
+        root.add(activeSamplePackLabel, leftS, top + 12, leftE - leftS, 1);
+
+        WButton createNewButton = new WButton(Text.literal("Create New"));
+        createNewButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(createNewButton, leftS, bottom - 3, leftAdjust, 2);
+        createNewButton.setOnClick(() -> {
+            SamplePack.CreateNewPack();
+            MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackConfig()));
+        });
 
         ArrayList<File> samplePacks = SamplePack.FetchSamplePackFiles();
         ArrayList<SamplePack> data = new ArrayList<>();
@@ -132,16 +155,14 @@ public class SamplePackConfig extends LightweightGuiDescription {
                 destination.icon = new WSprite(noimgfound);
             }
 
-            destination.add(destination.icon, 150, 2, 32, 32);
+            destination.add(destination.icon, (int) (126* scaler), 2, 32, 32);
             destination.thisPack = s;
         };
 
         WListPanel<SamplePack, SamplePackWidget> packList = new WListPanel<>(data, SamplePackWidget::new, configurator);
         packList.setListItemHeight(36);
 
-        int listY = 1;
-        int listH = (ProvinceOfMusicClient.guiSize == 3) ? 20 : 21;
-        root.add(packList, rightX, listY, rightW - rightX - 1, listH);
+        root.add(packList, rightS - 2, top, rightE - rightS + 2, bottom-top);
 
         root.validate(this);
     }

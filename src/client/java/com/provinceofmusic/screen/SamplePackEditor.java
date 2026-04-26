@@ -42,67 +42,92 @@ public class SamplePackEditor extends LightweightGuiDescription {
     public SamplePackEditor(SamplePack inPack) {
         thisPack = inPack;
 
-        //idk if there is a better way to do this
+        int guiSize = ProvinceOfMusicClient.guiSize;
+        float[] scalers = {0.9f, 0.95f, 1.0f, 1.05f};
+        float scaler = (guiSize >= 1 && guiSize <= 4) ? scalers[guiSize - 1] : 1.0f;
+
+
         int cell = 9;
-        int totalCellsX = (400 * (4 - ProvinceOfMusicClient.guiSize)) / cell;
-
         int margin = 2;
-        int centerX = totalCellsX / 2;
+        int rawCellsX = (int) ((405 * scaler) / cell);
+        int rawCellsY = (int) ((225 * scaler) / cell);
 
-        int leftX = margin;
-        int leftW = centerX - margin - 2;
+        int totalCellsX = (rawCellsX % 2 == 0) ? rawCellsX : rawCellsX - 1; //just to make a perfect center
+        int totalCellsY = (rawCellsY % 2 == 0) ? rawCellsY : rawCellsY - 1;
 
-        int rightX = centerX;
-        int rightW = totalCellsX - margin;
+        int width = totalCellsX * cell;
+        int height = totalCellsY * cell;
+
+        int centerX = totalCellsX / 2 ;
+        int leftS = margin-1;
+        int leftE = centerX - margin;
+        int rightS = centerX + margin;
+        int rightE = totalCellsX - margin;
+        int top = margin;
+        int bottom = totalCellsY - margin;
+        int leftAdjust = ((leftE - leftS) % 2 == 0) ? (leftE - leftS) : (leftE - leftS) - 1;
 
         WGridPanel root = new WGridPanel(cell);
         setRootPanel(root);
-        root.setSize(400 * (4 - ProvinceOfMusicClient.guiSize), 220 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(width, height);
         root.setInsets(Insets.ROOT_PANEL);
-        root.setGaps(1, 3);
+
+
 
         this.setUseDefaultRootBackground(false);
         root.setBackgroundPainter(BackgroundPainter.createGuiSprite(Identifier.of("provinceofmusic", "gui_overlay")));
 
         WLabel title = new WLabel(Text.literal("Sample Pack Editor"), 0xFF000000);
         title.setHorizontalAlignment(HorizontalAlignment.CENTER);
-        root.add(title, leftX, margin, leftW, 1);
+        root.add(title, leftS, top, leftAdjust, 1);
+
+
+        WButton backButton = new WButton(Text.literal("Back ↶"));
+        backButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(backButton, leftS, top + 2, (leftAdjust / 2) - 1, 2);
+        backButton.setOnClick(this::BackOutToPreviousScreen);
+
+        WButton saveChangesButton = new WButton(Text.literal("Save \uD83D\uDDAB").styled(style -> style.withBold(true)));
+        saveChangesButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(saveChangesButton, leftS + (leftAdjust / 2), top + 2, (leftAdjust / 2) , 2);
+        saveChangesButton.setOnClick(() -> {
+            SaveChanges();
+            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0xFF000000);
+            savedPopup.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            root.add(savedPopup, leftS, top + 4, leftAdjust, 1);
+            Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                root.remove(savedPopup);
+            });
+            t.start();
+        });
 
         WLabel nameLabel = new WLabel(Text.literal("Name"), 0xFF000000);
-        root.add(nameLabel, leftX, 3, leftW, 1);
+        root.add(nameLabel, leftS, top + 5, leftAdjust, 1);
 
         nameField = new WTextField();
         nameField.setMaxLength(1000);
         nameField.setText(thisPack.name);
-        root.add(nameField, leftX, 4, leftW, 2);
+        root.add(nameField, leftS, top + 6, leftAdjust, 2);
 
         WLabel authorLabel = new WLabel(Text.literal("Author"), 0xFF000000);
-        root.add(authorLabel, leftX, 6, leftW, 1);
+        root.add(authorLabel, leftS, top + 9, leftAdjust, 1);
 
         authorField = new WTextField();
         authorField.setMaxLength(1000);
         authorField.setText(thisPack.author);
-        root.add(authorField, leftX, 7, leftW, 2);
+        root.add(authorField, leftS, top + 10, leftAdjust, 2);
 
-        WButton backButton = new WButton(Text.literal("Back ↶"));
-        backButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(backButton, leftX, 9, (leftW / 2) - 1, 2);
-        backButton.setOnClick(this::BackOutToPreviousScreen);
 
-        WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
-        openFolderButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(openFolderButton, leftX + (leftW / 2) + 1, 9, (leftW / 2) -1, 2);
-        openFolderButton.setOnClick(() -> {
-            try {
-                Desktop.getDesktop().open(new File(Path.of(ProvinceOfMusicClient.samplepacksdir + "/" + thisPack.name).toString()).getAbsoluteFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+
 
         WButton changeImageButton = new WButton(Text.literal("Change Img"));
         changeImageButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(changeImageButton, leftX, 11, (leftW / 2) - 1, 2);
+        root.add(changeImageButton, leftS, top + 13, (leftAdjust / 2) - 1, 2);
         changeImageButton.setOnClick(() -> {
             FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
             dialog.setFile("*.png");
@@ -126,28 +151,21 @@ public class SamplePackEditor extends LightweightGuiDescription {
             }
         });
 
-        WButton saveChangesButton = new WButton(Text.literal("Save \uD83D\uDDAB").styled(style -> style.withBold(true)));
-        saveChangesButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(saveChangesButton, leftX + (leftW / 2) + 1, 11, (leftW / 2) -1, 2);
-        saveChangesButton.setOnClick(() -> {
-            SaveChanges();
-            WLabel savedPopup = new WLabel(Text.literal("Changes Saved").styled(style -> style.withItalic(true)), 0xFF000000);
-            savedPopup.setHorizontalAlignment(HorizontalAlignment.CENTER);
-            root.add(savedPopup, leftX, 13, leftW, 1);
-            Thread t = new Thread(() -> {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                root.remove(savedPopup);
-            });
-            t.start();
+        WButton openFolderButton = new WButton(Text.literal("Open Folder \uD83D\uDDC1"));
+        openFolderButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(openFolderButton, leftS + (leftAdjust / 2), top + 13, (leftAdjust / 2), 2);
+        openFolderButton.setOnClick(() -> {
+            try {
+                Desktop.getDesktop().open(new File(Path.of(ProvinceOfMusicClient.samplepacksdir + "/" + thisPack.name).toString()).getAbsoluteFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
+
 
         WButton deletePackButton = new WButton(Text.literal("Delete Pack").withColor(0xFFFF0000).styled(style -> style.withBold(true)));
         deletePackButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(deletePackButton, leftX, 14, leftW, 2);
+        root.add(deletePackButton, leftS, top + 16, leftAdjust, 2);
         deletePackButton.setOnClick(() -> {
             SaveChanges();
             if (ProvinceOfMusicClient.configSettings.activeSamplePack != null) {
@@ -162,7 +180,7 @@ public class SamplePackEditor extends LightweightGuiDescription {
 
         WButton addNewButton = new WButton(Text.literal("Add+"));
         addNewButton.setAlignment(HorizontalAlignment.CENTER);
-        root.add(addNewButton, leftX, 16, leftW, 2);
+        root.add(addNewButton, rightE -6, top - 2, 5, 1);
         addNewButton.setOnClick(() -> {
             copyChangesToCache();
             InstrumentDef temp = new InstrumentDef("null", "null", 0, 1.0f, false);
@@ -188,12 +206,10 @@ public class SamplePackEditor extends LightweightGuiDescription {
         };
 
         instrumentList = new WListPanel<>(data, InstrumentWidget::new, configurator);
-        instrumentList.setListItemHeight(90);
+        instrumentList.setListItemHeight(88);
 
+        root.add(instrumentList, rightS - 2, top-1, rightE - rightS + 2, bottom-top+1);
 
-        int listH = (ProvinceOfMusicClient.guiSize == 3) ? 20 : 22 ;
-
-        root.add(instrumentList, rightX, 1, rightW-rightX, listH);
 
         root.validate(this);
     }

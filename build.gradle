@@ -69,6 +69,8 @@ dependencies {
 
 	modImplementation "io.github.cottonmc:LibGui:15.1.0+1.21.11"
 
+	//Idk how to make this work in a real launcher without it so here we are:
+ 	include "io.github.cottonmc:LibGui:15.1.0+1.21.11"
 }
 
 processResources {

@@ -2,54 +2,89 @@ package com.provinceofmusic.screen;
 
 import com.provinceofmusic.ProvinceOfMusicClient;
 import com.provinceofmusic.ui.InstrumentWidget;
+import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.WListPanel;
+import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-public class SF2FilePickerScreen  extends LightweightGuiDescription {
+public class SF2FilePickerScreen extends LightweightGuiDescription {
+
     public SamplePackEditor prevScreen;
     public InstrumentWidget widget;
-    public SF2FilePickerScreen(SamplePackEditor inScreen){
+
+    public SF2FilePickerScreen(SamplePackEditor inScreen) {
         prevScreen = inScreen;
-        WGridPanel root = new WGridPanel();
+
+        int guiSize = ProvinceOfMusicClient.guiSize;
+        float[] scalers = {0.9f, 0.95f, 1.0f, 1.05f};
+        float scaler = (guiSize >= 1 && guiSize <= 4) ? scalers[guiSize - 1] : 1.0f;
+
+        int cell = 9;
+        int margin = 2;
+        int rawCellsX = (int) ((405 * scaler) / cell);
+        int rawCellsY = (int) ((225 * scaler) / cell);
+
+        int totalCellsX = (rawCellsX % 2 == 0) ? rawCellsX : rawCellsX - 1;
+        int totalCellsY = (rawCellsY % 2 == 0) ? rawCellsY : rawCellsY - 1;
+
+        int width = totalCellsX * cell;
+        int height = totalCellsY * cell;
+
+        int centerX = totalCellsX / 2;
+        int leftS = margin - 1;
+        int leftE = centerX - margin;
+        int rightS = centerX + margin;
+        int rightE = totalCellsX - margin;
+        int top = margin;
+        int bottom = totalCellsY - margin;
+        int leftAdjust = ((leftE - leftS) % 2 == 0) ? (leftE - leftS) : (leftE - leftS) - 1;
+
+        WGridPanel root = new WGridPanel(cell);
         setRootPanel(root);
-        root.setSize(256, 200 * (4 - ProvinceOfMusicClient.guiSize));
+        root.setSize(width, height);
         root.setInsets(Insets.ROOT_PANEL);
 
-        WLabel title = new WLabel(Text.literal("Select Type"), 0xFF000000);
-        root.add(title, 0, 0, 9, 3);
+
+        this.setUseDefaultRootBackground(false);
+        root.setBackgroundPainter(BackgroundPainter.createGuiSprite(Identifier.of("provinceofmusic", "gui_overlay")));
+
+        WLabel title = new WLabel(Text.literal("Select File"), 0xFF000000);
+        title.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        root.add(title, leftS, top, leftAdjust, 1);
 
         WButton backButton = new WButton(Text.literal("Back ↶"));
-        Runnable backButtonRunnable = () -> {
-            MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
-        };
-        root.add(backButton, 9, 0, 3,1);
-        backButton.setOnClick(backButtonRunnable);
+        backButton.setAlignment(HorizontalAlignment.CENTER);
+        root.add(backButton, leftS, top + 2, leftAdjust, 2);
+        backButton.setOnClick(() -> MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen)));
 
         ArrayList<File> data = inScreen.thisPack.getInstrumentFiles();
         BiConsumer<File, WButton> configurator = (File s, WButton destination) -> {
             destination.setLabel(Text.literal(s.getName()));
             destination.setOnClick(() -> {
-                widget.instrumentDirectory.setText(s.getName());
+                if (widget != null) {
+                    widget.instrumentDirectory.setText(s.getName());
+                }
                 MinecraftClient.getInstance().setScreen(new CottonClientScreen(prevScreen));
             });
         };
-        WListPanel sf2FileList = new WListPanel(data, WButton::new, configurator);
+
+        WListPanel<File, WButton> sf2FileList = new WListPanel<>(data, WButton::new, configurator);
         sf2FileList.setListItemHeight(18);
-        if(ProvinceOfMusicClient.guiSize == 3){
-            root.add(sf2FileList, 0, 1, 14, 10);
-        } else{
-            root.add(sf2FileList, 0, 1, 14, 18);
-        }
+
+        root.add(sf2FileList, rightS - 2, top, rightE - rightS + 2, bottom - top);
+
+        root.validate(this);
     }
 }

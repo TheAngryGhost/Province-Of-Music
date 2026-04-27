@@ -26,8 +26,12 @@ public class SamplePackWidget extends WPlainPanel {
         this.setSize(7, 3);
         this.setBackgroundPainter(BackgroundPainter.createColorful(0x000000));
 
+        int guiSize = ProvinceOfMusicClient.guiSize;
+        float[] scalers = {0.9f, 0.95f, 1.0f, 1.05f};
+        float scaler = (guiSize >= 1 && guiSize <= 4) ? scalers[guiSize - 1] : 1.0f;
+
         WButton backgroundButton = new WButton(Text.literal(""));
-        this.add(backgroundButton, 0, 0, 235, 36);
+        this.add(backgroundButton, 0, 0, (int) (165 *  scaler), 36);
         Runnable backgroundButtonRunnable = () -> {
             if(SamplePackConfig.setActive){
                 ProvinceOfMusicClient.configSettings.activeSamplePack = thisPack.name;

@@ -1,5 +1,6 @@
 package com.provinceofmusic.ui;
 
+
 import com.provinceofmusic.jukebox.InstrumentDef;
 import com.provinceofmusic.screen.NoteTypePickerScreen;
 import com.provinceofmusic.screen.SF2FilePickerScreen;
@@ -27,16 +28,18 @@ public class InstrumentWidget extends WPlainPanel {
     public InstrumentWidget(){
         this.setSize(7, 20);
 
-        this.setBackgroundPainter(BackgroundPainter.createColorful(0x000000));
+        this.setBackgroundPainter(BackgroundPainter.createColorful(0x0FF000));
+
+
 
         WLabel directoryLabel = new WLabel(Text.literal("sf2 file"));
         this.add(directoryLabel, 7, 3, 10, 10);
         instrumentDirectory = new WTextField();
-        this.add(instrumentDirectory, 7,13, 150, 5);
+        this.add(instrumentDirectory, 7,13, 80, 5);
         instrumentDirectory.setMaxLength(150);
 
         WButton directorySwitchButton = new WButton(Text.literal("⟳"));
-        this.add(directorySwitchButton, 159, 17, 10, 10);
+        this.add(directorySwitchButton, 80, 7, 10, 10);
         Runnable directorySwitchButtonRunnable = () -> {
             SF2FilePickerScreen newScreen = new SF2FilePickerScreen(screen);
             newScreen.widget = this;
@@ -45,19 +48,19 @@ public class InstrumentWidget extends WPlainPanel {
         directorySwitchButton.setOnClick(directorySwitchButtonRunnable);
 
         WLabel transposeLabel = new WLabel(Text.literal("transpose"));
-        this.add(transposeLabel, 172, 3, 10, 10);
+        this.add(transposeLabel, 92, 3, 10, 10);
         transpose = new POMIntegerInputWidget();
-        this.add(transpose, 172,13, 50, 5);
+        this.add(transpose, 92,13, 50, 5);
         transpose.setMaxLength(150);
 
         WLabel noteTypeLabel = new WLabel(Text.literal("note type"));
         this.add(noteTypeLabel, 7, 35, 10, 10);
         noteType = new WTextField();
-        this.add(noteType, 7,45, 150, 5);
+        this.add(noteType, 7,45, 80, 5);
         noteType.setMaxLength(150);
 
         WButton noteTypeSwitch = new WButton(Text.literal("⟳"));
-        this.add(noteTypeSwitch, 159, 50, 10, 10);
+        this.add(noteTypeSwitch, 80, 40, 10, 10);
         Runnable noteTypeSwitchRunnable = () -> {
             NoteTypePickerScreen newScreen = new NoteTypePickerScreen();
             newScreen.prevScreen = screen;
@@ -67,18 +70,18 @@ public class InstrumentWidget extends WPlainPanel {
         noteTypeSwitch.setOnClick(noteTypeSwitchRunnable);
 
         WLabel singlePitchLabel = new WLabel(Text.literal("single pitch"));
-        this.add(singlePitchLabel, 232, 35, 10, 10);
+        this.add(singlePitchLabel, 7, 68, 10, 10);
 
         singlePitchToggle = new WToggleButton();
-        this.add(singlePitchToggle, 239, 45, 50, 10);
+        this.add(singlePitchToggle, 7, 73, 50, 10);
 
         WLabel volumeLabel = new WLabel(Text.literal("volume"));
-        this.add(volumeLabel, 172, 35, 10, 10);
+        this.add(volumeLabel, 92, 35, 10, 10);
         volume = new POMFloatInputWidget();
-        this.add(volume, 172,45, 30, 5);
+        this.add(volume, 92,45, 50, 5);
         volume.setMaxLength(150);
 
-        WButton deleteInstrumentButton = new WButton(Text.literal("X"));
+        WButton deleteInstrumentButton = new WButton(Text.literal("Delete").withColor(0xFFFF0000));
         Runnable deleteInstrumentButtonRunnable = () -> {
             screen.copyChangesToCache();
             screen.instrumentWidgets.remove(this);
@@ -92,6 +95,6 @@ public class InstrumentWidget extends WPlainPanel {
             MinecraftClient.getInstance().setScreen(new CottonClientScreen(new SamplePackEditor(screen.thisPack)));
         };
         deleteInstrumentButton.setOnClick(deleteInstrumentButtonRunnable);
-        this.add(deleteInstrumentButton, 315, 0, 10, 10);
+        this.add(deleteInstrumentButton, 92, 73, 50, 13);
     }
 }
